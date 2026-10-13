@@ -1,13 +1,14 @@
 import '../core/level/level_definition.dart';
+import 'genius/genius_game.dart';
 
 /// Menambah level baru = tambah satu entry di sini + satu folder di lib/levels/.
 const levelRegistry = <LevelDefinition>[
   LevelDefinition(
-    id: 'math',
+    id: 'genius',
     number: 1,
-    bossName: 'Bob the Mathematics',
+    bossName: 'Bob the Genius',
     introDialog: 'Who are you?\nChallenge me?!\nKnow your place!',
-    available: true,
+    createGame: createGeniusGame,
   ),
   LevelDefinition(
     id: 'maze',

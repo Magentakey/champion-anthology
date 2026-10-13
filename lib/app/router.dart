@@ -1,7 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../screens/boss_intro_screen.dart';
-import '../screens/gameplay_placeholder_screen.dart';
+import '../screens/gameplay_screen.dart';
 import '../screens/level_select_screen.dart';
 import '../screens/main_menu_screen.dart';
 import '../screens/storyboard_screen.dart';
@@ -19,7 +19,7 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/play/:levelId',
       builder: (context, state) =>
-          GameplayPlaceholderScreen(levelId: state.pathParameters['levelId']!),
+          GameplayScreen(levelId: state.pathParameters['levelId']!),
     ),
   ],
 );
