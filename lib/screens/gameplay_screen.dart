@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../app/strings.dart';
 import '../core/level/level_definition.dart';
 import '../core/level/level_game.dart';
 import '../core/level/level_session.dart';
@@ -100,9 +101,9 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('Level belum tersedia'),
+              const Text(AppText.levelUnavailable),
               const SizedBox(height: 16),
-              FilledButton(onPressed: _exit, child: const Text('Kembali')),
+              FilledButton(onPressed: _exit, child: const Text(AppText.backButton)),
             ],
           ),
         ),

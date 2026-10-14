@@ -2,6 +2,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
+import '../../app/strings.dart';
 import '../../core/audio/audio_service.dart';
 import 'star_row.dart';
 
@@ -53,21 +54,21 @@ class PauseOverlay extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Pause', style: Theme.of(context).textTheme.headlineSmall),
+          Text(AppText.paused, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 20),
-          FilledButton(onPressed: onResume, child: const Text('Lanjut')),
+          FilledButton(onPressed: onResume, child: const Text(AppText.resume)),
           const SizedBox(height: 12),
-          FilledButton(onPressed: onRestart, child: const Text('Ulangi')),
+          FilledButton(onPressed: onRestart, child: const Text(AppText.restart)),
           const SizedBox(height: 12),
           ValueListenableBuilder<bool>(
             valueListenable: AudioService.instance.muted,
             builder: (context, muted, _) => FilledButton(
               onPressed: () => AudioService.instance.setMuted(!muted),
-              child: Text(muted ? 'Suara: Mati' : 'Suara: Nyala'),
+              child: Text(muted ? AppText.soundOff : AppText.soundOn),
             ),
           ),
           const SizedBox(height: 12),
-          FilledButton(onPressed: onExit, child: const Text('Keluar')),
+          FilledButton(onPressed: onExit, child: const Text(AppText.exit)),
         ],
       ),
     );
@@ -99,7 +100,7 @@ class ResultOverlay extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            stars >= 3 ? 'Perfect Clear!' : 'Kalah di Step $step',
+            stars >= 3 ? AppText.perfectClear : AppText.lostAtStep(step),
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16),
@@ -116,9 +117,9 @@ class ResultOverlay extends StatelessWidget {
             ),
           ],
           const SizedBox(height: 24),
-          FilledButton(onPressed: onRestart, child: const Text('Ulangi')),
+          FilledButton(onPressed: onRestart, child: const Text(AppText.restart)),
           const SizedBox(height: 12),
-          FilledButton(onPressed: onExit, child: const Text('Level Select')),
+          FilledButton(onPressed: onExit, child: const Text(AppText.toLevelSelect)),
         ],
       ),
     );

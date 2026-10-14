@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../app/strings.dart';
 import '../levels/level_registry.dart';
 
 class BossIntroScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class BossIntroScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final level = levelById(levelId);
     if (level == null) {
-      return const Scaffold(body: Center(child: Text('Level tidak ditemukan')));
+      return const Scaffold(body: Center(child: Text(AppText.levelNotFound)));
     }
 
     return Scaffold(
@@ -25,7 +26,7 @@ class BossIntroScreen extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: TextButton(
                   onPressed: () => context.pop(),
-                  child: const Text('< back'),
+                  child: const Text(AppText.back),
                 ),
               ),
               _Bubble(text: level.bossName),
@@ -39,7 +40,7 @@ class BossIntroScreen extends StatelessWidget {
               const SizedBox(height: 24),
               FilledButton(
                 onPressed: () => context.pushReplacement('/play/${level.id}'),
-                child: const Text('Mulai'),
+                child: const Text(AppText.start),
               ),
             ],
           ),

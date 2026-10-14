@@ -7,7 +7,7 @@ const levelRegistry = <LevelDefinition>[
     id: 'genius',
     number: 1,
     bossName: 'Bob the Genius',
-    introDialog: 'Who are you?\nChallenge me?!\nKnow your place!',
+    introDialog: 'Siapa kau?\nBerani menantangku?!\nTahu tempatmu!',
     bossImage: 'assets/images/genius/boss_idle.png',
     createGame: createGeniusGame,
   ),
@@ -15,7 +15,7 @@ const levelRegistry = <LevelDefinition>[
     id: 'maze',
     number: 2,
     bossName: 'Asep the Mazelogist',
-    introDialog: 'Welcome...\nTake my title?\nFollow me...',
+    introDialog: 'Selamat datang...\nIngin merebut gelarku?\nIkuti aku...',
   ),
   LevelDefinition(
     id: 'cooking',

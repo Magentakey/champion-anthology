@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../app/strings.dart';
 import '../core/save/progress_repository.dart';
 import '../levels/level_registry.dart';
 import '../shared/widgets/star_row.dart';
@@ -24,10 +25,10 @@ class LevelSelectScreen extends ConsumerWidget {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 onPressed: () => context.go('/'),
-                child: const Text('< back'),
+                child: const Text(AppText.back),
               ),
             ),
-            Text('Beat them!', style: Theme.of(context).textTheme.titleLarge),
+            Text(AppText.levelSelectTitle, style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 16),
             Expanded(
               child: GridView.count(
@@ -52,8 +53,8 @@ class LevelSelectScreen extends ConsumerWidget {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(level.available
-                                ? 'Selesaikan level sebelumnya dulu'
-                                : 'Segera hadir'),
+                                ? AppText.finishPreviousLevel
+                                : AppText.comingSoon),
                           ),
                         );
                       }
