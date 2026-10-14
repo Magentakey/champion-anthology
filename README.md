@@ -1,17 +1,94 @@
-# champion_anthology
+# Champion Anthology — *The World in My Hands!*
 
-A new Flutter project.
+Game mobile (Android) bergenre **minigame anthology dengan alur cerita**. Karakter utama menantang para juara di berbagai bidang untuk merebut gelar juara utama. Dibuat dengan **Flutter** (UI, cerita, navigasi) dan **Flame Engine** (gameplay 2D).
 
-## Getting Started
+## Status
 
-This project is a starting point for a Flutter application.
+| Level | Boss | Status |
+|---|---|---|
+| 1 | Bob the Genius (kuis pengetahuan) | Selesai, bisa dimainkan |
+| 2 | Asep the Mazelogist (labirin) | Direncanakan |
+| 3 | Cooking Champion (ritme dan waktu) | Direncanakan |
 
-A few resources to get you started if this is your first Flutter project:
+## Unduh dan pasang
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+APK terbaru ada di halaman **Releases** repositori ini. Setelah mengunduh, izinkan "Instal aplikasi dari sumber tidak dikenal" di HP Anda. Jika muncul peringatan Play Protect, pilih "Tetap instal" (APK ini belum dipublikasikan lewat Play Store).
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Cara bermain
+
+- Setiap level terdiri dari **3 step berurutan** (Mudah → Sedang → Sulit) yang dimainkan langsung dalam satu sesi, tanpa kembali ke menu.
+- Jawab soal sebelum waktu habis. Jawaban salah atau terlambat mengurangi nyawa; nyawa habis berarti kalah.
+- Bintang sama dengan jumlah step yang berhasil dimenangkan:
+
+| Hasil | Bintang |
+|---|---|
+| Kalah di Step 1 | 0 |
+| Menang Step 1, kalah di Step 2 | 1 |
+| Menang Step 2, kalah di Step 3 | 2 |
+| Menang Step 3 | 3 (Sempurna) |
+
+- Level berikutnya terbuka jika level sebelumnya sudah mendapat minimal 1 bintang. Bintang terbaik tersimpan di perangkat.
+
+## Menjalankan dari kode
+
+Prasyarat: [Flutter SDK](https://docs.flutter.dev/get-started/install), Android SDK, dan perangkat Android (atau emulator).
+
+```bash
+git clone <url-repositori-ini>
+cd champion_anthology
+flutter pub get
+flutter run            # mode debug
+flutter run --profile  # untuk menguji performa
+```
+
+Perintah lain:
+
+```bash
+flutter analyze
+flutter test
+flutter build apk --release   # hasil: build/app/outputs/flutter-apk/app-release.apk
+```
+
+## Struktur proyek
+
+```
+lib/
+├── main.dart                 # titik masuk (SharedPreferences + audio)
+├── app/                      # app.dart, router.dart, theme.dart, strings.dart (semua teks UI)
+├── core/                     # inti yang dipakai semua level
+│   ├── level/                # LevelSession, LevelGame, LevelDefinition, StarCalculator
+│   ├── assets/               # AssetLoader (muat/bersihkan aset per level)
+│   ├── audio/                # AudioService (SFX latensi rendah + mute)
+│   └── save/                 # ProgressRepository (bintang tersimpan)
+├── levels/
+│   ├── level_registry.dart   # daftar semua level
+│   └── genius/               # Level 1: game, HUD, konfigurasi, soal, dialog
+├── screens/                  # menu, storyboard, pilih level, intro boss, gameplay
+└── shared/widgets/           # StarRow, overlay jeda/hasil, efek getar
+assets/
+├── images/genius/            # ekspresi Bob (boss_*.png)
+├── images/story/             # panel storyboard (panel_*.png)
+├── data/genius_questions.json
+├── audio/                    # SFX (.wav)
+└── icon/                     # ikon aplikasi
+test/                         # unit dan widget test
+docs/PANDUAN_PENGEMBANGAN.md  # panduan menambah level, soal, dan mengganti aset
+```
+
+Pembagian tugas: **Flutter** untuk menu, dialog, dan HUD; **Flame** hanya aktif saat gameplay (boss, time bar, efek). Aset dimuat per level dan dibersihkan saat level ditutup agar ringan di perangkat spesifikasi rendah.
+
+## Panduan pengembangan
+
+Lihat [`docs/PANDUAN_PENGEMBANGAN.md`](docs/PANDUAN_PENGEMBANGAN.md) untuk:
+
+- menambah level baru,
+- menambah atau mengubah soal,
+- mengatur tingkat kesulitan,
+- mengganti gambar dan suara dengan aset final,
+- mengubah teks dan dialog.
+
+## Aset dan lisensi
+
+- Gambar (boss, storyboard, ikon) saat ini **placeholder** buatan sendiri dan akan diganti aset final dengan menimpa file bernama sama.
+- Efek suara dibuat sendiri secara sintetis.
+- Lisensi proyek: belum ditentukan.
