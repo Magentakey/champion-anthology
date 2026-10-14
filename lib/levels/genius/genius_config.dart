@@ -14,8 +14,12 @@ const stepLabels = <String>['Mudah', 'Sedang', 'Sulit'];
 class ArenaLayout {
   const ArenaLayout._();
 
-  static const double bossCenterY = 0.17;
+  static const double bossCenterX = 0.30;
+  static const double bossCenterY = 0.19;
   static const double bossHeight = 0.22;
+  static const double bubbleTop = 0.10;
+  static const double bubbleHeight = 0.15;
+  static const double bubbleLeft = 0.52;
   static const double questionTop = 0.33;
   static const double questionHeight = 0.19;
   static const double timeBarY = 0.565;

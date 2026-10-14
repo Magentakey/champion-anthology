@@ -1,3 +1,5 @@
+import 'dart:math' show pi;
+
 import 'package:flutter/material.dart';
 
 import '../../core/level/star_calculator.dart';
@@ -22,7 +24,13 @@ class GeniusHud extends StatelessWidget {
       final h = c.maxHeight;
       return ListenableBuilder(
         listenable: Listenable.merge(
-          [game.session, game.question, game.feedback, game.progress],
+          [
+            game.session,
+            game.question,
+            game.feedback,
+            game.progress,
+            game.bossSay,
+          ],
         ),
         builder: (context, _) {
           final q = game.question.value;
@@ -37,6 +45,13 @@ class GeniusHud extends StatelessWidget {
                 top: topPad + 8,
                 left: 16,
                 child: _TopBar(step: step, progress: p),
+              ),
+              Positioned(
+                top: h * ArenaLayout.bubbleTop,
+                left: c.maxWidth * ArenaLayout.bubbleLeft,
+                right: 12,
+                height: h * ArenaLayout.bubbleHeight,
+                child: _SpeechBubble(text: game.bossSay.value),
               ),
               Positioned(
                 top: h * ArenaLayout.questionTop,
@@ -282,6 +297,80 @@ class _StepBanner extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Gelembung ucapan Bob di sebelah kanan karakternya.
+class _SpeechBubble extends StatelessWidget {
+  const _SpeechBubble({required this.text});
+
+  final String? text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        transitionBuilder: (child, anim) => FadeTransition(
+          opacity: anim,
+          child: ScaleTransition(
+            scale: anim,
+            alignment: Alignment.centerLeft,
+            child: child,
+          ),
+        ),
+        child: text == null
+            ? const SizedBox.shrink(key: ValueKey('none'))
+            : _BubbleBody(key: ValueKey(text), text: text!),
+      ),
+    );
+  }
+}
+
+class _BubbleBody extends StatelessWidget {
+  const _BubbleBody({super.key, required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final border = BorderSide(color: Colors.grey.shade500);
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.fromBorderSide(border),
+          ),
+          child: Text(
+            text,
+            maxLines: 4,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 14, color: Colors.black87),
+          ),
+        ),
+        // Ekor gelembung menunjuk ke Bob (kiri).
+        Positioned(
+          left: -6,
+          top: 20,
+          child: Transform.rotate(
+            angle: pi / 4,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(left: border, bottom: border),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

@@ -10,7 +10,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import '../../core/audio/audio_service.dart';
 import '../../core/level/level_game.dart';
 import '../../core/level/level_session.dart';
+import '../../core/level/star_calculator.dart';
 import 'genius_config.dart';
+import 'genius_dialog.dart';
 import 'genius_hud.dart';
 import 'genius_models.dart';
 import 'question_bank.dart';
@@ -33,7 +35,14 @@ class GeniusGame extends LevelGame {
 
   /// Bertambah setiap jawaban salah / telat; memicu efek getar + kilat di HUD.
   final ValueNotifier<int> wrongCount = ValueNotifier(0);
+
+  /// Kalimat Bob yang sedang tampil di gelembung ucapan (null = sembunyi).
+  final ValueNotifier<String?> bossSay = ValueNotifier(null);
+
   int _lastTick = -1;
+  int _sayToken = 0;
+  String? _lastLine;
+  String? _resultLine;
 
   late final BossComponent _boss;
   late final TimeBarComponent _timeBar;
@@ -49,7 +58,12 @@ class GeniusGame extends LevelGame {
   bool _awaiting = false;
 
   @override
-  List<String> get assetPaths => const ['genius/boss.png'];
+  List<String> get assetPaths => const [
+        'genius/boss_idle.png',
+        'genius/boss_shock.png',
+        'genius/boss_laugh.png',
+        'genius/boss_defeat.png',
+      ];
 
   @override
   Color backgroundColor() => const Color(0xFFFFEBEE);
@@ -61,8 +75,15 @@ class GeniusGame extends LevelGame {
   Future<void> onLoad() async {
     _bank = QuestionBank.parse(await rootBundle.loadString(QuestionBank.assetPath));
     await loadAssets();
+    Sprite spriteOf(String file) =>
+        Sprite(levelImages.fromCache('genius/$file.png'));
     _boss = BossComponent(
-      sprite: Sprite(levelImages.fromCache('genius/boss.png')),
+      sprites: {
+        BossMood.idle: spriteOf('boss_idle'),
+        BossMood.shock: spriteOf('boss_shock'),
+        BossMood.laugh: spriteOf('boss_laugh'),
+        BossMood.defeat: spriteOf('boss_defeat'),
+      },
     );
     _timeBar = TimeBarComponent();
     await addAll([_boss, _timeBar]);
@@ -78,9 +99,12 @@ class GeniusGame extends LevelGame {
   }
 
   void _layout(Vector2 s) {
-    final side = min(s.x * 0.6, s.y * ArenaLayout.bossHeight);
+    final side = min(s.x * 0.5, s.y * ArenaLayout.bossHeight);
     _boss.size = Vector2.all(side);
-    _boss.position = Vector2(s.x / 2, s.y * ArenaLayout.bossCenterY);
+    _boss.position = Vector2(
+      s.x * ArenaLayout.bossCenterX,
+      s.y * ArenaLayout.bossCenterY,
+    );
     _timeBar.size = Vector2(s.x - 32, 14);
     _timeBar.position = Vector2(16, s.y * ArenaLayout.timeBarY);
   }
@@ -93,6 +117,8 @@ class GeniusGame extends LevelGame {
     _correct = 0;
     _lives = _config.lives;
     _publishProgress();
+    _boss.setMood(BossMood.idle);
+    _say(GeniusDialog.stepIntro[step - 1], seconds: 2.6);
     _nextQuestion();
   }
 
@@ -113,6 +139,33 @@ class GeniusGame extends LevelGame {
     _timeBar.fraction = 1;
     _lastTick = -1;
     _awaiting = true;
+  }
+
+  @override
+  String? resultMessage() => _resultLine;
+
+  /// Tampilkan kalimat Bob di gelembung ucapan selama [seconds] detik.
+  void _say(String line, {double seconds = 2.2}) {
+    final token = ++_sayToken;
+    bossSay.value = line;
+    add(TimerComponent(
+      period: seconds,
+      removeOnFinish: true,
+      onTick: () {
+        if (token == _sayToken) bossSay.value = null;
+      },
+    ));
+  }
+
+  /// Pilih kalimat acak, hindari mengulang kalimat yang sama berturut-turut.
+  String _pick(List<String> lines) {
+    if (lines.length == 1) return lines.first;
+    String line;
+    do {
+      line = lines[_rng.nextInt(lines.length)];
+    } while (line == _lastLine);
+    _lastLine = line;
+    return line;
   }
 
   /// Ambil soal berikutnya; hindari kategori yang sama berturut-turut jika bisa.
@@ -162,9 +215,13 @@ class GeniusGame extends LevelGame {
     feedback.value = AnswerFeedback(chosen: chosen, correct: correct);
     if (ok) {
       _boss.flinch();
+      _boss.setMood(BossMood.shock, revertAfter: 0.9);
+      _say(_pick(GeniusDialog.correct));
       AudioService.instance.play(Sfx.correct);
     } else {
       _boss.laugh();
+      _boss.setMood(BossMood.laugh, revertAfter: 0.9);
+      _say(_pick(chosen < 0 ? GeniusDialog.timeout : GeniusDialog.wrong));
       wrongCount.value++;
       AudioService.instance.play(Sfx.wrong);
     }
@@ -196,10 +253,21 @@ class GeniusGame extends LevelGame {
     question.value = null;
     feedback.value = null;
 
+    _sayToken++;
+    bossSay.value = null;
+
+    // Kalimat hasil harus siap SEBELUM session berubah (listener layar membacanya).
     if (!won) {
+      _resultLine = _pick(GeniusDialog.resultByStars[session.stepsWon]);
+      _boss.setMood(BossMood.laugh);
       AudioService.instance.play(Sfx.lose);
       session.loseStep();
       return;
+    }
+    if (session.step >= StarCalculator.totalSteps) {
+      _resultLine =
+          _pick(GeniusDialog.resultByStars[StarCalculator.totalSteps]);
+      _boss.setMood(BossMood.defeat);
     }
     session.winStep();
     AudioService.instance.play(session.isPlaying ? Sfx.stepUp : Sfx.win);
@@ -214,10 +282,16 @@ class GeniusGame extends LevelGame {
   }
 }
 
-/// TODO(art): ganti assets/images/genius/boss.png dengan art final (cukup overwrite).
+enum BossMood { idle, shock, laugh, defeat }
+
+/// TODO(art): ganti gambar boss_*.png di assets/images/genius/ dengan art final (cukup overwrite).
 class BossComponent extends SpriteComponent {
-  BossComponent({required Sprite sprite})
-      : super(sprite: sprite, anchor: Anchor.center);
+  BossComponent({required Map<BossMood, Sprite> sprites})
+      : _sprites = sprites,
+        super(sprite: sprites[BossMood.idle], anchor: Anchor.center);
+
+  final Map<BossMood, Sprite> _sprites;
+  int _moodToken = 0;
 
   @override
   Future<void> onLoad() async {
@@ -230,6 +304,21 @@ class BossComponent extends SpriteComponent {
         curve: Curves.easeInOut,
       ),
     ));
+  }
+
+  /// Ganti ekspresi; jika [revertAfter] diisi, kembali ke idle setelah jeda itu.
+  void setMood(BossMood mood, {double? revertAfter}) {
+    sprite = _sprites[mood];
+    final token = ++_moodToken;
+    if (revertAfter != null) {
+      add(TimerComponent(
+        period: revertAfter,
+        removeOnFinish: true,
+        onTick: () {
+          if (token == _moodToken) sprite = _sprites[BossMood.idle];
+        },
+      ));
+    }
   }
 
   void flinch() {

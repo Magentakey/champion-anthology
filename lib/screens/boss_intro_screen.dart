@@ -30,8 +30,10 @@ class BossIntroScreen extends StatelessWidget {
               ),
               _Bubble(text: level.bossName),
               const Spacer(),
-              // TODO(art): sprite boss
-              const Icon(Icons.accessibility_new, size: 160, color: Colors.blue),
+              if (level.bossImage != null)
+                Image.asset(level.bossImage!, height: 220)
+              else
+                const Icon(Icons.accessibility_new, size: 160, color: Colors.blue),
               const Spacer(),
               _Bubble(text: level.introDialog),
               const SizedBox(height: 24),

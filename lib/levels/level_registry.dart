@@ -8,6 +8,7 @@ const levelRegistry = <LevelDefinition>[
     number: 1,
     bossName: 'Bob the Genius',
     introDialog: 'Who are you?\nChallenge me?!\nKnow your place!',
+    bossImage: 'assets/images/genius/boss_idle.png',
     createGame: createGeniusGame,
   ),
   LevelDefinition(

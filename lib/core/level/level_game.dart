@@ -21,6 +21,9 @@ abstract class LevelGame extends FlameGame {
   /// HUD Flutter di atas arena Flame (soal, tombol jawaban, dll).
   Widget buildHud(BuildContext context) => const SizedBox.shrink();
 
+  /// Kalimat karakter boss di layar hasil (mis. ejekan). null = tidak ada.
+  String? resultMessage() => null;
+
   /// Mulai step [step] (1..3). Panggil [LevelSession.winStep] / [LevelSession.loseStep]
   /// saat step selesai.
   void startStep(int step);

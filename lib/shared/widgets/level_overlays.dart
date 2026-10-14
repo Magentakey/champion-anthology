@@ -81,10 +81,14 @@ class ResultOverlay extends StatelessWidget {
     required this.step,
     required this.onRestart,
     required this.onExit,
+    this.bossName,
+    this.message,
   });
 
   final int stars;
   final int step;
+  final String? bossName;
+  final String? message;
   final VoidCallback onRestart;
   final VoidCallback onExit;
 
@@ -100,6 +104,17 @@ class ResultOverlay extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           StarRow(stars: stars, size: 40),
+          if (message != null) ...[
+            const SizedBox(height: 16),
+            Text(
+              bossName == null ? '"$message"' : '$bossName:\n"$message"',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontStyle: FontStyle.italic,
+                color: Colors.black87,
+              ),
+            ),
+          ],
           const SizedBox(height: 24),
           FilledButton(onPressed: onRestart, child: const Text('Ulangi')),
           const SizedBox(height: 12),

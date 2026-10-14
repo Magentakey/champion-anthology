@@ -156,6 +156,8 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                       return ResultOverlay(
                         stars: session.stars,
                         step: session.step,
+                        bossName: _level?.bossName,
+                        message: game.resultMessage(),
                         onRestart: _restart,
                         onExit: _exit,
                       );
