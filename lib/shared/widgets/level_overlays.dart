@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/audio/audio_service.dart';
 import 'star_row.dart';
 
 class _Scrim extends StatelessWidget {
@@ -49,6 +50,14 @@ class PauseOverlay extends StatelessWidget {
           FilledButton(onPressed: onResume, child: const Text('Lanjut')),
           const SizedBox(height: 12),
           FilledButton(onPressed: onRestart, child: const Text('Ulangi')),
+          const SizedBox(height: 12),
+          ValueListenableBuilder<bool>(
+            valueListenable: AudioService.instance.muted,
+            builder: (context, muted, _) => FilledButton(
+              onPressed: () => AudioService.instance.setMuted(!muted),
+              child: Text(muted ? 'Suara: Mati' : 'Suara: Nyala'),
+            ),
+          ),
           const SizedBox(height: 12),
           FilledButton(onPressed: onExit, child: const Text('Keluar')),
         ],

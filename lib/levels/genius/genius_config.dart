@@ -7,6 +7,8 @@ const geniusSteps = <StepConfig>[
   StepConfig(targetCorrect: 5, secondsPerQuestion: 7, lives: 2), // Step 3 - Sulit
 ];
 
+const stepLabels = <String>['Mudah', 'Sedang', 'Sulit'];
+
 /// Posisi vertikal (pecahan tinggi layar) yang dipakai bersama oleh Flame
 /// (boss, time bar) dan HUD Flutter (soal, jawaban) supaya sejajar.
 class ArenaLayout {

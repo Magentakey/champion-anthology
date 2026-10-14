@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter/material.dart' show BuildContext, Curves, Widget;
 import 'package:flutter/services.dart' show rootBundle;
 
+import '../../core/audio/audio_service.dart';
 import '../../core/level/level_game.dart';
 import '../../core/level/level_session.dart';
 import 'genius_config.dart';
@@ -29,6 +30,10 @@ class GeniusGame extends LevelGame {
   final ValueNotifier<AnswerFeedback?> feedback = ValueNotifier(null);
   final ValueNotifier<StepProgress> progress =
       ValueNotifier(const StepProgress.empty());
+
+  /// Bertambah setiap jawaban salah / telat; memicu efek getar + kilat di HUD.
+  final ValueNotifier<int> wrongCount = ValueNotifier(0);
+  int _lastTick = -1;
 
   late final BossComponent _boss;
   late final TimeBarComponent _timeBar;
@@ -56,6 +61,7 @@ class GeniusGame extends LevelGame {
   Future<void> onLoad() async {
     _bank = QuestionBank.parse(await rootBundle.loadString(QuestionBank.assetPath));
     await loadAssets();
+    await AudioService.instance.preload();
     _boss = BossComponent(
       sprite: Sprite(levelImages.fromCache('genius/boss.png')),
     );
@@ -106,6 +112,7 @@ class GeniusGame extends LevelGame {
     question.value = item.toQuestion(_rng);
     _timeLeft = _config.secondsPerQuestion;
     _timeBar.fraction = 1;
+    _lastTick = -1;
     _awaiting = true;
   }
 
@@ -140,6 +147,11 @@ class GeniusGame extends LevelGame {
     if (!_awaiting) return;
     _timeLeft -= dt;
     _timeBar.fraction = _timeLeft / _config.secondsPerQuestion;
+    final secondsLeft = _timeLeft.ceil();
+    if (secondsLeft > 0 && secondsLeft <= 3 && secondsLeft != _lastTick) {
+      _lastTick = secondsLeft;
+      AudioService.instance.play(Sfx.tick);
+    }
     if (_timeLeft <= 0) {
       _awaiting = false;
       _resolve(chosen: -1, correct: question.value!.correctIndex);
@@ -149,7 +161,14 @@ class GeniusGame extends LevelGame {
   void _resolve({required int chosen, required int correct}) {
     final ok = chosen == correct;
     feedback.value = AnswerFeedback(chosen: chosen, correct: correct);
-    if (ok) _boss.flinch();
+    if (ok) {
+      _boss.flinch();
+      AudioService.instance.play(Sfx.correct);
+    } else {
+      _boss.laugh();
+      wrongCount.value++;
+      AudioService.instance.play(Sfx.wrong);
+    }
 
     // Jeda singkat agar pemain melihat benar/salah. Berhenti otomatis saat pause.
     add(TimerComponent(
@@ -179,10 +198,12 @@ class GeniusGame extends LevelGame {
     feedback.value = null;
 
     if (!won) {
+      AudioService.instance.play(Sfx.lose);
       session.loseStep();
       return;
     }
     session.winStep();
+    AudioService.instance.play(session.isPlaying ? Sfx.stepUp : Sfx.win);
     if (session.isPlaying) {
       // Jeda singkat lalu lanjut otomatis ke step berikutnya.
       add(TimerComponent(
@@ -216,6 +237,14 @@ class BossComponent extends SpriteComponent {
     add(ScaleEffect.by(
       Vector2.all(0.9),
       EffectController(duration: 0.08, alternate: true),
+    ));
+  }
+
+  /// Bob menertawakan jawaban salah.
+  void laugh() {
+    add(ScaleEffect.by(
+      Vector2.all(1.12),
+      EffectController(duration: 0.12, alternate: true, repeatCount: 2),
     ));
   }
 }

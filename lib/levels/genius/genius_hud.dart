@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/level/star_calculator.dart';
+import '../../shared/widgets/hit_effect.dart';
 import 'genius_config.dart';
 import 'genius_game.dart';
 import 'genius_models.dart';
@@ -15,7 +16,9 @@ class GeniusHud extends StatelessWidget {
   Widget build(BuildContext context) {
     final topPad = MediaQuery.of(context).padding.top;
 
-    return LayoutBuilder(builder: (context, c) {
+    return HitEffect(
+      trigger: game.wrongCount,
+      child: LayoutBuilder(builder: (context, c) {
       final h = c.maxHeight;
       return ListenableBuilder(
         listenable: Listenable.merge(
@@ -40,10 +43,9 @@ class GeniusHud extends StatelessWidget {
                 left: 16,
                 right: 16,
                 height: h * ArenaLayout.questionHeight,
-                child: _QuestionCard(
-                  category: q?.category,
-                  text: q?.text ?? 'Step $step\nBersiap...',
-                ),
+                child: q == null
+                    ? _StepBanner(step: step)
+                    : _QuestionCard(category: q.category, text: q.text),
               ),
               Positioned(
                 top: h * ArenaLayout.answersTop,
@@ -61,7 +63,8 @@ class GeniusHud extends StatelessWidget {
           );
         },
       );
-    });
+    }),
+    );
   }
 }
 
@@ -81,10 +84,16 @@ class _TopBar extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         for (var i = 0; i < progress.maxLives; i++)
-          Icon(
-            i < progress.lives ? Icons.favorite : Icons.favorite_border,
-            color: Colors.red,
-            size: 20,
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            transitionBuilder: (child, anim) =>
+                ScaleTransition(scale: anim, child: child),
+            child: Icon(
+              i < progress.lives ? Icons.favorite : Icons.favorite_border,
+              key: ValueKey(i < progress.lives),
+              color: Colors.red,
+              size: 20,
+            ),
           ),
         const SizedBox(width: 12),
         Text('${progress.correct}/${progress.target}'),
@@ -224,6 +233,53 @@ class _AnswerButton extends StatelessWidget {
               style: const TextStyle(fontSize: 15, color: Colors.black87),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Banner besar saat pergantian step (muncul menggantikan kartu soal).
+class _StepBanner extends StatelessWidget {
+  const _StepBanner({required this.step});
+
+  final int step;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = stepLabels[(step - 1).clamp(0, stepLabels.length - 1).toInt()];
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(step),
+      tween: Tween(begin: 0.6, end: 1.0),
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.easeOutBack,
+      builder: (context, scale, child) => Opacity(
+        opacity: scale.clamp(0.0, 1.0),
+        child: Transform.scale(scale: scale, child: child),
+      ),
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: Colors.blue.shade100,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'STEP $step',
+              style: const TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 18, color: Colors.black54),
+            ),
+          ],
         ),
       ),
     );
