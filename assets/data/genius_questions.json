@@ -1,0 +1,472 @@
+{
+  "steps": [
+    {
+      "step": 1,
+      "label": "Mudah",
+      "questions": [
+        {
+          "category": "Antariksa",
+          "text": "Siapa orang pertama yang menginjakkan kaki di Bulan?",
+          "correct": "Neil Armstrong",
+          "wrong": [
+            "Buzz Aldrin",
+            "Yuri Gagarin",
+            "Michael Collins"
+          ]
+        },
+        {
+          "category": "Penemuan",
+          "text": "Siapa yang menerbangkan pesawat bermotor berawak pertama pada tahun 1903?",
+          "correct": "Wright bersaudara",
+          "wrong": [
+            "Leonardo da Vinci",
+            "Thomas Edison",
+            "Alexander Graham Bell"
+          ]
+        },
+        {
+          "category": "Geografi",
+          "text": "Apa ibu kota Jepang?",
+          "correct": "Tokyo",
+          "wrong": [
+            "Kyoto",
+            "Osaka",
+            "Seoul"
+          ]
+        },
+        {
+          "category": "Antariksa",
+          "text": "Planet apa yang paling besar di tata surya?",
+          "correct": "Jupiter",
+          "wrong": [
+            "Saturnus",
+            "Neptunus",
+            "Bumi"
+          ]
+        },
+        {
+          "category": "Seni",
+          "text": "Siapa pelukis lukisan Mona Lisa?",
+          "correct": "Leonardo da Vinci",
+          "wrong": [
+            "Pablo Picasso",
+            "Vincent van Gogh",
+            "Michelangelo"
+          ]
+        },
+        {
+          "category": "Alam",
+          "text": "Apa hewan darat tercepat di dunia?",
+          "correct": "Citah",
+          "wrong": [
+            "Singa",
+            "Kuda",
+            "Harimau"
+          ]
+        },
+        {
+          "category": "Geografi",
+          "text": "Berapa jumlah benua menurut model yang paling umum diajarkan?",
+          "correct": "7",
+          "wrong": [
+            "5",
+            "6",
+            "8"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Pada suhu berapa air murni mendidih di permukaan laut?",
+          "correct": "100°C",
+          "wrong": [
+            "90°C",
+            "110°C",
+            "80°C"
+          ]
+        },
+        {
+          "category": "Umum",
+          "text": "Berapa jumlah hari dalam satu tahun kabisat?",
+          "correct": "366",
+          "wrong": [
+            "365",
+            "364",
+            "367"
+          ]
+        },
+        {
+          "category": "Antariksa",
+          "text": "Apa nama galaksi tempat tata surya kita berada?",
+          "correct": "Bima Sakti",
+          "wrong": [
+            "Andromeda",
+            "Triangulum",
+            "Sombrero"
+          ]
+        },
+        {
+          "category": "Geografi",
+          "text": "Samudra apa yang paling luas di dunia?",
+          "correct": "Pasifik",
+          "wrong": [
+            "Atlantik",
+            "Hindia",
+            "Arktik"
+          ]
+        },
+        {
+          "category": "Sejarah",
+          "text": "Siapa presiden pertama Republik Indonesia?",
+          "correct": "Soekarno",
+          "wrong": [
+            "Soeharto",
+            "Mohammad Hatta",
+            "B.J. Habibie"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Bagian tumbuhan mana yang umumnya menyerap air dari dalam tanah?",
+          "correct": "Akar",
+          "wrong": [
+            "Daun",
+            "Batang",
+            "Bunga"
+          ]
+        },
+        {
+          "category": "Geografi",
+          "text": "Menara Eiffel terletak di negara apa?",
+          "correct": "Prancis",
+          "wrong": [
+            "Italia",
+            "Spanyol",
+            "Jerman"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Apa nama proses tumbuhan membuat makanan dengan bantuan cahaya matahari?",
+          "correct": "Fotosintesis",
+          "wrong": [
+            "Respirasi",
+            "Transpirasi",
+            "Fermentasi"
+          ]
+        }
+      ]
+    },
+    {
+      "step": 2,
+      "label": "Sedang",
+      "questions": [
+        {
+          "category": "Sains",
+          "text": "Siapa yang merumuskan hukum gravitasi universal?",
+          "correct": "Isaac Newton",
+          "wrong": [
+            "Galileo Galilei",
+            "Albert Einstein",
+            "Johannes Kepler"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Gas apa yang paling banyak terkandung di atmosfer Bumi?",
+          "correct": "Nitrogen",
+          "wrong": [
+            "Oksigen",
+            "Karbon dioksida",
+            "Argon"
+          ]
+        },
+        {
+          "category": "Penemuan",
+          "text": "Siapa yang menemukan penisilin pada tahun 1928?",
+          "correct": "Alexander Fleming",
+          "wrong": [
+            "Louis Pasteur",
+            "Robert Koch",
+            "Edward Jenner"
+          ]
+        },
+        {
+          "category": "Antariksa",
+          "text": "Siapa manusia pertama yang mengorbit Bumi (1961)?",
+          "correct": "Yuri Gagarin",
+          "wrong": [
+            "Neil Armstrong",
+            "Alan Shepard",
+            "John Glenn"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Organ apa yang menghasilkan hormon insulin?",
+          "correct": "Pankreas",
+          "wrong": [
+            "Hati",
+            "Ginjal",
+            "Lambung"
+          ]
+        },
+        {
+          "category": "Sastra",
+          "text": "Siapa penulis novel \"Laskar Pelangi\"?",
+          "correct": "Andrea Hirata",
+          "wrong": [
+            "Tere Liye",
+            "Pramoedya Ananta Toer",
+            "Habiburrahman El Shirazy"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Apa lambang kimia untuk emas?",
+          "correct": "Au",
+          "wrong": [
+            "Ag",
+            "Go",
+            "Gd"
+          ]
+        },
+        {
+          "category": "Sejarah",
+          "text": "Pada tahun berapa Perang Dunia II berakhir?",
+          "correct": "1945",
+          "wrong": [
+            "1939",
+            "1918",
+            "1950"
+          ]
+        },
+        {
+          "category": "Penemuan",
+          "text": "Siapa yang dikenal sebagai penemu mesin cetak bergerak di Eropa pada abad ke-15?",
+          "correct": "Johannes Gutenberg",
+          "wrong": [
+            "William Caxton",
+            "Leonardo da Vinci",
+            "Isaac Newton"
+          ]
+        },
+        {
+          "category": "Budaya",
+          "text": "Candi Buddha terbesar di dunia yang terletak di Magelang adalah...",
+          "correct": "Borobudur",
+          "wrong": [
+            "Prambanan",
+            "Mendut",
+            "Sewu"
+          ]
+        },
+        {
+          "category": "Geografi",
+          "text": "Apa ibu kota Australia?",
+          "correct": "Canberra",
+          "wrong": [
+            "Sydney",
+            "Melbourne",
+            "Perth"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Berapa jumlah tulang pada tubuh manusia dewasa (kira-kira)?",
+          "correct": "206",
+          "wrong": [
+            "106",
+            "306",
+            "406"
+          ]
+        },
+        {
+          "category": "Sejarah",
+          "text": "Siapa presiden Amerika Serikat saat Perang Saudara Amerika yang kemudian mengakhiri perbudakan?",
+          "correct": "Abraham Lincoln",
+          "wrong": [
+            "George Washington",
+            "Thomas Jefferson",
+            "Theodore Roosevelt"
+          ]
+        },
+        {
+          "category": "Seni",
+          "text": "Siapa pelukis karya \"Malam Berbintang\" (The Starry Night)?",
+          "correct": "Vincent van Gogh",
+          "wrong": [
+            "Claude Monet",
+            "Pablo Picasso",
+            "Salvador Dali"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Apa nama zat hijau pada daun yang berperan dalam fotosintesis?",
+          "correct": "Klorofil",
+          "wrong": [
+            "Hemoglobin",
+            "Keratin",
+            "Melanin"
+          ]
+        }
+      ]
+    },
+    {
+      "step": 3,
+      "label": "Sulit",
+      "questions": [
+        {
+          "category": "Sains",
+          "text": "Di ruang hampa, palu dan bulu dijatuhkan bersamaan. Mengapa keduanya jatuh dengan percepatan sama?",
+          "correct": "Percepatan gravitasi tidak bergantung pada massa benda",
+          "wrong": [
+            "Bulu menjadi lebih berat di ruang hampa",
+            "Tidak ada gravitasi di ruang hampa",
+            "Palu tertahan oleh hambatan udara"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Menurut relativitas umum Einstein, gravitasi adalah akibat dari...",
+          "correct": "Lengkungan ruang-waktu oleh massa dan energi",
+          "wrong": [
+            "Tarikan tak terlihat antar atom",
+            "Medan listrik antar planet",
+            "Putaran Bumi pada porosnya"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Berapa kecepatan cahaya di ruang hampa (kira-kira)?",
+          "correct": "300.000 km/detik",
+          "wrong": [
+            "30.000 km/detik",
+            "150.000 km/detik",
+            "3.000.000 km/detik"
+          ]
+        },
+        {
+          "category": "Penemuan",
+          "text": "Selain Francis Crick, siapa yang mengusulkan model heliks ganda DNA pada 1953?",
+          "correct": "James Watson",
+          "wrong": [
+            "Gregor Mendel",
+            "Charles Darwin",
+            "Louis Pasteur"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Organel sel apa yang berperan utama menghasilkan energi (ATP)?",
+          "correct": "Mitokondria",
+          "wrong": [
+            "Ribosom",
+            "Lisosom",
+            "Badan Golgi"
+          ]
+        },
+        {
+          "category": "Sejarah",
+          "text": "Siapa orang pertama yang meraih hadiah Nobel di dua bidang berbeda?",
+          "correct": "Marie Curie",
+          "wrong": [
+            "Linus Pauling",
+            "Albert Einstein",
+            "Niels Bohr"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Berapa percepatan gravitasi di permukaan Bumi (kira-kira)?",
+          "correct": "9,8 m/s²",
+          "wrong": [
+            "1,6 m/s²",
+            "3,7 m/s²",
+            "24,8 m/s²"
+          ]
+        },
+        {
+          "category": "Antariksa",
+          "text": "Siapa yang pertama kali mengamati bulan-bulan Jupiter dengan teleskop (1610)?",
+          "correct": "Galileo Galilei",
+          "wrong": [
+            "Isaac Newton",
+            "Nicolaus Copernicus",
+            "Tycho Brahe"
+          ]
+        },
+        {
+          "category": "Sejarah",
+          "text": "Perjanjian yang mengakhiri Perang Dunia I dengan Jerman pada 1919 dikenal sebagai Perjanjian...",
+          "correct": "Versailles",
+          "wrong": [
+            "Brest-Litovsk",
+            "Potsdam",
+            "Wina"
+          ]
+        },
+        {
+          "category": "Sejarah",
+          "text": "Pada tahun berapa Konferensi Asia-Afrika diadakan di Bandung?",
+          "correct": "1955",
+          "wrong": [
+            "1945",
+            "1950",
+            "1960"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Hukum pertama Newton juga dikenal dengan nama...",
+          "correct": "Hukum inersia",
+          "wrong": [
+            "Hukum aksi-reaksi",
+            "Hukum gravitasi",
+            "Hukum kekekalan energi"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Berapa nomor atom karbon?",
+          "correct": "6",
+          "wrong": [
+            "4",
+            "8",
+            "12"
+          ]
+        },
+        {
+          "category": "Sains",
+          "text": "Siapa yang menulis buku \"On the Origin of Species\" (1859)?",
+          "correct": "Charles Darwin",
+          "wrong": [
+            "Alfred Wallace",
+            "Gregor Mendel",
+            "Jean-Baptiste Lamarck"
+          ]
+        },
+        {
+          "category": "Teknologi",
+          "text": "Bahasa pemrograman Python dibuat oleh...",
+          "correct": "Guido van Rossum",
+          "wrong": [
+            "James Gosling",
+            "Bjarne Stroustrup",
+            "Dennis Ritchie"
+          ]
+        },
+        {
+          "category": "Teknologi",
+          "text": "Siapa matematikawan Inggris yang berperan besar memecahkan kode Enigma Jerman di Perang Dunia II?",
+          "correct": "Alan Turing",
+          "wrong": [
+            "Charles Babbage",
+            "Tim Berners-Lee",
+            "John von Neumann"
+          ]
+        }
+      ]
+    }
+  ]
+}

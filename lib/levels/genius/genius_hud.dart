@@ -41,6 +41,7 @@ class GeniusHud extends StatelessWidget {
                 right: 16,
                 height: h * ArenaLayout.questionHeight,
                 child: _QuestionCard(
+                  category: q?.category,
                   text: q?.text ?? 'Step $step\nBersiap...',
                 ),
               ),
@@ -93,9 +94,10 @@ class _TopBar extends StatelessWidget {
 }
 
 class _QuestionCard extends StatelessWidget {
-  const _QuestionCard({required this.text});
+  const _QuestionCard({required this.text, this.category});
 
   final String text;
+  final String? category;
 
   @override
   Widget build(BuildContext context) {
@@ -106,10 +108,29 @@ class _QuestionCard extends StatelessWidget {
         color: Colors.grey.shade300,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Text(
-        text,
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 18, color: Colors.black87),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (category != null && category!.isNotEmpty) ...[
+            Text(
+              category!.toUpperCase(),
+              style: const TextStyle(
+                fontSize: 11,
+                letterSpacing: 1.2,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+          Flexible(
+            child: Text(
+              text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 18, color: Colors.black87),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter/material.dart' show BuildContext, Curves, Widget;
+import 'package:flutter/services.dart' show rootBundle;
 
 import '../../core/level/level_game.dart';
 import '../../core/level/level_session.dart';
@@ -34,7 +35,9 @@ class GeniusGame extends LevelGame {
   bool _ready = false;
 
   late StepConfig _config;
+  late final QuestionBank _bank;
   List<QuizItem> _pool = [];
+  String? _lastCategory;
   int _correct = 0;
   int _lives = 0;
   double _timeLeft = 0;
@@ -51,6 +54,7 @@ class GeniusGame extends LevelGame {
 
   @override
   Future<void> onLoad() async {
+    _bank = QuestionBank.parse(await rootBundle.loadString(QuestionBank.assetPath));
     await loadAssets();
     _boss = BossComponent(
       sprite: Sprite(levelImages.fromCache('genius/boss.png')),
@@ -79,7 +83,8 @@ class GeniusGame extends LevelGame {
   @override
   void startStep(int step) {
     _config = geniusSteps[step - 1];
-    _pool = List.of(geniusBank[step - 1])..shuffle(_rng);
+    _pool = List.of(_bank.forStep(step))..shuffle(_rng);
+    _lastCategory = null;
     _correct = 0;
     _lives = _config.lives;
     _publishProgress();
@@ -96,15 +101,29 @@ class GeniusGame extends LevelGame {
   }
 
   void _nextQuestion() {
-    if (_pool.isEmpty) {
-      _pool = List.of(geniusBank[session.step - 1])..shuffle(_rng);
-    }
-    final item = _pool.removeLast();
+    final item = _takeNext();
     feedback.value = null;
     question.value = item.toQuestion(_rng);
     _timeLeft = _config.secondsPerQuestion;
     _timeBar.fraction = 1;
     _awaiting = true;
+  }
+
+  /// Ambil soal berikutnya; hindari kategori yang sama berturut-turut jika bisa.
+  QuizItem _takeNext() {
+    if (_pool.isEmpty) {
+      _pool = List.of(_bank.forStep(session.step))..shuffle(_rng);
+    }
+    var index = _pool.length - 1;
+    for (var i = _pool.length - 1; i >= 0; i--) {
+      if (_pool[i].category != _lastCategory) {
+        index = i;
+        break;
+      }
+    }
+    final item = _pool.removeAt(index);
+    _lastCategory = item.category;
+    return item;
   }
 
   /// Dipanggil HUD saat pemain memilih jawaban.
