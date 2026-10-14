@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/audio/audio_service.dart';
 import '../core/level/level_definition.dart';
 import '../core/level/level_game.dart';
 import '../core/level/level_session.dart';
@@ -49,6 +48,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     if (session == null || level == null) return;
     if (session.isFinished && !_saved) {
       _saved = true;
+      _game?.pauseEngine(); // hasil sudah final; hentikan loop agar ringan di balik blur
       ref.read(progressProvider.notifier).submitStars(level.id, session.stars);
     }
   }
@@ -86,7 +86,6 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     _session?.removeListener(_onSessionChanged);
     _game?.disposeAssets();
     _session?.dispose();
-    AudioService.instance.unload();
     super.dispose();
   }
 

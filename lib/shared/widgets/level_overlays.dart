@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 
 import '../../core/audio/audio_service.dart';
@@ -10,17 +12,23 @@ class _Scrim extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: const Color(0x99000000),
-      child: Center(
-        child: Container(
-          margin: const EdgeInsets.all(32),
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+    // Blur semua yang ada di belakang overlay (arena Flame + HUD); panel tetap tajam.
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: ColoredBox(
+          color: const Color(0x55000000),
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.all(32),
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: child,
+            ),
           ),
-          child: child,
         ),
       ),
     );

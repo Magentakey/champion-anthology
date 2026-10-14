@@ -61,7 +61,6 @@ class GeniusGame extends LevelGame {
   Future<void> onLoad() async {
     _bank = QuestionBank.parse(await rootBundle.loadString(QuestionBank.assetPath));
     await loadAssets();
-    await AudioService.instance.preload();
     _boss = BossComponent(
       sprite: Sprite(levelImages.fromCache('genius/boss.png')),
     );

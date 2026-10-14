@@ -17,7 +17,8 @@ enum Sfx {
   final String file;
 }
 
-/// Pemutar SFX sederhana dengan tombol mute yang tersimpan.
+/// Pemutar SFX berlatensi rendah (AudioPool / SoundPool) dengan tombol mute tersimpan.
+/// Pool dibuat sekali saat aplikasi mulai, jadi tidak ada jeda saat pertama diputar.
 class AudioService {
   AudioService._();
 
@@ -25,11 +26,27 @@ class AudioService {
   static const _mutedKey = 'audio_muted';
 
   final ValueNotifier<bool> muted = ValueNotifier(false);
+  final Map<Sfx, Future<void> Function()> _starters = {};
   SharedPreferences? _prefs;
 
   Future<void> init(SharedPreferences prefs) async {
     _prefs = prefs;
     muted.value = prefs.getBool(_mutedKey) ?? false;
+
+    for (final sfx in Sfx.values) {
+      try {
+        final pool = await FlameAudio.createPool(
+          sfx.file,
+          minPlayers: 1,
+          maxPlayers: 4,
+        );
+        _starters[sfx] = () async {
+          await pool.start();
+        };
+      } catch (e) {
+        debugPrint('Gagal membuat pool SFX ${sfx.file}: $e');
+      }
+    }
   }
 
   Future<void> setMuted(bool value) async {
@@ -37,28 +54,18 @@ class AudioService {
     await _prefs?.setBool(_mutedKey, value);
   }
 
-  /// Muat semua SFX ke cache supaya tidak ada jeda saat pertama diputar.
-  Future<void> preload() async {
-    try {
-      await FlameAudio.audioCache.loadAll([for (final s in Sfx.values) s.file]);
-    } catch (e) {
-      debugPrint('Preload SFX gagal: $e');
-    }
-  }
-
   void play(Sfx sfx) {
     if (muted.value) return;
-    unawaited(_play(sfx.file));
+    final start = _starters[sfx];
+    if (start == null) return;
+    unawaited(_safeStart(start));
   }
 
-  Future<void> _play(String file) async {
+  Future<void> _safeStart(Future<void> Function() start) async {
     try {
-      await FlameAudio.play(file);
+      await start();
     } catch (e) {
       debugPrint('SFX gagal diputar: $e');
     }
   }
-
-  /// Bersihkan cache audio saat keluar dari level.
-  void unload() => FlameAudio.audioCache.clearAll();
 }
