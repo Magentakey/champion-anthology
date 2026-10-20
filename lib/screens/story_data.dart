@@ -1,6 +1,3 @@
-/// Penanda cerita sudah pernah dilihat (disimpan di SharedPreferences).
-const storySeenKey = 'story_seen';
-
 class StoryPanel {
   const StoryPanel({required this.image, required this.caption});
 

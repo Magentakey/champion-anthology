@@ -103,11 +103,12 @@ Cukup **timpa file bernama sama**, tanpa mengubah kode:
 | Aset | Lokasi |
 |---|---|
 | Ekspresi Bob (idle, shock, laugh, defeat) | `assets/images/genius/boss_*.png` |
+| Karakter menu utama (pemain) | `assets/images/home/mc_home.png` |
 | Panel storyboard | `assets/images/story/panel_1.png` … `panel_4.png` |
 | Efek suara | `assets/audio/*.wav` |
 | Ikon aplikasi | `assets/icon/app_icon.png` dan `app_icon_fg.png`, lalu `dart run flutter_launcher_icons` |
 
-Ukuran gambar boss sebaiknya persegi (placeholder 512×512). Jika menambah file baru atau subfolder baru, daftarkan di `pubspec.yaml`.
+Ukuran gambar boss sebaiknya persegi (512×512). Semua gambar bisa dibuat ulang dengan `python tools/art/generate_art.py` (butuh Pillow); aturan gayanya ada di [`ART_STYLE.md`](ART_STYLE.md). Jika menambah file baru atau subfolder baru, daftarkan di `pubspec.yaml`.
 
 ## 5. Mengubah teks dan dialog
 

@@ -8,7 +8,6 @@ class AppText {
   // Menu utama
   static const play = 'Main';
   static const quit = 'Keluar';
-  static const viewStory = 'Lihat cerita';
 
   // Storyboard
   static const storySkip = 'Lewati';

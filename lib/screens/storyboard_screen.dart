@@ -1,23 +1,19 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../app/strings.dart';
-import '../core/save/progress_repository.dart';
 import 'story_data.dart';
 
 /// Storyboard 4 panel sesuai sketsa (1 atas, 4 kiri besar, 2 & 3 kanan).
-/// Ketuk layar untuk memunculkan panel berikutnya.
-class StoryboardScreen extends ConsumerStatefulWidget {
+/// Ketuk layar untuk memunculkan panel berikutnya. Tampil setiap kali Main ditekan.
+class StoryboardScreen extends StatefulWidget {
   const StoryboardScreen({super.key});
 
   @override
-  ConsumerState<StoryboardScreen> createState() => _StoryboardScreenState();
+  State<StoryboardScreen> createState() => _StoryboardScreenState();
 }
 
-class _StoryboardScreenState extends ConsumerState<StoryboardScreen> {
+class _StoryboardScreenState extends State<StoryboardScreen> {
   int _revealed = 1;
 
   bool get _allRevealed => _revealed >= storyPanels.length;
@@ -26,10 +22,7 @@ class _StoryboardScreenState extends ConsumerState<StoryboardScreen> {
     if (!_allRevealed) setState(() => _revealed++);
   }
 
-  void _finish() {
-    unawaited(ref.read(sharedPrefsProvider).setBool(storySeenKey, true));
-    context.go('/levels');
-  }
+  void _finish() => context.go('/levels');
 
   Widget _panel(int index) {
     final panel = storyPanels[index];

@@ -16,6 +16,7 @@ APK terbaru ada di halaman **Releases** repositori ini. Setelah mengunduh, izink
 
 ## Cara bermain
 
+- Setiap kali menekan **Main**, cerita pembuka tampil dulu (bisa dilewati dengan tombol Lewati).
 - Setiap level terdiri dari **3 step berurutan** (Mudah → Sedang → Sulit) yang dimainkan langsung dalam satu sesi, tanpa kembali ke menu.
 - Jawab soal sebelum waktu habis. Jawaban salah atau terlambat mengurangi nyawa; nyawa habis berarti kalah.
 - Bintang sama dengan jumlah step yang berhasil dimenangkan:
@@ -66,13 +67,16 @@ lib/
 ├── screens/                  # menu, storyboard, pilih level, intro boss, gameplay
 └── shared/widgets/           # StarRow, overlay jeda/hasil, efek getar
 assets/
+├── images/home/              # karakter pemain di menu utama (mc_home.png)
 ├── images/genius/            # ekspresi Bob (boss_*.png)
 ├── images/story/             # panel storyboard (panel_*.png)
 ├── data/genius_questions.json
 ├── audio/                    # SFX (.wav)
 └── icon/                     # ikon aplikasi
 test/                         # unit dan widget test
+tools/art/generate_art.py     # generator aset gambar (gaya stickman)
 docs/PANDUAN_PENGEMBANGAN.md  # panduan menambah level, soal, dan mengganti aset
+docs/ART_STYLE.md             # panduan gaya seni dan karakter
 ```
 
 Pembagian tugas: **Flutter** untuk menu, dialog, dan HUD; **Flame** hanya aktif saat gameplay (boss, time bar, efek). Aset dimuat per level dan dibersihkan saat level ditutup agar ringan di perangkat spesifikasi rendah.
@@ -89,6 +93,6 @@ Lihat [`docs/PANDUAN_PENGEMBANGAN.md`](docs/PANDUAN_PENGEMBANGAN.md) untuk:
 
 ## Aset dan lisensi
 
-- Gambar (boss, storyboard, ikon) saat ini **placeholder** buatan sendiri dan akan diganti aset final dengan menimpa file bernama sama.
+- Gambar (pemain, boss, storyboard, ikon) dibuat sendiri lewat skrip `tools/art/generate_art.py` dengan gaya yang dikunci di [`docs/ART_STYLE.md`](docs/ART_STYLE.md). Bisa diganti art final dengan menimpa file bernama sama.
 - Efek suara dibuat sendiri secara sintetis.
 - Lisensi proyek: belum ditentukan.
