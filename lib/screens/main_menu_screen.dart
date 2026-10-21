@@ -10,50 +10,57 @@ class MainMenuScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFFEBEE),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Karakter pemain di lapisan paling belakang.
+          // Karakter pemain besar di lapisan paling belakang.
           Positioned.fill(
             child: Image.asset(
               'assets/images/home/mc_home.png',
-              fit: BoxFit.contain,
+              fit: BoxFit.cover,
               alignment: Alignment.bottomCenter,
-              errorBuilder: (context, error, stack) => const SizedBox.shrink(),
             ),
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 48),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Align(
+                alignment: const Alignment(0, 0.25),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
                       AppText.gameTitle,
                       textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                        shadows: const [
+                          Shadow(color: Colors.white, blurRadius: 8),
+                          Shadow(color: Colors.white, blurRadius: 16),
+                        ],
+                      ),
                     ),
-                  ),
-                  const Spacer(),
-                  FilledButton(
-                    // Setiap menekan Main, cerita tampil lagi.
-                    onPressed: () => context.go('/story'),
-                    child: const Text(AppText.play),
-                  ),
-                  const SizedBox(height: 12),
-                  FilledButton(
-                    onPressed: () => SystemNavigator.pop(),
-                    child: const Text(AppText.quit),
-                  ),
-                ],
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: 200,
+                      child: FilledButton(
+                        // Setiap menekan Main, cerita tampil lagi.
+                        onPressed: () => context.go('/story'),
+                        child: const Text(AppText.play),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: 200,
+                      child: FilledButton(
+                        onPressed: () => SystemNavigator.pop(),
+                        child: const Text(AppText.quit),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

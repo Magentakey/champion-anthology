@@ -5,13 +5,14 @@ Gaya yang dikunci: **kartun stickman** (kepala bulat putih besar, garis hitam te
 ## Aturan gambar
 
 1. **Kepala**: lingkaran putih dengan garis tepi hitam tebal, besar dibanding badan (pemain r=150, bos r=190 dan badannya lebih pendek).
-2. **Badan dan anggota gerak**: garis hitam berujung bulat dengan ketebalan sama di seluruh gambar. Tidak ada jari. Tangan mengepal digambar sebagai lingkaran putih kecil dengan tiga garis jari.
+2. **Badan dan anggota gerak**: garis hitam berujung bulat dengan ketebalan sama di seluruh gambar. Jari hanya digambar pada tangan terbuka (menopang bola dunia). Tangan mengepal digambar sebagai lingkaran putih kecil dengan tiga garis jari.
 3. **Wajah**: mata oval putih dengan pupil kecil, tampak 3/4 ke arah hadap. Emosi ditentukan mata, alis, dan mulut:
 
 | Ekspresi | Mata | Alis | Mulut | Tambahan |
 |---|---|---|---|---|
 | Sombong | setengah terpejam, pupil melirik | satu naik, satu turun | senyum miring | |
 | Bertekad | terbuka | miring ke dalam (marah) | senyum lebar | |
+| Semangat menang (`mc_hype`, wajah utama pemain) | besar, pupil berkilau | tajam, turun ke arah hidung | terbuka lebar, gigi dan lidah | tiga garis semangat di atas kepala |
 | Kaget | sangat lebar | naik | bulat "O" | tetes keringat |
 | Tertawa | tertutup (^ ^) | naik lembut | terbuka lebar, lidah merah | air mata |
 | Kalah | tanda X | naik di sisi dalam (sedih) | bergelombang | bintang pusing, kacamata retak |
@@ -33,7 +34,7 @@ Gaya yang dikunci: **kartun stickman** (kepala bulat putih besar, garis hitam te
 
 ## Karakter
 
-- **Pemain**: stickman dengan **ikat kepala merah** berekor dua yang melambai. Selalu percaya diri. Di menu utama menghadap **kiri**, mengepal tangan, wajah sombong, tangan lain di pinggang, dan diletakkan di lapisan paling belakang (di belakang judul dan tombol). Karakter ini dipakai di semua gambar.
+- **Pemain**: stickman dengan **ikat kepala merah** berekor dua yang melambai. Selalu bersemangat dan ingin menang; wajah sombong (smug) hanya untuk lawan seperti Bob. Di menu utama setengah badan (sampai pinggang), menghadap **kiri**, telapak terbuka menopang bola dunia (gambar yang sama dipakai sebagai ikon), wajah semangat ingin menang dengan senyum tipis (`mc_hype`, bukan sombong), tangan lain di pinggang, dan diletakkan di lapisan paling belakang (di belakang judul dan tombol). Karakter ini dipakai di semua gambar.
 - **Bob the Genius**: rambut runcing hitam, kacamata bulat, dasi kupu-kupu biru, kepala besar. Menghadap kanan di game (ke arah pemain). Empat ekspresi: `idle`, `shock`, `laugh`, `defeat`.
 - **Champion lain**: tokoh dengan atribut khas, bukan warna besar. Asep membawa papan labirin; Chef memakai topi koki.
 

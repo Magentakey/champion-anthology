@@ -145,6 +145,13 @@ POSES = {
                [(470, 860), (640, 1020), (660, 1250), (740, 1262)],
                [(470, 860), (330, 1090), (180, 1200), (250, 1255)],
                fist_f=True),
+    # pose menu utama: satu tangan menopang bola dunia, tangan lain di pinggang, kuda-kuda lebar
+    'globe_hold': P((545, 330), (470, 860),
+                    [(532, 545), (720, 620), (850, 520)],
+                    [(525, 560), (360, 680), (462, 820)],
+                    [(470, 860), (640, 1020), (660, 1250), (740, 1262)],
+                    [(470, 860), (330, 1090), (180, 1200), (250, 1255)],
+                    open_f=True),
     'stand': P((500, 320), (500, 850),
                [(500, 540), (580, 680), (590, 820)],
                [(500, 540), (420, 680), (410, 820)],
@@ -226,6 +233,8 @@ POSES.update({
 # ---------------- wajah (satuan = jari-jari kepala; u positif = arah hadap) ----------------
 FACES = {
     'mc_smug': dict(eyes='smug', brows='smug', mouth='smirk'),
+    # semangat ingin menang: mata berapi, alis tajam, senyum tipis percaya diri
+    'mc_hype': dict(eyes='fire', brows='fierce', mouth='smile', extra='spark'),
     'mc_determined': dict(eyes='open', brows='angry', mouth='grin'),
     'mc_look': dict(eyes='open', brows='up_soft', mouth='flat'),
     'bob_idle': dict(eyes='smug', brows='smug', mouth='grin'),
@@ -243,6 +252,11 @@ def draw_eye(art, c, rp, kind, d, lw):
     if kind == 'open':
         art.ellipse_rot(c, rx, ry, fill=WHITE, outline=BLACK, width=ow)
         art.circle((c[0] + d * 0.03 * rp, c[1] + 0.02 * rp), 0.065 * rp, fill=BLACK)
+    elif kind == 'fire':   # mata besar menyala, pupil besar + kilau
+        art.ellipse_rot(c, rx * 1.05, ry * 0.92, fill=WHITE, outline=BLACK, width=ow)
+        pc = (c[0] + d * 0.035 * rp, c[1] + 0.02 * rp)
+        art.circle(pc, 0.085 * rp, fill=BLACK)
+        art.circle((pc[0] - 0.03 * rp, pc[1] - 0.04 * rp), 0.025 * rp, fill=WHITE)
     elif kind == 'wide':
         art.ellipse_rot(c, rx * 1.3, ry * 1.25, fill=WHITE, outline=BLACK, width=ow)
         art.circle(c, 0.04 * rp, fill=BLACK)
@@ -268,6 +282,7 @@ BROWS = {
     'up_soft': ([(0.06, -0.36), (0.38, -0.40)], [(0.50, -0.40), (0.82, -0.36)]),
     'sad': ([(0.06, -0.28), (0.38, -0.40)], [(0.50, -0.40), (0.82, -0.28)]),
     'angry': ([(0.06, -0.42), (0.38, -0.27)], [(0.50, -0.27), (0.82, -0.42)]),
+    'fierce': ([(-0.02, -0.26), (0.42, -0.06)], [(0.46, -0.06), (0.92, -0.28)]),
 }
 
 
@@ -299,6 +314,9 @@ def draw_face(art, hc, rp, face, d, lw, view='3q'):
         art.line([pt(0.82 + ms, 0.40), pt(0.92 + ms, 0.33)], lw * 0.4)
     elif m == 'grin':
         art.line(catmull([pt(0.12 + ms, 0.48), pt(0.50 + ms, 0.76), pt(0.88 + ms, 0.44)], 10), lw * 0.5)
+    elif m == 'smile':   # senyum tipis, mulut tertutup, sudut naik
+        art.line(catmull([pt(0.22 + ms, 0.52), pt(0.52 + ms, 0.64), pt(0.84 + ms, 0.46)], 10), lw * 0.5)
+        art.line([pt(0.84 + ms, 0.46), pt(0.92 + ms, 0.38)], lw * 0.4)
     elif m == 'flat':
         art.line([pt(0.25 + ms, 0.58), pt(0.75 + ms, 0.55)], lw * 0.5)
     elif m == 'o':
@@ -309,6 +327,15 @@ def draw_face(art, hc, rp, face, d, lw, view='3q'):
                for t in [math.pi * i / 24 for i in range(25)]]
         art.poly(pts, fill=BLACK)
         art.ellipse_rot((c[0], c[1] + 0.28 * rp), 0.20 * rp, 0.10 * rp, fill=(239, 83, 80, 255))
+    elif m == 'shout':   # mulut terbuka lebar, gigi atas, lidah
+        c = pt(0.50 + ms, 0.42)
+        rx_, ry_ = 0.42 * rp, 0.42 * rp
+        pts = [(c[0] + rx_ * math.cos(t), c[1] + ry_ * math.sin(t))
+               for t in [math.pi * i / 24 for i in range(25)]]
+        art.poly(pts, fill=BLACK)
+        art.poly([(c[0] - rx_ * 0.86, c[1] + 0.02 * rp), (c[0] + rx_ * 0.86, c[1] + 0.02 * rp),
+                  (c[0] + rx_ * 0.72, c[1] + 0.12 * rp), (c[0] - rx_ * 0.72, c[1] + 0.12 * rp)], fill=WHITE)
+        art.ellipse_rot((c[0], c[1] + 0.31 * rp), 0.20 * rp, 0.10 * rp, fill=(239, 83, 80, 255))
     elif m == 'wavy':
         pts = [pt(0.2 + ms + 0.64 * i / 20, 0.62 + 0.05 * math.sin(i * 0.9)) for i in range(21)]
         art.line(pts, lw * 0.5)
@@ -320,6 +347,12 @@ def draw_face(art, hc, rp, face, d, lw, view='3q'):
             art.circle((c[0], c[1] + s * rp * 0.4), s * rp * 0.55, fill=(120, 200, 255, 255), outline=BLACK, width=lw * 0.2)
             art.poly([(c[0], c[1] - s * rp * 0.9), (c[0] - s * rp * 0.45, c[1]), (c[0] + s * rp * 0.45, c[1])],
                      fill=(120, 200, 255, 255))
+    elif extra == 'spark':   # garis semangat di atas kepala
+        for ang in (-62, -90, -118):
+            a_ = math.radians(ang)
+            p0 = (hc[0] + math.cos(a_) * rp * 1.22, hc[1] + math.sin(a_) * rp * 1.22)
+            p1 = (hc[0] + math.cos(a_) * rp * 1.52, hc[1] + math.sin(a_) * rp * 1.52)
+            art.line([p0, p1], lw * 0.55)
     elif extra == 'tears':
         for c in eye_c:
             art.circle((c[0], c[1] + 0.32 * rp), 0.06 * rp, fill=(120, 200, 255, 255), outline=BLACK, width=lw * 0.15)
@@ -399,6 +432,28 @@ def draw_fist(art, c, rp, lw):
         art.line([(c[0] - r * 0.1, c[1] + r * k), (c[0] + r * 0.55, c[1] + r * k)], lw * 0.18)
 
 
+def draw_open_hand(art, c, rp, lw, d=1):
+    """Telapak terbuka menopang benda di atasnya: empat jari terpisah dan ibu jari."""
+    u = 0.42 * rp
+    pc = (c[0] + d * 0.05 * rp, c[1] + 0.10 * rp)
+    fw = 0.115 * rp   # lebar jari
+
+    def finger(base, tip, w):
+        mid = ((base[0] + tip[0]) / 2 + d * 0.03 * rp, (base[1] + tip[1]) / 2)
+        pts = catmull([base, mid, tip], 6)
+        art.line(pts, w + lw * 0.5, BLACK)
+        art.line(pts, w, WHITE)
+
+    # ibu jari di sisi dekat badan
+    finger((pc[0] - d * u * 0.85, pc[1] - 0.02 * rp), (pc[0] - d * u * 1.30, pc[1] - 0.30 * rp), fw * 1.1)
+    # empat jari, sedikit melengkung mengikuti bola
+    for k, ln in ((-0.62, 0.34), (-0.21, 0.40), (0.21, 0.40), (0.62, 0.34)):
+        base = (pc[0] + d * k * u, pc[1] - 0.06 * rp)
+        tip = (pc[0] + d * (k * 1.28 + 0.12) * u, pc[1] - (0.06 + ln) * rp)
+        finger(base, tip, fw)
+    art.ellipse_rot(pc, u * 0.95, 0.16 * rp, 0, fill=WHITE, outline=BLACK, width=lw * 0.5)
+
+
 def draw_globe(art, c, r, ow=7):
     W, H = art.img.size
     cx, cy, R = c[0] * SS, c[1] * SS, r * SS
@@ -448,7 +503,7 @@ def draw_maze_board(art, c, size, lw):
 
 # ---------------- figur ----------------
 def draw_figure(art, pose_name, face_name, ox, oy, s, flip=False, lw=18, acc=(), props=(),
-                view='3q'):
+                view='3q', tail=1.0):
     pose = POSES[pose_name]
     face = FACES[face_name]
     d = -1 if flip else 1
@@ -486,30 +541,48 @@ def draw_figure(art, pose_name, face_name, ox, oy, s, flip=False, lw=18, acc=(),
         draw_chef_hat(art, hc, rp, W)
     eye_c = draw_face(art, hc, rp, face, d, W, view)
     if 'headband' in acc:
-        draw_headband(art, hc, rp, d, W)
+        draw_headband(art, hc, rp, d, W, tail=tail)
     if 'bob' in acc:
         draw_glasses(art, eye_c, rp, d, W, cracked=face.get('cracked', False))
         draw_bowtie(art, neck, rp, W)
     if pose.get('fist_b'):
         draw_fist(art, T(pose['arm_b'][-1]), rp, W)
+    if pose.get('open_f'):
+        draw_open_hand(art, T(pose['arm_f'][-1]), rp, W, -d)
     if pose.get('fist_f'):
         draw_fist(art, T(pose['arm_f'][-1]), rp, W)
     return hc, rp
 
 
 # ================= aset =================
+def home_figure():
+    """Pemain setengah badan (sampai pinggang) menopang bola dunia; dipakai di menu dan ikon."""
+    a = Art(1300, 1400)
+    draw_figure(a, 'globe_hold', 'mc_hype', 150, 0, 1.0, flip=True, lw=22, acc=('headband',),
+                props=[('globe', (880, 350), 175)])
+    im = a.final()
+    bb = im.getbbox()
+    return im.crop((max(0, bb[0] - 20), max(0, bb[1] - 20), min(1300, bb[2] + 20), 790))
+
+
 def gen_home():
-    a = Art(1000, 1400)
-    a.shadow((550, 1272), 330, 26, 75)
-    draw_figure(a, 'power', 'mc_smug', 0, 0, 1.0, flip=True, lw=22, acc=('headband',))
-    # aksen garis aksi di dekat kepalan
-    bb = a.final().getbbox()
-    out = a.final().crop((max(0, bb[0] - 20), max(0, bb[1] - 20), min(1000, bb[2] + 20), min(1400, bb[3] + 20)))
-    out = out.resize((int(out.width * 0.85), int(out.height * 0.85)), Image.LANCZOS)
+    """Menu utama (potret): kepala di kanan atas, bola dunia di kiri, badan turun sampai tepi bawah layar."""
+    W, H = 800, 1600
+    a = Art(1300, 1500)
+    draw_figure(a, 'globe_hold', 'mc_hype', 150, 0, 1.0, flip=True, lw=22, acc=('headband',),
+                props=[('globe', (880, 350), 175)])
+    im = a.final()
+    bb = im.crop((0, 0, 1300, 900)).getbbox()        # tepi kiri = bola dunia
+    f = 1.03                                         # dibesarkan; ekor ikat kepala boleh terpotong tepi kanan
+    big = im.resize((int(im.width * f), int(im.height * f)), Image.LANCZOS)
+    ox = int(0.015 * W - bb[0] * f)
+    oy = int(0.34 * H - 330 * f)                     # pusat kepala di 35% tinggi
+    canvas = Image.new('RGBA', (W, H), (0, 0, 0, 0))
+    canvas.paste(big, (ox, oy), big)                 # bagian di luar kanvas (kaki, ekor) terpotong
     path = ROOT / 'assets/images/home/mc_home.png'
     path.parent.mkdir(parents=True, exist_ok=True)
-    out.save(path)
-    print('ditulis', path.relative_to(ROOT), out.size)
+    canvas.save(path)
+    print('ditulis', path.relative_to(ROOT), canvas.size)
 
 
 def gen_boss():
@@ -525,35 +598,33 @@ def gen_boss():
         a.save(ROOT / 'assets/images/genius' / fname)
 
 
-def mc_icon_art(a, scale=1.0, cx=500, cy=520):
-    """Pemain (ikat kepala) memeluk bola dunia; tampak depan."""
-    def X(x):
-        return cx + (x - 500) * scale
-
-    def Y(y):
-        return cy + (y - 520) * scale
-
-    lw = 30 * scale
-    hc, rp = (X(500), Y(330)), 190 * scale
-    gc, gr = (X(500), Y(700)), 250 * scale
-    a.line([(X(500), Y(520)), (X(500), Y(640))], lw)                         # badan
-    a.line([(X(470), Y(540)), (X(300), Y(610)), (X(265), Y(705))], lw)       # lengan memeluk
-    a.line([(X(530), Y(540)), (X(700), Y(610)), (X(735), Y(705))], lw)
-    draw_globe(a, gc, gr, ow=14 * scale)
-    draw_fist(a, (X(265), Y(705)), rp, lw)
-    draw_fist(a, (X(735), Y(705)), rp, lw)
-    a.circle(hc, rp, fill=WHITE, outline=BLACK, width=lw * 0.9)
-    draw_face(a, hc, rp, FACES['mc_smug'], 1, lw, view='front')
-    draw_headband(a, hc, rp, -1, lw, tail=0.5)
-
-
 def gen_icon():
-    full = Art(1024, 1024, PINK_BG + (255,))
-    mc_icon_art(full, 0.95, 512, 540)
-    full.save(ROOT / 'assets/icon/app_icon.png', rgb=True)
-    fg = Art(1024, 1024)
-    mc_icon_art(fg, 0.62, 512, 520)
-    fg.save(ROOT / 'assets/icon/app_icon_fg.png')
+    """Ikon = gambar menu utama (setengah badan), menempel di tepi bawah."""
+    fig = home_figure()
+
+    def place(canvas_bg, width_frac):
+        size = 1024
+        canvas = Image.new('RGBA', (size, size), canvas_bg)
+        w = int(size * width_frac)
+        h = int(fig.height * w / fig.width)
+        f = fig.resize((w, h), Image.LANCZOS)
+        canvas.alpha_composite(f, ((size - w) // 2, size - h))
+        return canvas
+
+    full = place((0, 0, 0, 0), 0.92)
+    # sinar latar di belakang kepala agar bagian atas ikon tidak kosong
+    rays = Image.new('RGBA', full.size, (0, 0, 0, 0))
+    rd = ImageDraw.Draw(rays)
+    cx, cy = 560, 560
+    for i in range(0, 24, 2):
+        a0, a1 = math.radians(i * 15), math.radians((i + 1) * 15)
+        rd.polygon([(cx, cy), (cx + math.cos(a0) * 1500, cy + math.sin(a0) * 1500),
+                    (cx + math.cos(a1) * 1500, cy + math.sin(a1) * 1500)], fill=(255, 205, 210, 255))
+    bg = Image.new('RGBA', full.size, PINK_BG + (255,))
+    bg.alpha_composite(rays)
+    bg.alpha_composite(full)
+    bg.convert('RGB').save(ROOT / 'assets/icon/app_icon.png')
+    place((0, 0, 0, 0), 0.62).save(ROOT / 'assets/icon/app_icon_fg.png')   # zona aman ikon adaptif
 
 
 def ground(a, y):
@@ -586,7 +657,7 @@ def gen_story():
         a.shadow((cx + 5, 455), 55, 8)
         draw_figure(a, pose, face, cx - 120, 187, 0.24, lw=22, acc=acc, props=props)
     a.shadow((440, 566), 85, 10)
-    draw_figure(a, 'stand', 'mc_smug', 325, 225, 0.27, flip=True, lw=20, acc=('headband',))
+    draw_figure(a, 'stand', 'mc_hype', 325, 225, 0.27, flip=True, lw=20, acc=('headband',))
     a.save(ROOT / 'assets/images/story/panel_2.png', rgb=True)
 
     # panel 3: satu gelar juara utama
