@@ -1,0 +1,261 @@
+// GENERATED oleh tools/art/fight_poses.py - jangan diedit manual.
+// Ubah pose di skrip itu lalu jalankan: python tools/art/fight_poses.py
+import 'dart:ui' show Offset;
+
+import 'pose.dart';
+
+/// Koordinat relatif terhadap titik tanah di bawah pinggul (x ke depan, y ke bawah).
+abstract final class Poses {
+  static const idleA = Pose(
+    neck: Offset(20.0, -782.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-10.0, -402.0),
+    elbowF: Offset(130.0, -607.0), handF: Offset(230.0, -707.0),
+    elbowB: Offset(45.0, -577.0), handB: Offset(140.0, -667.0),
+    kneeF: Offset(100.0, -222.0), ankleF: Offset(130.0, -12.0), toeF: Offset(205.0, 0.0),
+    kneeB: Offset(-90.0, -212.0), ankleB: Offset(-160.0, -12.0), toeB: Offset(-85.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const idleB = Pose(
+    neck: Offset(18.0, -770.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-10.0, -386.0),
+    elbowF: Offset(130.0, -590.0), handF: Offset(228.0, -690.0),
+    elbowB: Offset(42.0, -562.0), handB: Offset(128.0, -652.0),
+    kneeF: Offset(112.0, -212.0), ankleF: Offset(130.0, -12.0), toeF: Offset(205.0, 0.0),
+    kneeB: Offset(-95.0, -204.0), ankleB: Offset(-160.0, -12.0), toeB: Offset(-85.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const walkA = Pose(
+    neck: Offset(25.0, -782.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-5.0, -407.0),
+    elbowF: Offset(135.0, -607.0), handF: Offset(235.0, -707.0),
+    elbowB: Offset(50.0, -577.0), handB: Offset(145.0, -667.0),
+    kneeF: Offset(140.0, -262.0), ankleF: Offset(200.0, -72.0), toeF: Offset(275.0, -62.0),
+    kneeB: Offset(-100.0, -212.0), ankleB: Offset(-165.0, -12.0), toeB: Offset(-90.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const walkB = Pose(
+    neck: Offset(35.0, -780.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(5.0, -397.0),
+    elbowF: Offset(140.0, -602.0), handF: Offset(240.0, -702.0),
+    elbowB: Offset(55.0, -572.0), handB: Offset(150.0, -662.0),
+    kneeF: Offset(130.0, -222.0), ankleF: Offset(190.0, -12.0), toeF: Offset(265.0, 0.0),
+    kneeB: Offset(-100.0, -212.0), ankleB: Offset(-190.0, -22.0), toeB: Offset(-115.0, -10.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const walkC = Pose(
+    neck: Offset(45.0, -780.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(20.0, -400.0),
+    elbowF: Offset(140.0, -602.0), handF: Offset(240.0, -702.0),
+    elbowB: Offset(55.0, -572.0), handB: Offset(150.0, -662.0),
+    kneeF: Offset(150.0, -222.0), ankleF: Offset(190.0, -12.0), toeF: Offset(265.0, 0.0),
+    kneeB: Offset(-30.0, -212.0), ankleB: Offset(-70.0, -12.0), toeB: Offset(5.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const punchWind = Pose(
+    neck: Offset(5.0, -777.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-15.0, -400.0),
+    elbowF: Offset(90.0, -562.0), handF: Offset(85.0, -662.0),
+    elbowB: Offset(45.0, -572.0), handB: Offset(150.0, -682.0),
+    kneeF: Offset(90.0, -217.0), ankleF: Offset(125.0, -12.0), toeF: Offset(200.0, 0.0),
+    kneeB: Offset(-95.0, -212.0), ankleB: Offset(-165.0, -12.0), toeB: Offset(-90.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const punchHit = Pose(
+    neck: Offset(60.0, -784.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(10.0, -404.0),
+    elbowF: Offset(220.0, -677.0), handF: Offset(385.0, -707.0),
+    elbowB: Offset(55.0, -572.0), handB: Offset(140.0, -677.0),
+    kneeF: Offset(150.0, -227.0), ankleF: Offset(195.0, -12.0), toeF: Offset(270.0, 0.0),
+    kneeB: Offset(-80.0, -212.0), ankleB: Offset(-155.0, -12.0), toeB: Offset(-80.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const crossWind = Pose(
+    neck: Offset(0.0, -777.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-20.0, -397.0),
+    elbowF: Offset(130.0, -607.0), handF: Offset(220.0, -702.0),
+    elbowB: Offset(5.0, -562.0), handB: Offset(25.0, -672.0),
+    kneeF: Offset(100.0, -222.0), ankleF: Offset(130.0, -12.0), toeF: Offset(205.0, 0.0),
+    kneeB: Offset(-90.0, -212.0), ankleB: Offset(-160.0, -12.0), toeB: Offset(-85.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const crossHit = Pose(
+    neck: Offset(70.0, -782.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(20.0, -402.0),
+    elbowF: Offset(120.0, -597.0), handF: Offset(200.0, -682.0),
+    elbowB: Offset(205.0, -672.0), handB: Offset(380.0, -702.0),
+    kneeF: Offset(140.0, -222.0), ankleF: Offset(180.0, -12.0), toeF: Offset(255.0, 0.0),
+    kneeB: Offset(-60.0, -212.0), ankleB: Offset(-110.0, -12.0), toeB: Offset(-35.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const kickWind = Pose(
+    neck: Offset(-30.0, -774.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-50.0, -394.0),
+    elbowF: Offset(60.0, -597.0), handF: Offset(140.0, -692.0),
+    elbowB: Offset(0.0, -572.0), handB: Offset(80.0, -662.0),
+    kneeF: Offset(130.0, -312.0), ankleF: Offset(90.0, -107.0), toeF: Offset(165.0, -97.0),
+    kneeB: Offset(-60.0, -212.0), ankleB: Offset(-80.0, -12.0), toeB: Offset(-5.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const kickHit = Pose(
+    neck: Offset(-100.0, -747.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-70.0, -377.0),
+    elbowF: Offset(0.0, -562.0), handF: Offset(-80.0, -652.0),
+    elbowB: Offset(20.0, -572.0), handB: Offset(100.0, -652.0),
+    kneeF: Offset(130.0, -362.0), ankleF: Offset(330.0, -392.0), toeF: Offset(405.0, -412.0),
+    kneeB: Offset(-60.0, -197.0), ankleB: Offset(-80.0, -12.0), toeB: Offset(-5.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const throwWind = Pose(
+    neck: Offset(-20.0, -777.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-20.0, -402.0),
+    elbowF: Offset(-50.0, -822.0), handF: Offset(-130.0, -1022.0),
+    elbowB: Offset(60.0, -582.0), handB: Offset(140.0, -672.0),
+    kneeF: Offset(100.0, -222.0), ankleF: Offset(130.0, -12.0), toeF: Offset(205.0, 0.0),
+    kneeB: Offset(-90.0, -212.0), ankleB: Offset(-160.0, -12.0), toeB: Offset(-85.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const throwHit = Pose(
+    neck: Offset(30.0, -782.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-10.0, -402.0),
+    elbowF: Offset(180.0, -742.0), handF: Offset(345.0, -792.0),
+    elbowB: Offset(60.0, -582.0), handB: Offset(130.0, -662.0),
+    kneeF: Offset(120.0, -222.0), ankleF: Offset(165.0, -12.0), toeF: Offset(240.0, 0.0),
+    kneeB: Offset(-90.0, -212.0), ankleB: Offset(-165.0, -12.0), toeB: Offset(-90.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const block = Pose(
+    neck: Offset(0.0, -757.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-30.0, -377.0),
+    elbowF: Offset(110.0, -622.0), handF: Offset(140.0, -812.0),
+    elbowB: Offset(60.0, -607.0), handB: Offset(100.0, -812.0),
+    kneeF: Offset(90.0, -212.0), ankleF: Offset(110.0, -12.0), toeF: Offset(185.0, 0.0),
+    kneeB: Offset(-100.0, -207.0), ankleB: Offset(-150.0, -12.0), toeB: Offset(-75.0, 0.0),
+    armsOver: true,
+    fistF: true,
+    fistB: true,
+  );
+  static const hurt = Pose(
+    neck: Offset(-70.0, -760.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-60.0, -382.0),
+    elbowF: Offset(-180.0, -612.0), handF: Offset(-260.0, -502.0),
+    elbowB: Offset(-200.0, -662.0), handB: Offset(-300.0, -722.0),
+    kneeF: Offset(40.0, -212.0), ankleF: Offset(60.0, -12.0), toeF: Offset(135.0, 0.0),
+    kneeB: Offset(-140.0, -212.0), ankleB: Offset(-190.0, -12.0), toeB: Offset(-115.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const fall = Pose(
+    neck: Offset(-250.0, -412.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-90.0, -322.0),
+    elbowF: Offset(-170.0, -542.0), handF: Offset(-180.0, -692.0),
+    elbowB: Offset(-240.0, -542.0), handB: Offset(-300.0, -672.0),
+    kneeF: Offset(60.0, -262.0), ankleF: Offset(140.0, -112.0), toeF: Offset(215.0, -112.0),
+    kneeB: Offset(-30.0, -182.0), ankleB: Offset(30.0, -42.0), toeB: Offset(105.0, -32.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const ko = Pose(
+    neck: Offset(-210.0, -92.0),
+    headDir: Offset(-0.9239, -0.3827),
+    hip: Offset(150.0, -37.0),
+    elbowF: Offset(-20.0, -112.0), handF: Offset(-115.0, -197.0),
+    elbowB: Offset(-30.0, -22.0), handB: Offset(90.0, -17.0),
+    kneeF: Offset(310.0, -72.0), ankleF: Offset(450.0, -27.0), toeF: Offset(520.0, -22.0),
+    kneeB: Offset(330.0, -27.0), ankleB: Offset(480.0, -12.0), toeB: Offset(550.0, -7.0),
+    armsOver: false,
+    fistF: false,
+    fistB: false,
+  );
+  static const win = Pose(
+    neck: Offset(-20.0, -782.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-30.0, -402.0),
+    elbowF: Offset(140.0, -807.0), handF: Offset(190.0, -1002.0),
+    elbowB: Offset(-110.0, -562.0), handB: Offset(-100.0, -432.0),
+    kneeF: Offset(90.0, -222.0), ankleF: Offset(150.0, -12.0), toeF: Offset(225.0, 0.0),
+    kneeB: Offset(-150.0, -222.0), ankleB: Offset(-200.0, -12.0), toeB: Offset(-125.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const taunt = Pose(
+    neck: Offset(0.0, -800.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(0.0, -402.0),
+    elbowF: Offset(160.0, -722.0), handF: Offset(290.0, -832.0),
+    elbowB: Offset(-160.0, -722.0), handB: Offset(-290.0, -832.0),
+    kneeF: Offset(100.0, -222.0), ankleF: Offset(160.0, -12.0), toeF: Offset(235.0, 0.0),
+    kneeB: Offset(-100.0, -222.0), ankleB: Offset(-160.0, -12.0), toeB: Offset(-85.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const heavyWind = Pose(
+    neck: Offset(-60.0, -732.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(-60.0, -332.0),
+    elbowF: Offset(-120.0, -542.0), handF: Offset(-240.0, -612.0),
+    elbowB: Offset(40.0, -522.0), handB: Offset(120.0, -612.0),
+    kneeF: Offset(120.0, -192.0), ankleF: Offset(150.0, -12.0), toeF: Offset(225.0, 0.0),
+    kneeB: Offset(-170.0, -182.0), ankleB: Offset(-240.0, -12.0), toeB: Offset(-165.0, 0.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+  static const heavyHit = Pose(
+    neck: Offset(140.0, -742.0),
+    headDir: Offset(0.0000, -1.0000),
+    hip: Offset(20.0, -362.0),
+    elbowF: Offset(280.0, -622.0), handF: Offset(450.0, -662.0),
+    elbowB: Offset(100.0, -522.0), handB: Offset(180.0, -602.0),
+    kneeF: Offset(180.0, -212.0), ankleF: Offset(240.0, -12.0), toeF: Offset(315.0, 0.0),
+    kneeB: Offset(-100.0, -182.0), ankleB: Offset(-210.0, -32.0), toeB: Offset(-140.0, -12.0),
+    armsOver: false,
+    fistF: true,
+    fistB: true,
+  );
+}
