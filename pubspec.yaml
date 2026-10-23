@@ -67,6 +67,7 @@ flutter:
   assets:
   - assets/images/
   - assets/images/home/
+  - assets/images/fight/
   - assets/images/genius/
   - assets/images/story/
   - assets/data/

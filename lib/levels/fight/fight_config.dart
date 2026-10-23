@@ -87,6 +87,8 @@ class RockPhaseStats {
     required this.kickDamage,
     required this.blockChance,
     required this.hurtScale,
+    required this.counterChance,
+    required this.punishChance,
   });
 
   final double speedScale;
@@ -104,19 +106,28 @@ class RockPhaseStats {
 
   /// Pengali lama terhenti saat terkena (Rock makin sulit dihentikan).
   final double hurtScale;
+
+  /// Peluang membalas dengan pukulan segera setelah berhasil menangkis.
+  final double counterChance;
+
+  /// Peluang menghukum pemain yang serangannya meleset (celah pemulihan).
+  final double punishChance;
 }
 
 const rockPhaseStats = <RockPhaseStats>[
   RockPhaseStats(
     speedScale: 0.85, reactionMs: 700, intervalMs: 2200,
     punchDamage: 6, kickDamage: 9, blockChance: 0.10, hurtScale: 0.8,
+    counterChance: 0, punishChance: 0.05,
   ),
   RockPhaseStats(
     speedScale: 1.0, reactionMs: 450, intervalMs: 1600,
     punchDamage: 8, kickDamage: 11, blockChance: 0.35, hurtScale: 0.55,
+    counterChance: 0.30, punishChance: 0.30,
   ),
   RockPhaseStats(
     speedScale: 1.2, reactionMs: 250, intervalMs: 1100,
     punchDamage: 10, kickDamage: 13, blockChance: 0.50, hurtScale: 0.3,
+    counterChance: 0.50, punishChance: 0.70,
   ),
 ];

@@ -9,7 +9,7 @@ Level baru tidak perlu mengubah inti game. Alurnya: buat kelas game, daftarkan d
 1. **Buat folder** `lib/levels/<id>/` (contoh `lib/levels/maze/`).
 2. **Buat kelas game** turunan `LevelGame` (lihat kerangka di bawah).
 3. **Buat fungsi pabrik** `LevelGame createXGame(LevelSession session) => XGame(session);`.
-4. **Daftarkan** di `lib/levels/level_registry.dart`: isi `createGame` (dan `bossImage` jika ada) pada entri level tersebut. Entri level 2 dan 3 sudah ada tanpa `createGame`, cukup ditambahkan.
+4. **Daftarkan** di `lib/levels/level_registry.dart`: isi `createGame` (dan `bossImage` jika ada) pada entri level tersebut. Entri level 3 (Maze) dan 4 (Cooking) sudah ada tanpa `createGame`, cukup ditambahkan.
 5. **Tambah aset** di `assets/images/<id>/` dan daftarkan foldernya di `pubspec.yaml` (folder tidak rekursif, tiap subfolder ditulis sendiri).
 6. Jalankan `flutter analyze` dan `flutter test`.
 
@@ -67,7 +67,7 @@ class MazeGame extends LevelGame {
 - Untuk kalimat boss di layar hasil, override `resultMessage()`.
 - Efek suara: `AudioService.instance.play(Sfx.xxx)`. Tambah SFX baru di enum `Sfx` dan taruh file `.wav` di `assets/audio/`.
 
-## 2. Menambah atau mengubah soal (Level 1)
+## 2. Menambah atau mengubah soal (Level 2, Bob)
 
 Semua soal ada di `assets/data/genius_questions.json`. Satu soal:
 
@@ -84,7 +84,7 @@ Aturan (dicek otomatis saat game memuat dan oleh `flutter test`):
 
 Step 1 = Mudah (umum), Step 2 = Sedang (sains dan sejarah), Step 3 = Sulit (pengetahuan khusus).
 
-## 3. Mengatur kesulitan (Level 1)
+## 3. Mengatur kesulitan (Level 2, Bob)
 
 Ubah angka di `lib/levels/genius/genius_config.dart`:
 
@@ -103,6 +103,7 @@ Cukup **timpa file bernama sama**, tanpa mengubah kode:
 | Aset | Lokasi |
 |---|---|
 | Ekspresi Bob (idle, shock, laugh, defeat) | `assets/images/genius/boss_*.png` |
+| Arena Colosseum, gambar intro Rock, potret HUD | `assets/images/fight/*.png` |
 | Karakter menu utama (pemain) | `assets/images/home/mc_home.png` |
 | Panel storyboard | `assets/images/story/panel_1.png` … `panel_4.png` |
 | Efek suara | `assets/audio/*.wav` |
@@ -123,3 +124,16 @@ Ukuran gambar boss sebaiknya persegi (512×512). Semua gambar bisa dibuat ulang 
 2. `flutter analyze` dan `flutter test` harus bersih.
 3. `flutter build apk --release`.
 4. Commit, lalu buat Release di GitHub dan lampirkan APK (lihat bagian rilis di README atau catatan tim).
+
+## 5. Level Fight (Level 1): pose, animasi, dan orientasi
+
+- **Landscape**: level mengunci orientasi lewat `LevelGame.orientations` (dipulihkan ke potret saat keluar). Tombol jeda bisa dipindah lewat `pauseButtonAlignment`, dan layar hasil menyebut "Fase" lewat `stepLabel`. Level lain tidak perlu mengubah apa pun (nilai bawaan = potret).
+- **Pose** ditulis di `tools/art/fight_poses.py` (satu sumber untuk gambar dan game). Setelah mengubah pose, jalankan `python tools/art/fight_poses.py` (tambah `--sheet` untuk lembar pratinjau di `/tmp/fight_poses.png`). Skrip menulis ulang `lib/levels/fight/pose_library.dart`; **jangan edit file itu manual**.
+- **Klip animasi** (urutan pose dan durasi, termasuk waktu persiapan/aktif/pemulihan serangan) ada di `lib/levels/fight/pose_clips.dart`.
+- **Tampilan petarung** (kepala, garis, rambut, sabuk, ikat kepala, wajah) digambar kode di `stick_renderer.dart`; warna dan proporsinya sama dengan generator art.
+- **Tuning** fase, HP, kecepatan, dan sifat Rock per fase: `lib/levels/fight/fight_config.dart`. Damage, dorongan, dan lama terhenti tiap serangan: `attacks.dart` (jendela waktu hantam otomatis mengikuti klip animasinya). Kalimat Rock: `fight_dialog.dart`.
+- **Arsitektur tempur**: `fighter_body.dart` (satu petarung: HP, mesin keadaan, serangan, tangkis, animasi) dan `fight_arena.dart` (dua petarung, pisau, penyelesaian hit) adalah Dart murni tanpa Flame sehingga bisa di-unit-test (`test/levels/fight/combat_test.dart`). `fight_game.dart` menghubungkannya ke Flame, HUD, dan sesi core.
+- **Alur fase**: Rock hanya punya satu bar HP; saat HP-nya menyentuh batas fase (67% dan 33%), `FightGame` memanggil `session.winStep()` lalu `startStep(next)` tanpa memutus pertarungan. KO Rock di fase 3 memanggil `winStep()` terakhir; KO pemain memanggil `loseStep()`.
+- **Kontrol di desktop** (untuk uji cepat di Windows): panah atau A/D untuk gerak, J pukul, K tendang, L atau S tangkis, I pisau.
+- **Panel uji**: tombol `DEV` di bawah layar membuka panel untuk memutar animasi, mengatur Rock diam atau menyerang, dan memaksa menang fase atau kalah. Bersifat sementara; dihapus sebelum rilis.
+- **AI Rock** ada di `enemy_ai.dart` (Dart murni, bisa di-test dengan `Random` ber-seed). Angka per fase (kecepatan, jeda reaksi, jeda serang, damage, peluang menangkis, membalas, menghukum) ada di `rockPhaseStats` pada `fight_config.dart`. Susunan combo dan pilihan serangan khusus tiap fase ada di `_choosePlan`. Serangan khusus (`Attacks.roundhouse`, `heavy`, `dash`) didefinisikan di `attacks.dart` dengan aba-aba (`telegraphMs`), terjang (`lunge`), armor, dan faktor tembus saat ditangkis (`blockedFactor`).

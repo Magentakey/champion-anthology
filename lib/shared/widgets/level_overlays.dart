@@ -13,6 +13,8 @@ class _Scrim extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Layar landscape pendek (~360 dp): panel dirapatkan dan bisa digulir agar tidak terpotong.
+    final compact = MediaQuery.sizeOf(context).height < 500;
     // Blur semua yang ada di belakang overlay (arena Flame + HUD); panel tetap tajam.
     return ClipRect(
       child: BackdropFilter(
@@ -20,14 +22,16 @@ class _Scrim extends StatelessWidget {
         child: ColoredBox(
           color: const Color(0x55000000),
           child: Center(
-            child: Container(
-              margin: const EdgeInsets.all(32),
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+            child: SingleChildScrollView(
+              child: Container(
+                margin: EdgeInsets.all(compact ? 12 : 32),
+                padding: EdgeInsets.all(compact ? 16 : 24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: child,
               ),
-              child: child,
             ),
           ),
         ),
@@ -80,6 +84,7 @@ class ResultOverlay extends StatelessWidget {
     super.key,
     required this.stars,
     required this.step,
+    this.stepLabel = 'Step',
     required this.onRestart,
     required this.onExit,
     this.bossName,
@@ -88,6 +93,7 @@ class ResultOverlay extends StatelessWidget {
 
   final int stars;
   final int step;
+  final String stepLabel;
   final String? bossName;
   final String? message;
   final VoidCallback onRestart;
@@ -100,7 +106,7 @@ class ResultOverlay extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            stars >= 3 ? AppText.perfectClear : AppText.lostAtStep(step),
+            stars >= 3 ? AppText.perfectClear : AppText.lostAtStep(step, stepLabel),
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16),

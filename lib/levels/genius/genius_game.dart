@@ -19,7 +19,7 @@ import 'question_bank.dart';
 
 LevelGame createGeniusGame(LevelSession session) => GeniusGame(session);
 
-/// Level 1: Bob the Genius - kuis pengetahuan dengan time bar.
+/// Level 2: Bob the Genius - kuis pengetahuan dengan time bar.
 /// Alur step: jawab benar [targetCorrect] kali untuk menang; salah atau
 /// kehabisan waktu mengurangi nyawa; nyawa habis = kalah.
 class GeniusGame extends LevelGame {

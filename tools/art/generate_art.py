@@ -30,6 +30,7 @@ SKY_TOP = (41, 98, 180)
 SKY_BOT = (144, 202, 249)
 GROUND = (158, 158, 158)
 PINK_BG = (255, 235, 238)
+ORANGE = (251, 140, 0, 255)       # aksen Rock (sabuk)
 
 
 # ---------------- kanvas ----------------
@@ -241,6 +242,8 @@ FACES = {
     'bob_shock': dict(eyes='wide', brows='up', mouth='o', extra='sweat'),
     'bob_laugh': dict(eyes='happy', brows='up_soft', mouth='laugh', extra='tears'),
     'bob_defeat': dict(eyes='x', brows='sad', mouth='wavy', extra='stars', cracked=True),
+    'rock_idle': dict(eyes='open', brows='angry', mouth='flat', scar=True),
+    'rock_roar': dict(eyes='open', brows='fierce', mouth='shout', scar=True),
     'plain': dict(eyes='open', brows='none', mouth='smirk'),
     'cheer': dict(eyes='happy', brows='none', mouth='grin'),
 }
@@ -340,6 +343,11 @@ def draw_face(art, hc, rp, face, d, lw, view='3q'):
         pts = [pt(0.2 + ms + 0.64 * i / 20, 0.62 + 0.05 * math.sin(i * 0.9)) for i in range(21)]
         art.line(pts, lw * 0.5)
 
+    if face.get('scar'):   # bekas luka di pipi
+        art.line([pt(0.82, 0.18), pt(0.72, 0.48)], lw * 0.32)
+        for (a_, b_) in (((0.74, 0.28), (0.90, 0.33)), ((0.72, 0.40), (0.88, 0.45))):
+            art.line([pt(*a_), pt(*b_)], lw * 0.26)
+
     extra = face.get('extra')
     if extra == 'sweat':
         for (u, v, s) in [(-0.95, -0.30, 0.16), (-1.15, 0.05, 0.12)]:
@@ -402,6 +410,26 @@ def draw_spikes(art, hc, rp, lw):
         b1 = (hc[0] + 0.9 * rp * math.cos(a - 0.20), hc[1] + 0.9 * rp * math.sin(a - 0.20))
         b2 = (hc[0] + 0.9 * rp * math.cos(a + 0.20), hc[1] + 0.9 * rp * math.sin(a + 0.20))
         art.poly([b1, tip, b2], fill=BLACK, outline=BLACK, width=lw * 0.2)
+
+
+def draw_rock_hair(art, hc, rp, d, lw):
+    """Rambut kotak bergerigi seperti batu (menutup bagian atas kepala)."""
+    uv = [(-0.87, -0.50), (-1.02, -0.80), (-0.78, -1.05), (-0.70, -1.30), (-0.30, -1.20), (-0.15, -1.42),
+          (0.25, -1.25), (0.50, -1.38), (0.78, -1.08), (1.02, -0.78), (0.87, -0.50)]
+    art.poly([(hc[0] + d * u * rp, hc[1] + v * rp) for u, v in uv], fill=BLACK, outline=BLACK, width=lw * 0.2)
+
+
+def draw_rock_belt(art, neck, hip, lw):
+    """Sabuk oranye di pinggul (tegak lurus badan)."""
+    dx, dy = hip[0] - neck[0], hip[1] - neck[1]
+    ln = math.hypot(dx, dy) or 1
+    ux, uy = dx / ln, dy / ln
+    px, py = -uy, ux
+    c = (hip[0] - ux * lw * 0.9, hip[1] - uy * lw * 0.9)
+    hl, ht = lw * 1.6, lw * 0.9
+    pts = [(c[0] + px * hl + ux * ht, c[1] + py * hl + uy * ht), (c[0] - px * hl + ux * ht, c[1] - py * hl + uy * ht),
+           (c[0] - px * hl - ux * ht, c[1] - py * hl - uy * ht), (c[0] + px * hl - ux * ht, c[1] + py * hl - uy * ht)]
+    art.poly(pts, fill=ORANGE, outline=BLACK, width=lw * 0.18)
 
 
 def draw_bowtie(art, c, rp, lw):
@@ -518,13 +546,14 @@ def draw_figure(art, pose_name, face_name, ox, oy, s, flip=False, lw=18, acc=(),
     r = pose.get('r', 150)
     hx, hy = pose['head']
     hc, rp = T((hx, hy)), r * s
-    neck, hip = T((hx, hy + r)), T(pose['hip'])
+    neck, hip = T(pose.get('neck', (hx, hy + r))), T(pose['hip'])
 
     art.line([T(p) for p in pose['arm_b']], W)
     art.line([T(p) for p in pose['leg_b'][:3]], W)
     art.line([neck, hip], W)
     art.line([T(p) for p in pose['leg_f'][:3]], W)
-    art.line([T(p) for p in pose['arm_f']], W)
+    if not pose.get('over'):
+        art.line([T(p) for p in pose['arm_f']], W)
     for leg in (pose['leg_b'], pose['leg_f']):
         draw_shoe(art, T(leg[2]), T(leg[3]), s)
 
@@ -536,7 +565,11 @@ def draw_figure(art, pose_name, face_name, ox, oy, s, flip=False, lw=18, acc=(),
 
     if 'bob' in acc:
         draw_spikes(art, hc, rp, W)
+    if 'rock' in acc:
+        draw_rock_belt(art, neck, hip, W)
     art.circle(hc, rp, fill=WHITE, outline=BLACK, width=W * 0.9)
+    if 'rock' in acc:
+        draw_rock_hair(art, hc, rp, d, W)
     if 'chef' in acc:
         draw_chef_hat(art, hc, rp, W)
     eye_c = draw_face(art, hc, rp, face, d, W, view)
@@ -706,4 +739,6 @@ if __name__ == '__main__':
     gen_boss()
     gen_icon()
     gen_story()
+    import fight_art
+    fight_art.gen_fight()
     print('selesai')

@@ -52,6 +52,7 @@ class FighterBody {
   /// Sisa jeda pisau (ms).
   double knifeCooldownMs = 0;
 
+  double _telegraphLeft = 0;
   double _stunMs = 0;
   double _kbLeft = 0;
   int _kbDir = 1;
@@ -76,6 +77,9 @@ class FighterBody {
   bool get canAct =>
       state == BodyState.idle || state == BodyState.walk || state == BodyState.block;
   bool get isDead => state == BodyState.ko;
+
+  /// Sedang menahan pose aba-aba sebelum serangan khusus (ditampilkan dengan cahaya merah).
+  bool get telegraphing => state == BodyState.attack && _telegraphLeft > 0;
   bool get atFloor => hpFloor > 0 && hp <= hpFloor + 1e-6;
   double get hpFraction => maxHp == 0 ? 0 : hp / maxHp;
 
@@ -132,7 +136,7 @@ class FighterBody {
     final blocked = state == BodyState.block && spec.blockable && attackerSide == facing;
 
     if (blocked) {
-      _damage(spec.damage * blockedDamageFactor);
+      _damage(spec.damage * spec.blockedFactor);
       if (hp <= 0) {
         _knockOut(pushDir, spec.knockback);
       } else {
@@ -142,12 +146,16 @@ class FighterBody {
     }
 
     _damage(spec.damage);
-    attack = null;
-    _clearQueue();
+    final armored = state == BodyState.attack && (attack?.armored ?? false);
     if (hp <= 0) {
       _knockOut(pushDir, spec.knockback);
       return HitOutcome.hit;
     }
+    // serangan berarmor tetap berjalan meski terkena (hanya menerima damage)
+    if (armored) return HitOutcome.hit;
+    attack = null;
+    _telegraphLeft = 0;
+    _clearQueue();
     state = BodyState.hurt;
     _stunMs = spec.hurtMs * hurtScale;
     _knock(pushDir, spec.knockback);
@@ -214,7 +222,15 @@ class FighterBody {
       state = BodyState.idle;
       return;
     }
+    if (_telegraphLeft > 0) {
+      _telegraphLeft -= dtMs;
+      if (_telegraphLeft <= 0) _play(spec.clip);
+      return;
+    }
     attackMs += dtMs;
+    if (spec.lunge > 0 && attackMs <= spec.hitStartMs) {
+      x += facing * spec.lunge / math.max(1, spec.hitStartMs) * dtMs;
+    }
     // batalkan pemulihan ke pukulan berikutnya dalam rangkaian
     if (spec.chain && _queuedPunch && attackMs >= spec.hitEndMs) {
       _startPunch();
@@ -257,7 +273,8 @@ class FighterBody {
     attackMs = 0;
     hitDone = false;
     projectileSpawned = false;
-    _play(spec.clip);
+    _telegraphLeft = spec.telegraphMs.toDouble();
+    _play(spec.telegraphMs > 0 ? Clips.heavyWind : spec.clip);
   }
 
   void _clearQueue() {
@@ -269,6 +286,7 @@ class FighterBody {
   void _knockOut(int dir, double knockback) {
     state = BodyState.ko;
     attack = null;
+    _telegraphLeft = 0;
     _clearQueue();
     _knock(dir, knockback);
     _play(Clips.ko);

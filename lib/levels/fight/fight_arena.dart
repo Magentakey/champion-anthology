@@ -149,7 +149,7 @@ class FightArena {
       byPlayer: byPlayer,
       x: at.dx,
       y: at.dy,
-      damage: spec.damage * (blocked ? blockedDamageFactor : 1),
+      damage: spec.damage * (blocked ? spec.blockedFactor : 1),
       knife: knife,
     ));
     return true;

@@ -1,5 +1,6 @@
 import 'dart:ui' show Offset;
 
+import 'fight_config.dart';
 import 'pose.dart';
 import 'pose_clips.dart';
 
@@ -20,6 +21,10 @@ class AttackSpec {
     this.projectile = false,
     this.blockable = true,
     this.chain = false,
+    this.telegraphMs = 0,
+    this.lunge = 0,
+    this.armored = false,
+    this.blockedFactor = blockedDamageFactor,
   })  : hitStartMs = clip.timeAtKey(arriveKey) - 30,
         hitEndMs = clip.timeAtKey(arriveKey + 1);
 
@@ -43,6 +48,18 @@ class AttackSpec {
 
   /// Bagian dari rangkaian pukulan (pukul, silang, penutup) yang boleh dibatalkan ke pukulan berikutnya.
   final bool chain;
+
+  /// Aba-aba sebelum serangan (ms): petarung menahan pose bersiap dan menyala merah.
+  final int telegraphMs;
+
+  /// Jarak maju (satuan ruang gambar) selama fase persiapan serangan.
+  final double lunge;
+
+  /// Tidak terhenti saat terkena ketika sedang menyiapkan atau melakukan serangan ini.
+  final bool armored;
+
+  /// Bagian damage yang tembus saat ditangkis (bawaan 0,2; pukulan berat lebih tembus).
+  final double blockedFactor;
 
   /// Awal dan akhir jendela hantam (ms sejak serangan mulai).
   final int hitStartMs;
@@ -73,6 +90,10 @@ class AttackSpec {
         projectile: projectile,
         blockable: blockable,
         chain: chain,
+        telegraphMs: telegraphMs,
+        lunge: lunge,
+        armored: armored,
+        blockedFactor: blockedFactor,
       );
 }
 
@@ -126,7 +147,8 @@ abstract final class Attacks {
     projectile: true,
   );
 
-  /// Pukulan berat Rock (fase 3): sulit ditangkis, aba-aba panjang.
+  /// Hantaman Rock (fase 3): aba-aba merah 0,5 dtk, maju, tidak bisa dihentikan,
+  /// dan hanya berkurang 40% saat ditangkis.
   static final heavy = AttackSpec(
     id: 'heavy',
     clip: Clips.heavyHit,
@@ -134,6 +156,33 @@ abstract final class Attacks {
     knockback: 380,
     hurtMs: 460,
     arriveKey: 1,
+    telegraphMs: 500,
+    lunge: 140,
+    armored: true,
+    blockedFactor: 0.6,
+  );
+
+  /// Tendangan Putar Rock (fase 2 dan 3): aba-aba 0,35 dtk lalu menerjang sambil menendang.
+  static final roundhouse = AttackSpec(
+    id: 'roundhouse',
+    clip: Clips.kick,
+    damage: 12,
+    knockback: 320,
+    hurtMs: 420,
+    tip: Tip.toeF,
+    telegraphMs: 350,
+    lunge: 260,
+  );
+
+  /// Pukulan terjang Rock (fase 3): menutup jarak jauh dengan cepat.
+  static final dash = AttackSpec(
+    id: 'dash',
+    clip: Clips.punch,
+    damage: 10,
+    knockback: 200,
+    hurtMs: 300,
+    telegraphMs: 250,
+    lunge: 480,
   );
 
   /// Urutan rangkaian pukulan pemain.

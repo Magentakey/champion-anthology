@@ -35,5 +35,5 @@ class AppText {
   static const soundOff = 'Suara: Mati';
   static const perfectClear = 'Sempurna!';
   static const toLevelSelect = 'Pilih Level';
-  static String lostAtStep(int step) => 'Kalah di Step $step';
+  static String lostAtStep(int step, [String label = 'Step']) => 'Kalah di $label $step';
 }

@@ -6,9 +6,10 @@ Game mobile (Android) bergenre **minigame anthology dengan alur cerita**. Karakt
 
 | Level | Boss | Status |
 |---|---|---|
-| 1 | Bob the Genius (kuis pengetahuan) | Selesai, bisa dimainkan |
-| 2 | Asep the Mazelogist (labirin) | Direncanakan |
-| 3 | Cooking Champion (ritme dan waktu) | Direncanakan |
+| 1 | Rock the Fighter (pertarungan, 3 fase menurut batas HP) | Dalam pengerjaan (M3: tempur dan AI Rock selesai; efek, suara, dan tuning menyusul) |
+| 2 | Bob the Genius (kuis pengetahuan) | Selesai, bisa dimainkan |
+| 3 | Asep the Mazelogist (labirin) | Direncanakan |
+| 4 | Cooking Champion (ritme dan waktu) | Direncanakan |
 
 ## Unduh dan pasang
 
@@ -63,7 +64,8 @@ lib/
 │   └── save/                 # ProgressRepository (bintang tersimpan)
 ├── levels/
 │   ├── level_registry.dart   # daftar semua level
-│   └── genius/               # Level 1: game, HUD, konfigurasi, soal, dialog
+│   ├── fight/                # Level 1: arena, petarung stickman, pose, animasi
+│   └── genius/               # Level 2: game, HUD, konfigurasi, soal, dialog
 ├── screens/                  # menu, storyboard, pilih level, intro boss, gameplay
 └── shared/widgets/           # StarRow, overlay jeda/hasil, efek getar
 assets/

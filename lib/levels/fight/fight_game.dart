@@ -14,6 +14,7 @@ import '../../core/level/level_session.dart';
 import 'arena_component.dart';
 import 'attacks.dart';
 import 'effects.dart';
+import 'enemy_ai.dart';
 import 'fight_arena.dart';
 import 'fight_config.dart';
 import 'fight_dialog.dart';
@@ -21,14 +22,13 @@ import 'fight_hud.dart';
 import 'fighter.dart';
 import 'pose_clips.dart';
 import 'stick_renderer.dart';
-import 'training_brain.dart';
 
 LevelGame createFightGame(LevelSession session) => FightGame(session);
 
 /// Level 1: Rock the Fighter - satu lawan, tiga fase menurut batas HP.
 ///
-/// Tahap M2: gerak, pukul/tendang/tangkis/pisau, deteksi hit, HP, dan alur fase ke core.
-/// Lawan masih memakai [TrainingBrain] sederhana; AI penuh menyusul di M3.
+/// Tahap M2-M3: gerak, pukul/tendang/tangkis/pisau, deteksi hit, HP, alur fase ke core, dan AI Rock.
+/// Lawan: [EnemyAi] (M3).
 class FightGame extends LevelGame with KeyboardEvents {
   FightGame(super.session);
 
@@ -37,7 +37,7 @@ class FightGame extends LevelGame with KeyboardEvents {
   late final Fighter _playerView;
   late final Fighter _rockView;
   late final KnifeLayer _knives;
-  final TrainingBrain _brain = TrainingBrain();
+  final EnemyAi _brain = EnemyAi();
   final math.Random _rnd = math.Random();
 
   bool _ready = false;
@@ -255,7 +255,14 @@ class FightGame extends LevelGame with KeyboardEvents {
       player.blockHeld = false;
     }
     _brain.enabled = rockAttacks.value && !_transitioning && !_resultPending;
-    _brain.update(dtMs, arena.rock, player, rockPhaseStats[arena.step - 1]);
+    _brain.update(
+      dtMs,
+      arena.rock,
+      player,
+      rockPhaseStats[arena.step - 1],
+      arena.step,
+      arena.worldWidth,
+    );
 
     arena.update(dtMs);
     _processEvents();

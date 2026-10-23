@@ -1,5 +1,6 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -27,13 +28,26 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
   LevelSession? _session;
   LevelGame? _game;
   bool _saved = false;
+  bool _orientationLocked = false;
   int _runId = 0;
 
   @override
   void initState() {
     super.initState();
     _level = levelById(widget.levelId);
-    if (_level?.createGame != null) _startRun();
+    if (_level?.createGame != null) {
+      _startRun();
+      _lockOrientation();
+    }
+  }
+
+  /// Level landscape mengunci orientasi saat masuk; dipulihkan ke potret di dispose().
+  void _lockOrientation() {
+    final orientations = _game?.orientations;
+    if (orientations == null) return;
+    _orientationLocked = true;
+    SystemChrome.setPreferredOrientations(orientations);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   }
 
   void _startRun() {
@@ -84,6 +98,10 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
 
   @override
   void dispose() {
+    if (_orientationLocked) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+    }
     _session?.removeListener(_onSessionChanged);
     _game?.disposeAssets();
     _session?.dispose();
@@ -110,8 +128,6 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
       );
     }
 
-    final topPad = MediaQuery.of(context).padding.top;
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
@@ -129,17 +145,23 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
               ),
             ),
             Positioned.fill(child: game.buildHud(context)),
-            Positioned(
-              top: topPad + 4,
-              right: 8,
-              child: ListenableBuilder(
-                listenable: session,
-                builder: (context, _) => session.isPlaying
-                    ? IconButton(
-                        icon: const Icon(Icons.pause_circle_outline, size: 32),
-                        onPressed: _pause,
-                      )
-                    : const SizedBox.shrink(),
+            Positioned.fill(
+              child: SafeArea(
+                child: Align(
+                  alignment: game.pauseButtonAlignment,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(4, 4, 8, 4),
+                    child: ListenableBuilder(
+                      listenable: session,
+                      builder: (context, _) => session.isPlaying
+                          ? IconButton(
+                              icon: const Icon(Icons.pause_circle_outline, size: 32),
+                              onPressed: _pause,
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ),
+                ),
               ),
             ),
             Positioned.fill(
@@ -157,6 +179,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                       return ResultOverlay(
                         stars: session.stars,
                         step: session.step,
+                        stepLabel: game.stepLabel,
                         bossName: _level?.bossName,
                         message: game.resultMessage(),
                         onRestart: _restart,

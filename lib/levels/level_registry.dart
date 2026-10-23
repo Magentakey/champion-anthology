@@ -1,11 +1,21 @@
 import '../core/level/level_definition.dart';
+import 'fight/fight_dialog.dart';
+import 'fight/fight_game.dart';
 import 'genius/genius_game.dart';
 
 /// Menambah level baru = tambah satu entry di sini + satu folder di lib/levels/.
 const levelRegistry = <LevelDefinition>[
   LevelDefinition(
-    id: 'genius',
+    id: 'fight',
     number: 1,
+    bossName: 'Rock the Fighter',
+    introDialog: FightDialog.intro,
+    bossImage: 'assets/images/fight/boss_idle.png',
+    createGame: createFightGame,
+  ),
+  LevelDefinition(
+    id: 'genius',
+    number: 2,
     bossName: 'Bob the Genius',
     introDialog: 'Siapa kau?\nBerani menantangku?!\nTahu tempatmu!',
     bossImage: 'assets/images/genius/boss_idle.png',
@@ -13,13 +23,13 @@ const levelRegistry = <LevelDefinition>[
   ),
   LevelDefinition(
     id: 'maze',
-    number: 2,
+    number: 3,
     bossName: 'Asep the Mazelogist',
     introDialog: 'Selamat datang...\nIngin merebut gelarku?\nIkuti aku...',
   ),
   LevelDefinition(
     id: 'cooking',
-    number: 3,
+    number: 4,
     bossName: 'Cooking Champion',
     introDialog: '...',
   ),

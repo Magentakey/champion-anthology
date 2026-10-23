@@ -73,11 +73,11 @@ void main() {
 
   testWidgets('pilih level: bintang tersimpan, kunci, dan intro boss terbuka',
       (tester) async {
-    await pumpApp(tester, {'stars_genius': 2});
+    await pumpApp(tester, {'stars_fight': 1, 'stars_genius': 2});
     await playThroughStory(tester);
 
-    expect(find.byIcon(Icons.star), findsNWidgets(2)); // 2 bintang level 1
-    expect(find.byIcon(Icons.lock), findsNWidgets(2)); // level 2 & 3 belum tersedia
+    expect(find.byIcon(Icons.star), findsNWidgets(3)); // 1 bintang Fight + 2 bintang Bob
+    expect(find.byIcon(Icons.lock), findsNWidgets(2)); // level 3 & 4 belum tersedia
 
     await tester.tap(find.byIcon(Icons.lock).first);
     await tester.pump();
@@ -85,7 +85,25 @@ void main() {
 
     await tester.tap(find.text('1'));
     await tester.pumpAndSettle();
-    expect(find.text('Bob the Genius'), findsOneWidget);
+    expect(find.text('Rock the Fighter'), findsOneWidget);
     expect(find.text(AppText.start), findsOneWidget);
+
+    await tester.tap(find.text(AppText.back)); // kembali ke pilih level
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('2'));
+    await tester.pumpAndSettle();
+    expect(find.text('Bob the Genius'), findsOneWidget);
+  });
+
+  testWidgets('Bob (level 2) terkunci sampai Fight punya minimal 1 bintang',
+      (tester) async {
+    await pumpApp(tester, {});
+    await playThroughStory(tester);
+
+    expect(find.byIcon(Icons.lock), findsNWidgets(3)); // Bob, Maze, Cooking
+
+    await tester.tap(find.byIcon(Icons.lock).first); // slot Bob
+    await tester.pump();
+    expect(find.text(AppText.finishPreviousLevel), findsOneWidget);
   });
 }

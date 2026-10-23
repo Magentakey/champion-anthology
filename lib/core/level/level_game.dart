@@ -1,5 +1,6 @@
 import 'package:flame/cache.dart';
 import 'package:flame/game.dart';
+import 'package:flutter/services.dart' show DeviceOrientation;
 import 'package:flutter/widgets.dart';
 
 import '../assets/asset_loader.dart';
@@ -20,6 +21,17 @@ abstract class LevelGame extends FlameGame {
 
   /// HUD Flutter di atas arena Flame (soal, tombol jawaban, dll).
   Widget buildHud(BuildContext context) => const SizedBox.shrink();
+
+  /// Orientasi layar yang dikunci selama level ini (dipulihkan ke potret saat keluar).
+  /// null = tidak diubah (potret).
+  List<DeviceOrientation>? get orientations => null;
+
+  /// Posisi tombol jeda dari core. Level landscape bisa memindahkannya agar tidak
+  /// menutupi HUD miliknya.
+  Alignment get pauseButtonAlignment => Alignment.topRight;
+
+  /// Sebutan satu tahap di layar hasil: "Step" (default) atau mis. "Fase".
+  String get stepLabel => 'Step';
 
   /// Kalimat karakter boss di layar hasil (mis. ejekan). null = tidak ada.
   String? resultMessage() => null;

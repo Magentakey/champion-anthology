@@ -36,6 +36,7 @@ Gaya yang dikunci: **kartun stickman** (kepala bulat putih besar, garis hitam te
 
 - **Pemain**: stickman dengan **ikat kepala merah** berekor dua yang melambai. Selalu bersemangat dan ingin menang; wajah sombong (smug) hanya untuk lawan seperti Bob. Di menu utama setengah badan (sampai pinggang), menghadap **kiri**, telapak terbuka menopang bola dunia (gambar yang sama dipakai sebagai ikon), wajah semangat ingin menang dengan senyum tipis (`mc_hype`, bukan sombong), tangan lain di pinggang, dan diletakkan di lapisan paling belakang (di belakang judul dan tombol). Karakter ini dipakai di semua gambar.
 - **Bob the Genius**: rambut runcing hitam, kacamata bulat, dasi kupu-kupu biru, kepala besar. Menghadap kanan di game (ke arah pemain). Empat ekspresi: `idle`, `shock`, `laugh`, `defeat`.
+- **Rock the Fighter**: kepala lebih besar (jari-jari 190 vs 150) dan garis lebih tebal, **rambut kotak bergerigi seperti batu**, bekas luka di pipi, **sabuk oranye** `#FB8C00` sebagai aksen warna, wajah `rock_idle` (alis menukik, mulut datar). Tangan kosong, tanpa senjata. Di dalam game ia digambar oleh kode (`stick_renderer.dart`) dari pose, bukan sprite.
 - **Champion lain**: tokoh dengan atribut khas, bukan warna besar. Asep membawa papan labirin; Chef memakai topi koki.
 
 ## Daftar aset gambar
@@ -45,6 +46,8 @@ Gaya yang dikunci: **kartun stickman** (kepala bulat putih besar, garis hitam te
 | Karakter menu utama | `assets/images/home/mc_home.png` | sekitar 650 x 990, latar transparan |
 | Ekspresi Bob | `assets/images/genius/boss_idle/shock/laugh/defeat.png` | 512 x 512 (persegi) |
 | Panel cerita | `assets/images/story/panel_1..4.png` | 1000x400, 600x600, 600x600, 600x900 |
+| Arena Colosseum | `assets/images/fight/arena.png` | 1600 x 720, satu gambar (warna per fase ditambahkan kode) |
+| Rock (intro) dan potret HUD | `assets/images/fight/boss_idle.png`, `portrait_player.png`, `portrait_rock.png` | 512 x 512, 256 x 256 |
 | Ikon aplikasi | `assets/icon/app_icon.png`, `app_icon_fg.png` | 1024 x 1024 |
 
 ## Membuat ulang aset
@@ -53,10 +56,12 @@ Semua gambar dihasilkan oleh `tools/art/generate_art.py`, sehingga gayanya selal
 
 ```bash
 pip install pillow
-python tools/art/generate_art.py
+python tools/art/generate_art.py          # semua gambar
+python tools/art/fight_poses.py            # pose petarung (Dart)
 ```
 
 - Pose ada di `POSES` (koordinat sendi pada bingkai 1000 x 1400, menghadap kanan; `flip=True` membalik arah).
+- Pose petarung Level Fight ada di `tools/art/fight_poses.py` (lihat panduan pengembangan, bagian 5).
 - Wajah ada di `FACES`; aksesori (ikat kepala, kacamata, rambut, topi koki) berupa fungsi `draw_*`.
 - Tambah karakter atau pose baru dengan menambah entri pose dan wajah, lalu panggil `draw_figure(...)` di fungsi `gen_*` yang sesuai.
 - Setelah diubah, jalankan skrip lagi. Jika nanti ada art digital buatan tangan, cukup timpa file PNG dengan nama sama.

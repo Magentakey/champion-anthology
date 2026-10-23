@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flame/components.dart';
@@ -30,6 +31,17 @@ class Fighter extends Component {
     canvas.save();
     canvas.translate(body.x * unit, groundY);
     canvas.scale(unit * body.facing, unit);
+
+    // aba-aba serangan khusus: cahaya merah berdenyut di belakang petarung
+    if (body.telegraphing) {
+      final pulse = 0.5 + 0.5 * math.sin(_timeSec * 22);
+      canvas.drawOval(
+        Rect.fromCenter(center: const Offset(0, -560), width: 980, height: 1350),
+        Paint()
+          ..color = Color.fromARGB((70 + 90 * pulse).round(), 255, 40, 40)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 70),
+      );
+    }
 
     // bayangan di tanah
     canvas.drawOval(
