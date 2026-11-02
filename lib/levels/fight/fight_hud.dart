@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
 import '../../core/level/level_session.dart';
@@ -7,7 +8,7 @@ import 'pad_icons.dart';
 import 'pose_clips.dart';
 
 /// HUD Level Fight (landscape): bar HP dengan potret, banner fase, tombol kontrol,
-/// dan panel uji sementara (tombol DEV) untuk memutar animasi dan memaksa hasil.
+/// dan panel uji (tombol DEV, hanya di build debug) untuk memutar animasi dan memaksa hasil.
 class FightHud extends StatelessWidget {
   const FightHud({super.key, required this.game});
 
@@ -49,6 +50,8 @@ class FightHud extends StatelessWidget {
               ],
             ),
           ),
+          // kilat merah tepi layar saat pemain terkena
+          Positioned.fill(child: IgnorePointer(child: _HurtFlash(counter: game.hurtFlash))),
           // banner fase
           Align(
             alignment: const Alignment(0, -0.35),
@@ -70,11 +73,82 @@ class FightHud extends StatelessWidget {
               ),
             ),
           ),
+          // teks besar tengah layar (K.O.!)
+          Align(
+            alignment: const Alignment(0, -0.1),
+            child: IgnorePointer(child: _Callout(text: game.callout)),
+          ),
           Positioned(left: 12, bottom: 10, child: _MovePad(game: game)),
           Positioned(right: 12, bottom: 10, child: _ActionPad(game: game)),
-          Align(alignment: Alignment.bottomCenter, child: _DevPanel(game: game)),
+          // panel uji hanya ada di build debug (flutter run), tidak di APK rilis
+          if (kDebugMode)
+            Align(alignment: Alignment.bottomCenter, child: _DevPanel(game: game)),
         ],
       ),
+    );
+  }
+}
+
+// ---------------- efek layar ----------------
+class _HurtFlash extends StatelessWidget {
+  const _HurtFlash({required this.counter});
+
+  final ValueNotifier<int> counter;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: counter,
+      builder: (_, n, _) => n == 0
+          ? const SizedBox.shrink()
+          : TweenAnimationBuilder<double>(
+              key: ValueKey(n),
+              tween: Tween(begin: 0.4, end: 0),
+              duration: const Duration(milliseconds: 300),
+              builder: (_, v, _) => DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: RadialGradient(
+                    radius: 1.1,
+                    colors: [Colors.transparent, Colors.red.withValues(alpha: v)],
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+}
+
+class _Callout extends StatelessWidget {
+  const _Callout({required this.text});
+
+  final ValueNotifier<String?> text;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<String?>(
+      valueListenable: text,
+      builder: (_, t, _) => t == null
+          ? const SizedBox.shrink()
+          : TweenAnimationBuilder<double>(
+              key: ValueKey(t),
+              tween: Tween(begin: 2.4, end: 1),
+              duration: const Duration(milliseconds: 320),
+              curve: Curves.easeOutBack,
+              builder: (_, scale, child) => Transform.scale(scale: scale, child: child),
+              child: Text(
+                t,
+                style: TextStyle(
+                  fontSize: 56,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 2,
+                  color: Colors.white,
+                  shadows: [
+                    Shadow(color: Colors.red.shade900, offset: const Offset(4, 4)),
+                    const Shadow(color: Colors.black, blurRadius: 10),
+                  ],
+                ),
+              ),
+            ),
     );
   }
 }

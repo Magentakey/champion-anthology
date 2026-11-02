@@ -37,6 +37,14 @@ class BossIntroScreen extends StatelessWidget {
                 const Icon(Icons.accessibility_new, size: 160, color: Colors.blue),
               const Spacer(),
               _Bubble(text: level.introDialog),
+              if (level.tip != null) ...[
+                const SizedBox(height: 12),
+                Text(
+                  level.tip!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
               const SizedBox(height: 24),
               FilledButton(
                 onPressed: () => context.pushReplacement('/play/${level.id}'),

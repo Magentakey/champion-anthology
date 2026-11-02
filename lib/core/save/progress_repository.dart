@@ -34,8 +34,10 @@ class ProgressNotifier extends Notifier<Map<String, int>> {
   }
 
   /// Level terbuka jika sudah tersedia dan level sebelumnya minimal 1 bintang.
+  /// Level yang sudah punya bintang tetap terbuka (mis. progres lama sebelum urutan level berubah).
   bool isUnlocked(LevelDefinition level) {
     if (!level.available) return false;
+    if ((state[level.id] ?? 0) >= 1) return true;
     final index = levelRegistry.indexOf(level);
     if (index <= 0) return true;
     final previous = levelRegistry[index - 1];

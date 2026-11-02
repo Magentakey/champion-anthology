@@ -2,6 +2,11 @@
 abstract final class FightDialog {
   static const intro = 'Hmph. Kau datang untuk gelarku?\nBuktikan di arena, bocah!';
 
+  /// Petunjuk di layar intro.
+  static const tip = 'Level ini dimainkan landscape (layar melebar).\n'
+      'Tangkis menahan serangan, pisau dilempar dari jauh.\n'
+      'Hindari Hantaman yang menyala merah!';
+
   /// Ejekan saat fase 1, 2, 3 dimulai.
   static const phaseLines = <String>[
     'Pemanasan dulu, bocah.',

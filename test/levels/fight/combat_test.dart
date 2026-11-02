@@ -45,6 +45,7 @@ void main() {
       run(a, 1200);
       expect(a.rock.hp, 300 - 6);
       expect(a.events.where((e) => e.kind == HitKind.hit && e.byPlayer).length, 1);
+      expect(a.events.single.id, 'punch');
     });
 
     test('pukulan di luar jangkauan meleset', () {
@@ -61,6 +62,7 @@ void main() {
       run(a, 800);
       expect(a.rock.hp, 290);
       expect(a.rock.x, greaterThan(1400));
+      expect(a.events.single.id, 'kick');
     });
 
     test('Rock bisa melukai pemain', () {

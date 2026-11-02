@@ -16,6 +16,9 @@ class LevelDefinition {
   /// Gambar boss untuk layar intro (path aset penuh). null = ikon placeholder.
   final String? bossImage;
 
+  /// Petunjuk singkat di layar intro (mis. kontrol). null = tidak ada.
+  final String? tip;
+
   const LevelDefinition({
     required this.id,
     required this.number,
@@ -23,6 +26,7 @@ class LevelDefinition {
     required this.introDialog,
     this.createGame,
     this.bossImage,
+    this.tip,
   });
 
   bool get available => createGame != null;

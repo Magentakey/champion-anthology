@@ -2,6 +2,7 @@ import 'package:champion_anthology/app/app.dart';
 import 'package:champion_anthology/app/router.dart';
 import 'package:champion_anthology/app/strings.dart';
 import 'package:champion_anthology/core/save/progress_repository.dart';
+import 'package:champion_anthology/levels/fight/fight_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,6 +87,7 @@ void main() {
     await tester.tap(find.text('1'));
     await tester.pumpAndSettle();
     expect(find.text('Rock the Fighter'), findsOneWidget);
+    expect(find.text(FightDialog.tip), findsOneWidget);
     expect(find.text(AppText.start), findsOneWidget);
 
     await tester.tap(find.text(AppText.back)); // kembali ke pilih level

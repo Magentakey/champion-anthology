@@ -34,6 +34,7 @@ class HitEvent {
     required this.x,
     required this.y,
     required this.damage,
+    required this.id,
     this.knife = false,
   });
 
@@ -44,6 +45,9 @@ class HitEvent {
   final double x;
   final double y;
   final double damage;
+
+  /// Id serangan yang mengenai (punch, kick, heavy, throw, ...), untuk memilih suara.
+  final String id;
   final bool knife;
 }
 
@@ -150,6 +154,7 @@ class FightArena {
       x: at.dx,
       y: at.dy,
       damage: spec.damage * (blocked ? spec.blockedFactor : 1),
+      id: spec.id,
       knife: knife,
     ));
     return true;

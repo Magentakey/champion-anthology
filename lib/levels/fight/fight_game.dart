@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 import 'dart:ui';
 
@@ -7,8 +8,9 @@ import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter/material.dart'
     show Alignment, BuildContext, KeyEventResult, Widget;
 import 'package:flutter/services.dart'
-    show DeviceOrientation, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
+    show DeviceOrientation, HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
 
+import '../../core/audio/audio_service.dart';
 import '../../core/level/level_game.dart';
 import '../../core/level/level_session.dart';
 import 'arena_component.dart';
@@ -44,6 +46,11 @@ class FightGame extends LevelGame with KeyboardEvents {
   bool _transitioning = false;
   bool _resultPending = false;
   double _hitStopMs = 0;
+  double _slowMoMs = 0;
+  double _slowScale = 1;
+  double _cheer = 0;
+  bool _telegraphWas = false;
+  int _knivesWas = 0;
   double _shake = 0;
   double _unit = 1;
   double _groundY = 0;
@@ -60,6 +67,10 @@ class FightGame extends LevelGame with KeyboardEvents {
 
   /// Kesiapan pisau: 1 = siap, <1 = sedang jeda.
   final ValueNotifier<double> knifeReady = ValueNotifier(1);
+
+  /// Teks besar di tengah layar (mis. "K.O.!") dan penanda pukulan ke pemain (untuk kilat merah).
+  final ValueNotifier<String?> callout = ValueNotifier(null);
+  final ValueNotifier<int> hurtFlash = ValueNotifier(0);
 
   /// Mode uji: Rock menyerang atau diam.
   final ValueNotifier<bool> rockAttacks = ValueNotifier(true);
@@ -101,6 +112,13 @@ class FightGame extends LevelGame with KeyboardEvents {
     _ready = true;
     _layout(size);
     startStep(session.step);
+    unawaited(AudioService.instance.playBgm(AudioService.fightBgm, owner: this));
+  }
+
+  @override
+  void disposeAssets() {
+    AudioService.instance.stopBgm(owner: this);
+    super.disposeAssets();
   }
 
   @override
@@ -140,12 +158,20 @@ class FightGame extends LevelGame with KeyboardEvents {
     if (!_ready) return;
     arena.setStep(step);
     _showBanner('FASE $step: ${fightPhases[step - 1].name}\n${FightDialog.phaseLines[step - 1]}');
+    AudioService.instance.play(Sfx.bell);
   }
 
   void _showBanner(String text) {
     banner.value = text;
     _later(2.2, () {
       if (banner.value == text) banner.value = null;
+    });
+  }
+
+  void _showCallout(String text, double seconds) {
+    callout.value = text;
+    _later(seconds, () {
+      if (callout.value == text) callout.value = null;
     });
   }
 
@@ -163,26 +189,46 @@ class FightGame extends LevelGame with KeyboardEvents {
       _resultPending = true;
       arena.clearKnives();
       player.celebrate();
+      _knockOutEffects(slowScale: 0.3, slowMs: 1000);
       _later(1.4, () {
-        if (session.isPlaying) session.winStep();
+        if (!session.isPlaying) return;
+        session.winStep();
+        AudioService.instance.play(Sfx.win);
       });
       return;
     }
     if (player.isDead) {
       _resultPending = true;
       arena.clearKnives();
+      _knockOutEffects(slowScale: 0.4, slowMs: 700);
       _later(1.0, () {
-        if (session.isPlaying) session.loseStep();
+        if (!session.isPlaying) return;
+        session.loseStep();
+        AudioService.instance.play(Sfx.lose);
       });
       return;
     }
     if (!_transitioning && arena.step < 3 && rock.atFloor) _beginPhaseBreak();
   }
 
+  void _knockOutEffects({required double slowScale, required int slowMs}) {
+    _slowScale = slowScale;
+    _slowMoMs = slowMs.toDouble();
+    _cheer = 1;
+    _showCallout('K.O.!', 1.6);
+    AudioService.instance.play(Sfx.ko);
+    AudioService.instance.play(Sfx.crowd);
+    HapticFeedback.heavyImpact();
+  }
+
   /// Rock mencapai batas HP fase: fase dimenangkan, Rock mengamuk sebentar (kebal).
   void _beginPhaseBreak() {
     _transitioning = true;
     arena.clearKnives();
+    _cheer = 1;
+    AudioService.instance.play(Sfx.stepUp);
+    AudioService.instance.play(Sfx.crowd);
+    HapticFeedback.heavyImpact();
     arena.rock
       ..invulnerable = true
       ..playScripted(Clips.taunt, holdMs: 1500);
@@ -197,6 +243,22 @@ class FightGame extends LevelGame with KeyboardEvents {
 
   // ---------------- input pemain ----------------
   bool get _canInput => _ready && session.isPlaying && !_resultPending && !arena.player.isDead;
+
+  /// Menjeda permainan: tombol yang sedang ditahan dilepas agar tidak "menyangkut" saat lanjut.
+  @override
+  void pauseEngine() {
+    _left = false;
+    _right = false;
+    _block = false;
+    AudioService.instance.pauseBgm(owner: this);
+    super.pauseEngine();
+  }
+
+  @override
+  void resumeEngine() {
+    AudioService.instance.resumeBgm(owner: this);
+    super.resumeEngine();
+  }
 
   void setMoveLeft(bool v) => _left = v;
   void setMoveRight(bool v) => _right = v;
@@ -235,14 +297,21 @@ class FightGame extends LevelGame with KeyboardEvents {
       super.update(dt);
       return;
     }
-    final clamped = math.min(dt, 0.05);
-    if (_hitStopMs > 0) {
-      _hitStopMs -= clamped * 1000;
-    } else {
-      _stepWorld(clamped * 1000);
+    final real = math.min(dt, 0.05);
+    var timeScale = 1.0;
+    if (_slowMoMs > 0) {
+      _slowMoMs -= real * 1000; // slow-motion berjalan menurut waktu nyata
+      timeScale = _slowScale;
     }
-    _shake = math.max(0, _shake - 70 * clamped);
-    super.update(dt);
+    if (_hitStopMs > 0) {
+      _hitStopMs -= real * 1000;
+    } else {
+      _stepWorld(real * timeScale * 1000);
+    }
+    _shake = math.max(0, _shake - 70 * real);
+    _cheer = math.max(0, _cheer - 0.8 * real);
+    _bg.cheer = _cheer;
+    super.update(dt * timeScale);
   }
 
   void _stepWorld(double dtMs) {
@@ -266,6 +335,7 @@ class FightGame extends LevelGame with KeyboardEvents {
 
     arena.update(dtMs);
     _processEvents();
+    _processSoundEdges();
     _checkProgress();
 
     playerHp.value = player.hpFraction;
@@ -280,8 +350,52 @@ class FightGame extends LevelGame with KeyboardEvents {
       add(HitSpark(pos: at, radius: (blocked ? 200 : 300) * _unit, blocked: blocked));
       _hitStopMs = math.max(_hitStopMs, blocked ? 30 : 60);
       _shake = math.max(_shake, blocked ? 2 : (e.damage >= 10 ? 8 : 5));
+      _cheer = math.min(1, _cheer + (blocked ? 0.05 : (e.byPlayer ? 0.3 : 0.1)));
+
+      // suara
+      final audio = AudioService.instance;
+      audio.play(blocked ? Sfx.block : _sfxFor(e));
+      if (!e.byPlayer && !blocked) {
+        audio.play(Sfx.hurt);
+        hurtFlash.value++;
+      }
+
+      // getar: ringan saat memukul, sedang saat terkena, berat untuk Hantaman
+      if (!blocked) {
+        if (e.id == 'heavy') {
+          HapticFeedback.heavyImpact();
+        } else if (e.byPlayer) {
+          HapticFeedback.lightImpact();
+        } else {
+          HapticFeedback.mediumImpact();
+        }
+      }
     }
     arena.events.clear();
+  }
+
+  Sfx _sfxFor(HitEvent e) {
+    if (e.knife) return Sfx.knifeHit;
+    switch (e.id) {
+      case 'kick':
+      case 'roundhouse':
+        return Sfx.kick;
+      case 'heavy':
+        return Sfx.heavy;
+      default:
+        return Sfx.punch;
+    }
+  }
+
+  /// Suara yang dipicu perubahan keadaan: pisau dilempar dan aba-aba serangan khusus Rock.
+  void _processSoundEdges() {
+    final knives = arena.knives.length;
+    if (knives > _knivesWas) AudioService.instance.play(Sfx.whoosh);
+    _knivesWas = knives;
+
+    final telegraph = arena.rock.telegraphing;
+    if (telegraph && !_telegraphWas) AudioService.instance.play(Sfx.warning);
+    _telegraphWas = telegraph;
   }
 
   @override

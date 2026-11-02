@@ -6,7 +6,7 @@ Game mobile (Android) bergenre **minigame anthology dengan alur cerita**. Karakt
 
 | Level | Boss | Status |
 |---|---|---|
-| 1 | Rock the Fighter (pertarungan, 3 fase menurut batas HP) | Dalam pengerjaan (M3: tempur dan AI Rock selesai; efek, suara, dan tuning menyusul) |
+| 1 | Rock the Fighter (pertarungan, 3 fase menurut batas HP) | Dapat dimainkan (tempur, 3 fase, AI Rock, efek, suara); tuning berdasarkan uji di HP menyusul |
 | 2 | Bob the Genius (kuis pengetahuan) | Selesai, bisa dimainkan |
 | 3 | Asep the Mazelogist (labirin) | Direncanakan |
 | 4 | Cooking Champion (ritme dan waktu) | Direncanakan |

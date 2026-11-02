@@ -10,6 +10,7 @@ const levelRegistry = <LevelDefinition>[
     number: 1,
     bossName: 'Rock the Fighter',
     introDialog: FightDialog.intro,
+    tip: FightDialog.tip,
     bossImage: 'assets/images/fight/boss_idle.png',
     createGame: createFightGame,
   ),
