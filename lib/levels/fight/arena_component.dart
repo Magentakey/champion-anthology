@@ -32,6 +32,18 @@ class ArenaComponent extends PositionComponent {
   static const _torchX = [0.17, 0.39, 0.61, 0.83];
   static const _torchY = 0.66;
 
+  // Paint dan shader dipakai ulang tiap frame agar tidak membebani GC di HP lemah.
+  static final Paint _imagePaint = Paint()..filterQuality = FilterQuality.low;
+  final Paint _tintPaint = Paint();
+  final Paint _glowPaint = Paint();
+  final Paint _polePaint = Paint()
+    ..color = const Color(0xFF141418)
+    ..strokeCap = StrokeCap.round;
+  final Paint _fireOuter = Paint()..color = const Color(0xFFFF7A00);
+  final Paint _fireInner = Paint()..color = const Color(0xFFFFD54F);
+  Shader? _glowShader;
+  double _glowShaderRadius = 0;
+
   Color _tint = _tints.first;
   Color _target = _tints.first;
   double _t = 0;
@@ -58,7 +70,7 @@ class ArenaComponent extends PositionComponent {
     final w = iw * scale, h = ih * scale;
     // gambar menempel di bawah; kelebihan tinggi terpotong di atas
     final left = (size.x - w) / 2, top = size.y - h;
-    final paint = Paint()..filterQuality = FilterQuality.medium;
+    final paint = _imagePaint;
 
     final wallSrcH = ih * _floorFraction;
     final bob = cheer > 0.02 ? math.sin(_t * 18).abs() * cheer * 7 : 0.0;
@@ -86,7 +98,7 @@ class ArenaComponent extends PositionComponent {
     if (_torch > 0.01) _drawTorches(canvas, Rect.fromLTWH(left, top, w, h), scale);
 
     if (_tint.a > 0) {
-      canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), Paint()..color = _tint);
+      canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), _tintPaint..color = _tint);
     }
   }
 
@@ -96,28 +108,29 @@ class ArenaComponent extends PositionComponent {
       final cy = dst.top + dst.height * _torchY;
       final flicker = 0.75 + 0.25 * math.sin(_t * 17 + i * 2.1) + 0.1 * math.sin(_t * 29 + i);
 
-      // cahaya hangat di sekitar obor
+      // cahaya hangat di sekitar obor (shader dibuat sekali per ukuran layar)
       final radius = 150 * scale;
-      final alpha = math.min(255, math.max(0, (120 * _torch * flicker).round()));
-      canvas.drawCircle(
-        Offset(cx, cy),
-        radius,
-        Paint()
-          ..shader = Gradient.radial(
-            Offset(cx, cy),
-            radius,
-            [Color.fromARGB(alpha, 255, 170, 40), const Color(0x00FFAA28)],
-          ),
-      );
+      if (_glowShader == null || _glowShaderRadius != radius) {
+        _glowShaderRadius = radius;
+        _glowShader = Gradient.radial(
+          Offset.zero,
+          radius,
+          const [Color(0x78FFAA28), Color(0x00FFAA28)],
+        );
+        _glowPaint.shader = _glowShader;
+      }
+      final glow = math.min(255, math.max(0, (255 * _torch * flicker).round()));
+      _glowPaint.colorFilter = ColorFilter.mode(Color.fromARGB(glow, 255, 255, 255), BlendMode.modulate);
+      canvas.save();
+      canvas.translate(cx, cy);
+      canvas.drawCircle(Offset.zero, radius, _glowPaint);
+      canvas.restore();
 
       // tiang obor
       canvas.drawLine(
         Offset(cx, cy + 8 * scale),
         Offset(cx, cy + 46 * scale),
-        Paint()
-          ..color = const Color(0xFF141418)
-          ..strokeCap = StrokeCap.round
-          ..strokeWidth = 6 * scale,
+        _polePaint..strokeWidth = 6 * scale,
       );
 
       // api: lapisan oranye lalu kuning
@@ -127,8 +140,8 @@ class ArenaComponent extends PositionComponent {
         ..moveTo(cx, cy + 8 * scale)
         ..quadraticBezierTo(cx - fw * k, cy - fh * k * 0.35, cx, cy + 8 * scale - fh * k)
         ..quadraticBezierTo(cx + fw * k, cy - fh * k * 0.35, cx, cy + 8 * scale);
-      canvas.drawPath(flame(1), Paint()..color = const Color(0xFFFF7A00));
-      canvas.drawPath(flame(0.55), Paint()..color = const Color(0xFFFFD54F));
+      canvas.drawPath(flame(1), _fireOuter);
+      canvas.drawPath(flame(0.55), _fireInner);
     }
   }
 }

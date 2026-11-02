@@ -20,6 +20,16 @@ class Fighter extends Component {
 
   double _timeSec = 0;
 
+  /// Cahaya aba-aba: gradien radial dibuat sekali (bukan blur besar tiap frame, yang berat
+  /// di HP spesifikasi rendah). Intensitas diatur lewat [_glowPaint.colorFilter].
+  static final Paint _glowPaint = Paint()
+    ..shader = Gradient.radial(
+      Offset.zero,
+      675,
+      const [Color(0xFFFF2828), Color(0xD9FF2828), Color(0x00FF2828)],
+      const [0.0, 0.55, 1.0],
+    );
+
   @override
   void update(double dt) {
     super.update(dt);
@@ -35,12 +45,15 @@ class Fighter extends Component {
     // aba-aba serangan khusus: cahaya merah berdenyut di belakang petarung
     if (body.telegraphing) {
       final pulse = 0.5 + 0.5 * math.sin(_timeSec * 22);
-      canvas.drawOval(
-        Rect.fromCenter(center: const Offset(0, -560), width: 980, height: 1350),
-        Paint()
-          ..color = Color.fromARGB((70 + 90 * pulse).round(), 255, 40, 40)
-          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 70),
+      _glowPaint.colorFilter = ColorFilter.mode(
+        Color.fromARGB((70 + 90 * pulse).round(), 255, 255, 255),
+        BlendMode.modulate,
       );
+      canvas.save();
+      canvas.translate(0, -560);
+      canvas.scale(980 / 1350, 1); // lingkaran 675 jadi oval 980x1350
+      canvas.drawCircle(Offset.zero, 675, _glowPaint);
+      canvas.restore();
     }
 
     // bayangan di tanah
