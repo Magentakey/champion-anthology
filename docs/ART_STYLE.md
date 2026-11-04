@@ -37,6 +37,7 @@ Gaya yang dikunci: **kartun stickman** (kepala bulat putih besar, garis hitam te
 - **Pemain**: stickman dengan **ikat kepala merah** berekor dua yang melambai. Selalu bersemangat dan ingin menang; wajah sombong (smug) hanya untuk lawan seperti Bob. Di menu utama setengah badan (sampai pinggang), menghadap **kiri**, telapak terbuka menopang bola dunia (gambar yang sama dipakai sebagai ikon), wajah semangat ingin menang dengan senyum tipis (`mc_hype`, bukan sombong), tangan lain di pinggang, dan diletakkan di lapisan paling belakang (di belakang judul dan tombol). Karakter ini dipakai di semua gambar.
 - **Bob the Genius**: rambut runcing hitam, kacamata bulat, dasi kupu-kupu biru, kepala besar. Menghadap kanan di game (ke arah pemain). Empat ekspresi: `idle`, `shock`, `laugh`, `defeat`.
 - **Rock the Fighter**: kepala lebih besar (jari-jari 190 vs 150) dan garis lebih tebal, **rambut kotak bergerigi seperti batu**, bekas luka di pipi, **sabuk oranye** `#FB8C00` sebagai aksen warna, wajah `rock_idle` (alis menukik, mulut datar). Tangan kosong, tanpa senjata. Di dalam game ia digambar oleh kode (`stick_renderer.dart`) dari pose, bukan sprite.
+- **Asep the Mazelogist**: kepala besar seperti bos lain (r=190), tanpa aksesori warna; ciri khasnya **papan labirin** yang dipegang di depan badan. Menghadap kanan. Empat ekspresi: `idle` (tenang, senyum tipis), `shock` (papan diletakkan di lantai), `laugh`, `defeat`. Dibuat oleh `gen_asep()`.
 - **Champion lain**: tokoh dengan atribut khas, bukan warna besar. Asep membawa papan labirin; Chef memakai topi koki.
 
 ## Daftar aset gambar
@@ -47,6 +48,7 @@ Gaya yang dikunci: **kartun stickman** (kepala bulat putih besar, garis hitam te
 | Ekspresi Bob | `assets/images/genius/boss_idle/shock/laugh/defeat.png` | 512 x 512 (persegi) |
 | Panel cerita | `assets/images/story/panel_1..4.png` | 1000x400, 600x600, 600x600, 600x900 |
 | Arena Colosseum | `assets/images/fight/arena.png` | 1600 x 720, satu gambar (warna per fase ditambahkan kode) |
+| Ekspresi Asep | `assets/images/maze/boss_idle/shock/laugh/defeat.png` | 512 x 512 (persegi) |
 | Rock (intro) dan potret HUD | `assets/images/fight/boss_idle.png`, `portrait_player.png`, `portrait_rock.png` | 512 x 512, 256 x 256 |
 | Ikon aplikasi | `assets/icon/app_icon.png`, `app_icon_fg.png` | 1024 x 1024 |
 

@@ -229,6 +229,12 @@ POSES.update({
                  [(500, 585), (425, 700), (415, 830)],
                  [(500, 810), (540, 960), (555, 1105), (615, 1117)],
                  [(500, 810), (460, 960), (445, 1105), (505, 1117)], r=BOSS_R),
+    # Asep: tangan depan memegang papan labirin di depan badan
+    'c_hold': P((500, 330), (500, 810),
+                [(500, 585), (610, 660), (640, 760)],
+                [(500, 585), (425, 700), (415, 830)],
+                [(500, 810), (540, 960), (555, 1105), (615, 1117)],
+                [(500, 810), (460, 960), (445, 1105), (505, 1117)], r=BOSS_R),
 })
 
 # ---------------- wajah (satuan = jari-jari kepala; u positif = arah hadap) ----------------
@@ -242,6 +248,10 @@ FACES = {
     'bob_shock': dict(eyes='wide', brows='up', mouth='o', extra='sweat'),
     'bob_laugh': dict(eyes='happy', brows='up_soft', mouth='laugh', extra='tears'),
     'bob_defeat': dict(eyes='x', brows='sad', mouth='wavy', extra='stars', cracked=True),
+    'asep_idle': dict(eyes='open', brows='up_soft', mouth='smile'),
+    'asep_shock': dict(eyes='wide', brows='up', mouth='o', extra='sweat'),
+    'asep_laugh': dict(eyes='happy', brows='up_soft', mouth='laugh', extra='tears'),
+    'asep_defeat': dict(eyes='x', brows='sad', mouth='wavy', extra='stars'),
     'rock_idle': dict(eyes='open', brows='angry', mouth='flat', scar=True),
     'rock_roar': dict(eyes='open', brows='fierce', mouth='shout', scar=True),
     'plain': dict(eyes='open', brows='none', mouth='smirk'),
@@ -631,6 +641,20 @@ def gen_boss():
         a.save(ROOT / 'assets/images/genius' / fname)
 
 
+def gen_asep():
+    """Asep the Mazelogist: 4 ekspresi 512x512, papan labirin sebagai ciri khas."""
+    sets = {
+        'boss_idle.png': ('c_hold', 'asep_idle', [('maze', (640, 800), 230)]),
+        'boss_shock.png': ('b_shock', 'asep_shock', [('maze', (760, 1010), 210)]),
+        'boss_laugh.png': ('b_laugh', 'asep_laugh', [('maze', (660, 790), 230)]),
+        'boss_defeat.png': ('b_defeat', 'asep_defeat', [('maze', (700, 1000), 210)]),
+    }
+    for fname, (pose, face, props) in sets.items():
+        a = Art(512, 512)
+        draw_figure(a, pose, face, 41, 3, 0.43, lw=22, props=props)
+        a.save(ROOT / 'assets/images/maze' / fname)
+
+
 def gen_icon():
     """Ikon = gambar menu utama (setengah badan), menempel di tepi bawah."""
     fig = home_figure()
@@ -737,6 +761,7 @@ def gen_story():
 if __name__ == '__main__':
     gen_home()
     gen_boss()
+    gen_asep()
     gen_icon()
     gen_story()
     import fight_art

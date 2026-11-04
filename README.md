@@ -8,7 +8,7 @@ Game mobile (Android) bergenre **minigame anthology dengan alur cerita**. Karakt
 |---|---|---|
 | 1 | Rock the Fighter (pertarungan, 3 fase menurut batas HP) | Dapat dimainkan (tempur, 3 fase, AI Rock, efek, suara); tuning berdasarkan uji di HP menyusul |
 | 2 | Bob the Genius (kuis pengetahuan) | Selesai, bisa dimainkan |
-| 3 | Asep the Mazelogist (labirin) | Direncanakan |
+| 3 | Asep the Mazelogist (labirin, tombol arah, batas waktu) | Selesai, bisa dimainkan |
 | 4 | Cooking Champion (ritme dan waktu) | Direncanakan |
 
 ## Unduh dan pasang
@@ -30,6 +30,7 @@ APK terbaru ada di halaman **Releases** repositori ini. Setelah mengunduh, izink
 | Menang Step 3 | 3 (Sempurna) |
 
 - **Level 1 (Rock the Fighter)** dimainkan landscape: tombol gerak kiri/kanan, pukul, tendang, tangkis, dan lempar pisau. Rock punya 3 fase menurut batas HP-nya, dan tiap fase yang kamu menangkan memberi 1 bintang. Saat Rock memberi aba-aba merah, siapkan tangkisan atau menghindar. (Papan ketik untuk uji di emulator: A/D gerak, J pukul, K tendang, I pisau, L atau S tangkis.)
+- **Level 3 (Asep the Mazelogist)**: temukan jalan dari titik start (hijau, kiri atas) ke bintang emas (kanan bawah) memakai tombol arah di layar. Tahan tombol untuk jalan terus, ketuk untuk satu langkah. Tiap step hanya berbeda ukuran labirin dan batas waktu (Step 1 kecil, Step 3 besar); waktu habis berarti kalah. (Papan ketik untuk uji di emulator: panah atau WASD.)
 - Level berikutnya terbuka jika level sebelumnya sudah mendapat minimal 1 bintang. Bintang terbaik tersimpan di perangkat.
 
 ## Menjalankan dari kode
@@ -72,6 +73,7 @@ lib/
 assets/
 ├── images/home/              # karakter pemain di menu utama (mc_home.png)
 ├── images/genius/            # ekspresi Bob (boss_*.png)
+├── images/maze/              # ekspresi Asep (boss_*.png)
 ├── images/story/             # panel storyboard (panel_*.png)
 ├── data/genius_questions.json
 ├── audio/                    # SFX dan BGM (.wav)

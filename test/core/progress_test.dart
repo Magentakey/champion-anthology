@@ -46,7 +46,15 @@ void main() {
 
     expect(notifier.isUnlocked(levelById('fight')!), isTrue);
     expect(notifier.isUnlocked(levelById('genius')!), isTrue);
-    expect(notifier.isUnlocked(levelById('maze')!), isFalse); // belum tersedia
+    expect(notifier.isUnlocked(levelById('maze')!), isFalse); // Bob belum punya bintang
+  });
+
+  test('Asep (level 3) terbuka setelah Bob punya bintang; Cooking belum tersedia', () async {
+    final (container, _) = await makeContainer({'stars_fight': 1, 'stars_genius': 1});
+    final notifier = container.read(progressProvider.notifier);
+
+    expect(notifier.isUnlocked(levelById('maze')!), isTrue);
+    expect(notifier.isUnlocked(levelById('cooking')!), isFalse);
   });
 
   test('level yang sudah punya bintang tetap terbuka walau level sebelumnya belum', () async {

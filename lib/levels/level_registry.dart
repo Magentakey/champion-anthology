@@ -2,6 +2,8 @@ import '../core/level/level_definition.dart';
 import 'fight/fight_dialog.dart';
 import 'fight/fight_game.dart';
 import 'genius/genius_game.dart';
+import 'maze/maze_dialog.dart';
+import 'maze/maze_game.dart';
 
 /// Menambah level baru = tambah satu entry di sini + satu folder di lib/levels/.
 const levelRegistry = <LevelDefinition>[
@@ -27,6 +29,9 @@ const levelRegistry = <LevelDefinition>[
     number: 3,
     bossName: 'Asep the Mazelogist',
     introDialog: 'Selamat datang...\nIngin merebut gelarku?\nIkuti aku...',
+    tip: MazeDialog.tip,
+    bossImage: 'assets/images/maze/boss_idle.png',
+    createGame: createMazeGame,
   ),
   LevelDefinition(
     id: 'cooking',

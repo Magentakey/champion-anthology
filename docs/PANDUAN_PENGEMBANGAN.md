@@ -141,3 +141,15 @@ Ukuran gambar boss sebaiknya persegi (512×512). Semua gambar bisa dibuat ulang 
 - **Efek**: slow-motion saat KO, teks "K.O.!", kilat merah saat pemain terkena, penonton melonjak saat ramai, obor menyala di fase 3 (`arena_component.dart`), dan getar haptic (`fight_game.dart`).
 - **Petunjuk di layar intro** diatur lewat `LevelDefinition.tip`.
 - **AI Rock** ada di `enemy_ai.dart` (Dart murni, bisa di-test dengan `Random` ber-seed). Angka per fase (kecepatan, jeda reaksi, jeda serang, damage, peluang menangkis, membalas, menghukum) ada di `rockPhaseStats` pada `fight_config.dart`. Susunan combo dan pilihan serangan khusus tiap fase ada di `_choosePlan`. Serangan khusus (`Attacks.roundhouse`, `heavy`, `dash`) didefinisikan di `attacks.dart` dengan aba-aba (`telegraphMs`), terjang (`lunge`), armor, dan faktor tembus saat ditangkis (`blockedFactor`).
+
+
+## Mengatur kesulitan Level 3 (labirin)
+
+Semua angka ada di `lib/levels/maze/maze_config.dart`:
+
+- `mazeSteps`: ukuran (`cols` x `rows`) dan batas waktu (`seconds`) tiap step. Menambah ukuran memperpanjang jalur; sesuaikan waktunya.
+- `MazeTuning.repeatSeconds`: jeda antar langkah saat tombol ditahan (kecil = pemain lebih cepat).
+- `MazeLayout`: posisi labirin, bar waktu, dan tombol arah. Ubah di sini saja; Flame dan HUD sama-sama membacanya.
+- Kalimat Asep ada di `maze_dialog.dart`.
+
+Tes `maze_grid_test.dart` memastikan jalur terpanjang tiap step bisa ditempuh dalam kurang dari setengah batas waktu; jalankan `flutter test` setelah mengubah angka.

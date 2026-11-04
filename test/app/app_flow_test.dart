@@ -78,7 +78,7 @@ void main() {
     await playThroughStory(tester);
 
     expect(find.byIcon(Icons.star), findsNWidgets(3)); // 1 bintang Fight + 2 bintang Bob
-    expect(find.byIcon(Icons.lock), findsNWidgets(2)); // level 3 & 4 belum tersedia
+    expect(find.byIcon(Icons.lock), findsNWidgets(1)); // hanya level 4 yang belum tersedia
 
     await tester.tap(find.byIcon(Icons.lock).first);
     await tester.pump();
