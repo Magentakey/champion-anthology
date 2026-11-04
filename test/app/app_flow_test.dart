@@ -78,11 +78,12 @@ void main() {
     await playThroughStory(tester);
 
     expect(find.byIcon(Icons.star), findsNWidgets(3)); // 1 bintang Fight + 2 bintang Bob
-    expect(find.byIcon(Icons.lock), findsNWidgets(1)); // hanya level 4 yang masih terkunci (Asep belum punya bintang)
+    expect(find.byIcon(Icons.lock), findsNWidgets(1)); // hanya level 4 yang masih terkunci
 
+    // Level 4 sudah tersedia; terkunci karena Asep (level 3) belum punya bintang.
     await tester.tap(find.byIcon(Icons.lock).first);
     await tester.pump();
-    expect(find.text(AppText.comingSoon), findsOneWidget);
+    expect(find.text(AppText.finishPreviousLevel), findsOneWidget);
 
     await tester.tap(find.text('1'));
     await tester.pumpAndSettle();
