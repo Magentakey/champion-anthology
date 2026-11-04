@@ -31,6 +31,7 @@ APK terbaru ada di halaman **Releases** repositori ini. Setelah mengunduh, izink
 
 - **Level 1 (Rock the Fighter)** dimainkan landscape: tombol gerak kiri/kanan, pukul, tendang, tangkis, dan lempar pisau. Rock punya 3 fase menurut batas HP-nya, dan tiap fase yang kamu menangkan memberi 1 bintang. Saat Rock memberi aba-aba merah, siapkan tangkisan atau menghindar. (Papan ketik untuk uji di emulator: A/D gerak, J pukul, K tendang, I pisau, L atau S tangkis.)
 - **Level 3 (Asep the Mazelogist)**: temukan jalan dari titik start (hijau, kiri atas) ke bintang emas (kanan bawah) memakai tombol arah di layar. Tahan tombol untuk jalan terus, ketuk untuk satu langkah. Tiap step hanya berbeda ukuran labirin dan batas waktu (Step 1 kecil, Step 3 besar); waktu habis berarti kalah. (Papan ketik untuk uji di emulator: panah atau WASD.)
+- **Level 4 (Cooking Champion)**: tiap step ada satu pesanan masakan acak. Geser bahan dari baki ke stasiun yang tepat: **Talenan** (iris: ketuk terus sampai bar penuh), **Panci** (rebus: tahan tombol api untuk naik suhu, lepas untuk turun, jaga di zona hijau), **Wajan** (goreng: ketuk saat jarum di zona emas). Bahan di luar pesanan atau salah stasiun mengurangi 3 detik, cooking check yang gagal mengurangi 4 detik, check yang mulus menambah 1 detik. Semua bahan selesai sebelum waktu habis = menang. Step 1 sampai 3 beda jumlah bahan, pengecoh, dan ketatnya check.
 - Level berikutnya terbuka jika level sebelumnya sudah mendapat minimal 1 bintang. Bintang terbaik tersimpan di perangkat.
 
 ## Menjalankan dari kode
@@ -74,6 +75,7 @@ assets/
 ├── images/home/              # karakter pemain di menu utama (mc_home.png)
 ├── images/genius/            # ekspresi Bob (boss_*.png)
 ├── images/maze/              # ekspresi Asep (boss_*.png)
+├── images/cooking/           # chef, ikon bahan, stasiun, latar dapur
 ├── images/story/             # panel storyboard (panel_*.png)
 ├── data/genius_questions.json
 ├── audio/                    # SFX dan BGM (.wav)
@@ -81,6 +83,7 @@ assets/
 test/                         # unit dan widget test
 tools/art/generate_art.py     # generator aset gambar (gaya stickman)
 tools/audio/generate_fight_audio.py  # generator SFX dan BGM Level 1 (butuh numpy)
+tools/audio/generate_cooking_audio.py  # generator SFX Level 4 (potong, desis, gelembung, gosong)
 docs/PANDUAN_PENGEMBANGAN.md  # panduan menambah level, soal, dan mengganti aset
 docs/ART_STYLE.md             # panduan gaya seni dan karakter
 ```

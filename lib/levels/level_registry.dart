@@ -1,4 +1,6 @@
 import '../core/level/level_definition.dart';
+import 'cooking/cooking_dialog.dart';
+import 'cooking/cooking_game.dart';
 import 'fight/fight_dialog.dart';
 import 'fight/fight_game.dart';
 import 'genius/genius_game.dart';
@@ -37,7 +39,10 @@ const levelRegistry = <LevelDefinition>[
     id: 'cooking',
     number: 4,
     bossName: 'Cooking Champion',
-    introDialog: '...',
+    introDialog: CookingDialog.intro,
+    tip: CookingDialog.tip,
+    bossImage: 'assets/images/cooking/boss_idle.png',
+    createGame: createCookingGame,
   ),
 ];
 

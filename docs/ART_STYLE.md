@@ -38,7 +38,8 @@ Gaya yang dikunci: **kartun stickman** (kepala bulat putih besar, garis hitam te
 - **Bob the Genius**: rambut runcing hitam, kacamata bulat, dasi kupu-kupu biru, kepala besar. Menghadap kanan di game (ke arah pemain). Empat ekspresi: `idle`, `shock`, `laugh`, `defeat`.
 - **Rock the Fighter**: kepala lebih besar (jari-jari 190 vs 150) dan garis lebih tebal, **rambut kotak bergerigi seperti batu**, bekas luka di pipi, **sabuk oranye** `#FB8C00` sebagai aksen warna, wajah `rock_idle` (alis menukik, mulut datar). Tangan kosong, tanpa senjata. Di dalam game ia digambar oleh kode (`stick_renderer.dart`) dari pose, bukan sprite.
 - **Asep the Mazelogist**: kepala besar seperti bos lain (r=190), tanpa aksesori warna; ciri khasnya **papan labirin** yang dipegang di depan badan. Menghadap kanan. Empat ekspresi: `idle` (tenang, senyum tipis), `shock` (papan diletakkan di lantai), `laugh`, `defeat`. Dibuat oleh `gen_asep()`.
-- **Champion lain**: tokoh dengan atribut khas, bukan warna besar. Asep membawa papan labirin; Chef memakai topi koki.
+- **Cooking Champion (Chef)**: kepala besar (r=190) dengan **topi koki** putih bertingkat dan sendok sayur di tangan. Menghadap kanan. Empat ekspresi: `idle` (senyum percaya diri), `shock`, `laugh`, `defeat`. Dibuat oleh `gen_chef()` di `tools/art/cooking_art.py`.
+- **Champion lain**: tokoh dengan atribut khas, bukan warna besar.
 
 ## Daftar aset gambar
 
@@ -49,6 +50,10 @@ Gaya yang dikunci: **kartun stickman** (kepala bulat putih besar, garis hitam te
 | Panel cerita | `assets/images/story/panel_1..4.png` | 1000x400, 600x600, 600x600, 600x900 |
 | Arena Colosseum | `assets/images/fight/arena.png` | 1600 x 720, satu gambar (warna per fase ditambahkan kode) |
 | Ekspresi Asep | `assets/images/maze/boss_idle/shock/laugh/defeat.png` | 512 x 512 (persegi) |
+| Ekspresi Chef | `assets/images/cooking/boss_idle/shock/laugh/defeat.png` | 512 x 512 (persegi) |
+| Ikon bahan (16) | `assets/images/cooking/ing_<id>.png` | 128 x 128, latar transparan |
+| Stasiun masak | `assets/images/cooking/station_chop/boil/fry.png` | 256 x 256, latar transparan |
+| Latar dapur | `assets/images/cooking/kitchen_bg.png` | 800 x 1600 (potret, dipotong ke tengah agar menutupi layar) |
 | Rock (intro) dan potret HUD | `assets/images/fight/boss_idle.png`, `portrait_player.png`, `portrait_rock.png` | 512 x 512, 256 x 256 |
 | Ikon aplikasi | `assets/icon/app_icon.png`, `app_icon_fg.png` | 1024 x 1024 |
 
@@ -60,6 +65,7 @@ Semua gambar dihasilkan oleh `tools/art/generate_art.py`, sehingga gayanya selal
 pip install pillow
 python tools/art/generate_art.py          # semua gambar
 python tools/art/fight_poses.py            # pose petarung (Dart)
+python tools/art/cooking_art.py            # hanya aset Level 4
 ```
 
 - Pose ada di `POSES` (koordinat sendi pada bingkai 1000 x 1400, menghadap kanan; `flip=True` membalik arah).

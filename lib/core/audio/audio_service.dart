@@ -24,7 +24,13 @@ enum Sfx {
   knifeHit('knife_hit.wav'),
   bell('bell.wav'),
   crowd('crowd.wav'),
-  warning('warning.wav');
+  warning('warning.wav'),
+
+  // Level Cooking (dibuat oleh tools/audio/generate_cooking_audio.py)
+  chop('chop.wav'),
+  sizzle('sizzle.wav'),
+  bubble('bubble.wav'),
+  burn('burn.wav');
 
   const Sfx(this.file);
   final String file;

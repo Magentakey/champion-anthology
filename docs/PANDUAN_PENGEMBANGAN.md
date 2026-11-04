@@ -153,3 +153,19 @@ Semua angka ada di `lib/levels/maze/maze_config.dart`:
 - Kalimat Asep ada di `maze_dialog.dart`.
 
 Tes `maze_grid_test.dart` memastikan jalur terpanjang tiap step bisa ditempuh dalam kurang dari setengah batas waktu; jalankan `flutter test` setelah mengubah angka.
+
+
+## Mengatur kesulitan dan isi Level 4 (memasak)
+
+Semua angka ada di `lib/levels/cooking/cooking_config.dart`:
+
+- `cookingSteps`: jumlah bahan, pengecoh, batas waktu, dan parameter tiap cooking check (`ChopParams`, `BoilParams`, `FryParams`).
+- `CookingTuning`: penalti salah stasiun (3 dtk), penalti check gagal (4 dtk), bonus check mulus (1 dtk).
+- `CookingLayout`: posisi kartu pesanan, stasiun, baki. Flame dan HUD sama-sama membacanya.
+
+**Menambah resep atau bahan** (`cooking_models.dart`):
+
+1. Bahan baru: tambah satu entri di `ingredientCatalog` (id, nama, stasiun), lalu tambahkan fungsi `ing_<id>()` dan daftarnya di `INGREDIENTS` pada `tools/art/cooking_art.py`, jalankan skripnya. Tes memeriksa semua gambar ada.
+2. Resep baru: tambah `Recipe(nama, [id bahan...])` di `recipes`. Minimal 5 bahan, dan 3 bahan pertama harus mencakup minimal 2 stasiun (step 1 memakai 3 bahan pertama).
+
+Cooking check berupa kelas Dart murni di `cooking_checks.dart` (tanpa Flame/Flutter), jadi mudah diuji dan ikut berhenti saat jeda. Stasiun baru = enum `Station` + kelas `CookingCheck` baru + satu panel di `cooking_hud.dart`.

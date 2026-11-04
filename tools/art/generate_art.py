@@ -766,4 +766,6 @@ if __name__ == '__main__':
     gen_story()
     import fight_art
     fight_art.gen_fight()
+    import cooking_art
+    cooking_art.gen_cooking()
     print('selesai')
