@@ -5,7 +5,7 @@ class StoryPanel {
   final String caption;
 }
 
-/// Urutan cerita: 1 (atas) -> 2 (kanan atas) -> 3 (kanan bawah) -> 4 (kiri besar).
+/// Urutan cerita: 1 (atas) -> 2 (tengah, lebar) -> 3 (kiri bawah) -> 4 (kanan bawah).
 /// Ganti gambar dengan menimpa file panel_*.png; ubah kalimat di sini.
 const storyPanels = <StoryPanel>[
   StoryPanel(

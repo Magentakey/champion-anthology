@@ -186,12 +186,23 @@ Ukuran panel cerita (logis → PNG 3×): panel 1 = 216×87 → 648×261; panel 2
 ## 11. Cara membuat aset
 
 ```bash
+python tools/art/pixel_font.py        # font: assets/fonts/PixelChampion.ttf (butuh: pip install fonttools)
+python tools/art/pixel_export.py      # aset game: home_bg, btn_*, panel_1..4 (diperbesar 3x) -> assets/images/
+python tools/art/pixel_scenes.py      # mockup penuh + lembar karakter -> docs/preview/ (tidak masuk game)
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
-python tools/art/pixel_scenes.py      # home, storyboard, 4 panel, lembar karakter -> docs/preview/
 ```
 
 Aset baru dibuat dengan menambah spesifikasi karakter atau fungsi adegan, **bukan** dengan menggambar manual di luar generator,
 supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
+
+### Memakai di Flutter
+
+- Semua layar piksel memakai kisi rujukan **240×426 piksel logis**. `PixelUi.unit(context)` (di `lib/shared/widgets/pixel_ui.dart`) memberi ukuran 1 piksel logis dalam dp; seluruh layout dihitung dari unit ini.
+- Teks: `PixelUi.text(u, scale: 1|2|3, outline: ..., shadow: ...)`. Font `PixelChampion` hanya punya huruf besar; huruf kecil tampil sebagai huruf besar, jadi teks di `strings.dart` tidak perlu diubah. `fontSize = 10 × skala × unit`. Tebal tepi = skala.
+- Tombol: `PixelButton` (gambar `btn_primary.png` / `btn_secondary.png` + label teks, sehingga mudah diuji dan terbaca pembaca layar).
+- Gambar: selalu `filterQuality: FilterQuality.none`. Rasio gambar harus sama dengan kotaknya (panel cerita memakai `BoxFit.fill`).
+- Home: latar `home_bg.png` (tanpa teks) dengan `BoxFit.cover` dan `Alignment.bottomCenter`; judul dan tombol berupa widget.
+- Storyboard: panel di `_panelRects` (`storyboard_screen.dart`) pada kisi 240×426; ukuran PNG panel = ukuran kotak × 3.
 
 ## 12. Daftar periksa aset baru
 
@@ -218,9 +229,11 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | Aset | Status |
 |---|---|
 | Karakter Pemain, Bob, Asep, Chef, Rock (berdiri, 48 px) | Selesai (generator) |
-| Mockup home dan storyboard (PNG) | Selesai |
-| Pasang ke game: `mc_home.png` dan `panel_1..4.png` + layout storyboard | Belum |
+| Font piksel `PixelChampion.ttf` dan widget `PixelUi` / `PixelButton` | Selesai |
+| Menu utama (latar, judul, tombol) | **Terpasang di game** |
+| Storyboard (4 panel, bingkai, keterangan, penanda halaman) | **Terpasang di game** |
 | Gambar boss Bob, Asep, Chef (4 ekspresi) | Belum |
 | Rock sebagai sprite per frame untuk pertarungan | Belum |
 | Ikon bahan, stasiun, latar dapur (Level 4) | Belum |
-| Ikon aplikasi dan ilustrasi menu lain | Belum |
+| Pilih level, intro boss, jeda dan hasil, HUD level (gaya teks dan tombol) | Belum |
+| Ikon aplikasi | Belum |

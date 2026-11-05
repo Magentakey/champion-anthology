@@ -74,6 +74,11 @@ flutter:
   - assets/images/story/
   - assets/data/
   - assets/audio/
+
+  fonts:
+    - family: PixelChampion
+      fonts:
+        - asset: assets/fonts/PixelChampion.ttf
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

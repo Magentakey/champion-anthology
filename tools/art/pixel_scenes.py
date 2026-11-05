@@ -350,7 +350,8 @@ def panel4(w=106, h=137):
 
 
 # ---------------- halaman home ----------------
-def home(w=240, h=426):
+def home(w=240, h=426, ui=True):
+    """Halaman home. ui=False: tanpa judul, tombol, dan versi (dibuat widget Flutter di atas gambar)."""
     sc = Scene(w, h)
     sky = [C(30, 28, 86), C(52, 40, 112), C(88, 54, 134), C(140, 68, 140), C(204, 90, 128), C(244, 126, 112), C(255, 176, 108)]
     sc.vgrad(0, 0, w, 346, sky)
@@ -387,21 +388,22 @@ def home(w=240, h=426):
     sc.blit(hero('globe_up', legs='stand'), 124, fy, scale=2)
     for dx, dy in ((-36, -12), (38, -6), (-26, 14), (32, 16)):
         star4(sc, 124 + dx, int(gcy) + dy, C(255, 250, 200))
-    sc.text((w - sc.text_w('THE WORLD IN', 2)) // 2, 26, 'THE WORLD IN', scale=2, color=CREAM, outline=DARK, shadow=C(90, 40, 110))
-    sc.text((w - sc.text_w('MY HANDS!', 3)) // 2, 52, 'MY HANDS!', scale=3, color=C(255, 214, 64), outline=C(150, 30, 50), shadow=C(40, 10, 40))
+    if ui:
+        sc.text((w - sc.text_w('THE WORLD IN', 2)) // 2, 26, 'THE WORLD IN', scale=2, color=CREAM, outline=DARK, shadow=C(90, 40, 110))
+        sc.text((w - sc.text_w('MY HANDS!', 3)) // 2, 52, 'MY HANDS!', scale=3, color=C(255, 214, 64), outline=C(150, 30, 50), shadow=C(40, 10, 40))
 
-    def button(y, label, base, hi, lo):
-        x0, x1 = 68, 172
-        sc.rect(x0 + 2, y + 2, x1 + 2, y + 28, C(24, 16, 44))
-        sc.rect(x0, y, x1, y + 26, OUT)
-        sc.rect(x0 + 1, y + 1, x1 - 1, y + 25, base)
-        sc.rect(x0 + 1, y + 1, x1 - 1, y + 3, hi)
-        sc.rect(x0 + 1, y + 22, x1 - 1, y + 25, lo)
-        tw = sc.text_w(label, 2)
-        sc.text(x0 + (x1 - x0 - tw) // 2, y + 6, label, scale=2, color=CREAM, outline=OUT)
-    button(112, 'MAIN', C(226, 64, 56), C(255, 130, 108), C(160, 30, 44))
-    button(148, 'KELUAR', C(60, 104, 204), C(120, 164, 240), C(34, 58, 140))
-    sc.text((w - sc.text_w('VERSI 1.3.0', 1)) // 2, h - 12, 'VERSI 1.3.0', scale=1, color=C(150, 130, 200))
+        def button(y, label, base, hi, lo):
+            x0, x1 = 68, 172
+            sc.rect(x0 + 2, y + 2, x1 + 2, y + 28, C(24, 16, 44))
+            sc.rect(x0, y, x1, y + 26, OUT)
+            sc.rect(x0 + 1, y + 1, x1 - 1, y + 25, base)
+            sc.rect(x0 + 1, y + 1, x1 - 1, y + 3, hi)
+            sc.rect(x0 + 1, y + 22, x1 - 1, y + 25, lo)
+            tw = sc.text_w(label, 2)
+            sc.text(x0 + (x1 - x0 - tw) // 2, y + 6, label, scale=2, color=CREAM, outline=OUT)
+        button(112, 'MAIN', C(226, 64, 56), C(255, 130, 108), C(160, 30, 44))
+        button(148, 'KELUAR', C(60, 104, 204), C(120, 164, 240), C(34, 58, 140))
+        sc.text((w - sc.text_w('VERSI 1.3.0', 1)) // 2, h - 12, 'VERSI 1.3.0', scale=1, color=C(150, 130, 200))
     return sc
 
 
@@ -442,6 +444,17 @@ def storyboard(w=240, h=426):
     sc.text((w - sc.text_w('KETUK UNTUK LANJUT', 1)) // 2, 380, 'KETUK UNTUK LANJUT', scale=1, color=CREAM)
     for i in range(4):
         sc.rect(100 + i * 12, 398, 108 + i * 12, 404, CREAM if i == 0 else C(80, 70, 110))
+    return sc
+
+
+def button_image(base, hi, lo):
+    """Tombol 104x26 + bayangan jatuh 2 piksel (106x28), tanpa label (label = teks Flutter)."""
+    sc = Scene(106, 28)
+    sc.rect(2, 2, 106, 28, C(24, 16, 44))
+    sc.rect(0, 0, 104, 26, OUT)
+    sc.rect(1, 1, 103, 25, base)
+    sc.rect(1, 1, 103, 3, hi)
+    sc.rect(1, 22, 103, 25, lo)
     return sc
 
 

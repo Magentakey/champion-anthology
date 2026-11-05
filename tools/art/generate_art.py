@@ -759,11 +759,10 @@ def gen_story():
 
 
 if __name__ == '__main__':
-    gen_home()
+    # Home dan panel cerita kini bergaya piksel: python tools/art/pixel_export.py (bukan gen_home / gen_story).
     gen_boss()
     gen_asep()
     gen_icon()
-    gen_story()
     import fight_art
     fight_art.gen_fight()
     import cooking_art

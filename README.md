@@ -72,11 +72,12 @@ lib/
 ├── screens/                  # menu, storyboard, pilih level, intro boss, gameplay
 └── shared/widgets/           # StarRow, overlay jeda/hasil, efek getar
 assets/
-├── images/home/              # karakter pemain di menu utama (mc_home.png)
+├── images/home/              # latar menu piksel (home_bg.png) dan tombol (btn_*.png)
 ├── images/genius/            # ekspresi Bob (boss_*.png)
 ├── images/maze/              # ekspresi Asep (boss_*.png)
 ├── images/cooking/           # chef, ikon bahan, stasiun, latar dapur
-├── images/story/             # panel storyboard (panel_*.png)
+├── images/story/             # panel storyboard piksel (panel_*.png)
+├── fonts/                    # PixelChampion.ttf (font piksel 5x7, huruf besar)
 ├── data/genius_questions.json
 ├── audio/                    # SFX dan BGM (.wav)
 └── icon/                     # ikon aplikasi
@@ -85,7 +86,8 @@ tools/art/generate_art.py     # generator aset gambar (gaya stickman)
 tools/audio/generate_fight_audio.py  # generator SFX dan BGM Level 1 (butuh numpy)
 tools/audio/generate_cooking_audio.py  # generator SFX Level 4 (potong, desis, gelembung, gosong)
 docs/PANDUAN_PENGEMBANGAN.md  # panduan menambah level, soal, dan mengganti aset
-docs/ART_STYLE.md             # panduan gaya seni dan karakter
+docs/PIXEL_ART_STYLE.md       # kunci art style pixel 48 px (gaya baru)
+docs/ART_STYLE.md             # gaya stickman lama (aset yang belum dimigrasi)
 ```
 
 Pembagian tugas: **Flutter** untuk menu, dialog, dan HUD; **Flame** hanya aktif saat gameplay (boss, time bar, efek). Aset dimuat per level dan dibersihkan saat level ditutup agar ringan di perangkat spesifikasi rendah.
@@ -102,7 +104,7 @@ Lihat [`docs/PANDUAN_PENGEMBANGAN.md`](docs/PANDUAN_PENGEMBANGAN.md) untuk:
 
 ## Aset dan lisensi
 
-- Gambar (pemain, boss, storyboard, ikon) dibuat sendiri lewat skrip `tools/art/generate_art.py` dengan gaya yang dikunci di [`docs/ART_STYLE.md`](docs/ART_STYLE.md). Bisa diganti art final dengan menimpa file bernama sama.
+- Gambar dibuat sendiri lewat skrip. Menu utama dan storyboard sudah bergaya pixel art 48 px (`python tools/art/pixel_font.py` lalu `python tools/art/pixel_export.py`, aturan di [`docs/PIXEL_ART_STYLE.md`](docs/PIXEL_ART_STYLE.md)); boss, level, dan ikon masih gaya stickman lama (`tools/art/generate_art.py`, [`docs/ART_STYLE.md`](docs/ART_STYLE.md)) dan akan dimigrasi bertahap. Semua gambar bisa diganti art final dengan menimpa file bernama sama.
 - Efek suara dan musik latar Level 1 dibuat sendiri secara sintetis lewat `tools/audio/generate_fight_audio.py`; tidak ada file audio dari pihak lain.
 - Lisensi proyek: belum ditentukan.
 
