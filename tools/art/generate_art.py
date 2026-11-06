@@ -759,12 +759,9 @@ def gen_story():
 
 
 if __name__ == '__main__':
-    # Home dan panel cerita kini bergaya piksel: python tools/art/pixel_export.py (bukan gen_home / gen_story).
-    gen_boss()
-    gen_asep()
-    gen_icon()
+    # Gaya piksel (home, cerita, boss Bob/Asep/Chef, Level 4, ikon) dibuat oleh skrip piksel:
+    #   python tools/art/pixel_font.py; pixel_export.py; pixel_bosses.py; pixel_cooking.py; pixel_icon.py
+    # Yang tersisa di gaya stickman lama: aset Level 1 (Rock, arena, potret) sampai dimigrasi.
     import fight_art
     fight_art.gen_fight()
-    import cooking_art
-    cooking_art.gen_cooking()
     print('selesai')

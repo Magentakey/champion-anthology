@@ -159,7 +159,7 @@ def build(spec):
     torso_w = spec.get('torso_w', 0.125)
 
     # --- ekor ikat kepala (di belakang kepala) ---
-    if spec.get('band'):
+    if spec.get('band') and not spec.get('no_tails'):
         by0, by1 = hcy - 0.58 * hry, hcy - 0.36 * hry
         for k, dy in enumerate((0.0, f(0.05))):
             yy = (by0 + by1) / 2 + dy
@@ -173,100 +173,105 @@ def build(spec):
     skin = spec.get('skin', SKIN)
     pants = spec.get('bottom', NAVY)
     long_pants = spec.get('long_pants', False)
-    legs = {
-        'stand': [((-0.075, 0.74), (-0.075, 0.86), (-0.087, 0.895)), ((0.075, 0.74), (0.075, 0.86), (0.087, 0.895))],
-        'stride': [((-0.075, 0.74), (-0.13, 0.82), (-0.18, 0.875)), ((0.075, 0.74), (0.13, 0.80), (0.21, 0.79))],
-        'wide': [((-0.09, 0.74), (-0.13, 0.86), (-0.15, 0.895)), ((0.09, 0.74), (0.13, 0.86), (0.15, 0.895))],
-    }[lp]
-    for (hip, knee, foot) in legs:
-        pts = [(CX + f(hip[0]), f(hip[1])), (CX + f(knee[0]), f(knee[1])), (CX + f(foot[0]), f(foot[1]) - 1)]
-        c.paint(c.tube(pts, f(0.095) if long_pants else f(0.085)), pants if long_pants else skin)
-        fx, fy = CX + f(foot[0]), f(foot[1])
-        c.paint(c.ell(fx + (1 if foot[0] > 0 else -1), fy + 1.5, f(0.075), f(0.05)), shoe)
-        c.paint(c.rect(fx - f(0.07) + (1 if foot[0] > 0 else -1), fy + 2.5, fx + f(0.07) + (1 if foot[0] > 0 else -1), fy + 4.5), WHITE, shade=False)
+    if not spec.get('head_only'):
+        legs = {
+            'stand': [((-0.075, 0.74), (-0.075, 0.86), (-0.087, 0.895)), ((0.075, 0.74), (0.075, 0.86), (0.087, 0.895))],
+            'stride': [((-0.075, 0.74), (-0.13, 0.82), (-0.18, 0.875)), ((0.075, 0.74), (0.13, 0.80), (0.21, 0.79))],
+            'wide': [((-0.09, 0.74), (-0.13, 0.86), (-0.15, 0.895)), ((0.09, 0.74), (0.13, 0.86), (0.15, 0.895))],
+        }[lp]
+        for (hip, knee, foot) in legs:
+            pts = [(CX + f(hip[0]), f(hip[1])), (CX + f(knee[0]), f(knee[1])), (CX + f(foot[0]), f(foot[1]) - 1)]
+            c.paint(c.tube(pts, f(0.095) if long_pants else f(0.085)), pants if long_pants else skin)
+            fx, fy = CX + f(foot[0]), f(foot[1])
+            c.paint(c.ell(fx + (1 if foot[0] > 0 else -1), fy + 1.5, f(0.075), f(0.05)), shoe)
+            c.paint(c.rect(fx - f(0.07) + (1 if foot[0] > 0 else -1), fy + 2.5, fx + f(0.07) + (1 if foot[0] > 0 else -1), fy + 4.5), WHITE, shade=False)
 
-    # --- celana pendek dan badan ---
-    # celana pendek atau blok pinggul celana panjang (lebih panjang, kaki yang terlihat tetap pendek)
-    c.paint(c.rect(CX - f(0.145), f(0.66), CX + f(0.145), f(0.80) if long_pants else f(0.775)), pants)
-    if long_pants:
-        c.put(int(CX), int(f(0.80)) - 1, OUT)
-    tw = f(torso_w)
-    torso = c.rect(CX - tw, f(0.5), CX + tw, f(0.7))
-    top = spec.get('top', WHITE)
-    c.paint(torso, top)
-    if spec.get('stripe'):
-        for y in range(int(f(0.655)), int(f(0.655)) + max(1, round(f(0.025)))):
+        # --- celana pendek dan badan ---
+        # celana pendek atau blok pinggul celana panjang (lebih panjang, kaki yang terlihat tetap pendek)
+        c.paint(c.rect(CX - f(0.145), f(0.66), CX + f(0.145), f(0.80) if long_pants else f(0.775)), pants)
+        if long_pants:
+            c.put(int(CX), int(f(0.80)) - 1, OUT)
+        tw = f(torso_w)
+        torso = c.rect(CX - tw, f(0.5), CX + tw, f(0.7))
+        top = spec.get('top', WHITE)
+        c.paint(torso, top)
+        if spec.get('stripe'):
+            for y in range(int(f(0.655)), int(f(0.655)) + max(1, round(f(0.025)))):
+                for x in range(int(CX - tw), int(CX + tw)):
+                    if (x, y) in torso:
+                        c.put(x, y, spec['stripe'][0])
+        if spec.get('vest'):                       # rompi: dua panel gelap di kiri-kanan dada
+            for sg in (-1, 1):
+                m = c.rect(CX + (0 if sg > 0 else -tw), f(0.56), CX + (tw if sg > 0 else 0), f(0.7))
+                m = {q for q in m if q in torso}
+                side = {q for q in m if abs(q[0] + 0.5 - CX) > f(0.03)}
+                for q in side:
+                    c.put(q[0], q[1], spec['vest'][0])
+        if spec.get('apron'):
+            ap = c.rect(CX - tw + 2, f(0.56), CX + tw - 2, f(0.72))
+            c.paint(ap, spec['apron'], outline=True)
+        if spec.get('belt'):
             for x in range(int(CX - tw), int(CX + tw)):
-                if (x, y) in torso:
-                    c.put(x, y, spec['stripe'][0])
-    if spec.get('vest'):                       # rompi: dua panel gelap di kiri-kanan dada
-        for sg in (-1, 1):
-            m = c.rect(CX + (0 if sg > 0 else -tw), f(0.56), CX + (tw if sg > 0 else 0), f(0.7))
-            m = {q for q in m if q in torso}
-            side = {q for q in m if abs(q[0] + 0.5 - CX) > f(0.03)}
-            for q in side:
-                c.put(q[0], q[1], spec['vest'][0])
-    if spec.get('apron'):
-        ap = c.rect(CX - tw + 2, f(0.56), CX + tw - 2, f(0.72))
-        c.paint(ap, spec['apron'], outline=True)
-    if spec.get('belt'):
-        for x in range(int(CX - tw), int(CX + tw)):
-            for y in range(int(f(0.665)), int(f(0.665)) + 2):
-                if (x, y) in torso or (x, y) in c.rect(CX - f(0.145), f(0.66), CX + f(0.145), f(0.775)):
-                    c.put(x, y, spec['belt'][0])
-    if spec.get('neck'):                        # dasi kupu-kupu / syal
-        ny = f(0.585)
-        col = spec['neck']
-        if spec.get('neck_kind') == 'bow':
-            c.paint(c.poly([(CX - 1, ny + 1), (CX - 7, ny - 2), (CX - 7, ny + 4)]), col)
-            c.paint(c.poly([(CX + 1, ny + 1), (CX + 7, ny - 2), (CX + 7, ny + 4)]), col)
-            c.paint(c.rect(CX - 1.5, ny - 0.5, CX + 1.5, ny + 2.5), col, shade=False)
-        else:
-            c.paint(c.rect(CX - 7, ny - 1, CX + 7, ny + 3), col)
-            c.paint(c.rect(CX - 1, ny + 2, CX + 4, ny + 8), col)
+                for y in range(int(f(0.665)), int(f(0.665)) + 2):
+                    if (x, y) in torso or (x, y) in c.rect(CX - f(0.145), f(0.66), CX + f(0.145), f(0.775)):
+                        c.put(x, y, spec['belt'][0])
+        if spec.get('neck'):                        # dasi kupu-kupu / syal
+            ny = f(0.585)
+            col = spec['neck']
+            if spec.get('neck_kind') == 'bow':
+                c.paint(c.poly([(CX - 1, ny + 1), (CX - 7, ny - 2), (CX - 7, ny + 4)]), col)
+                c.paint(c.poly([(CX + 1, ny + 1), (CX + 7, ny - 2), (CX + 7, ny + 4)]), col)
+                c.paint(c.rect(CX - 1.5, ny - 0.5, CX + 1.5, ny + 2.5), col, shade=False)
+            else:
+                c.paint(c.rect(CX - 7, ny - 1, CX + 7, ny + 3), col)
+                c.paint(c.rect(CX - 1, ny + 3, CX + 2, ny + 6), col)
 
-    # --- lengan ---
-    aw = max(3, f(0.066))
-    hand_pal = spec.get('hand', skin)
-    poses = {
-        'stand_fist': dict(l=[(-.12, .54), (-.24, .58), (-.29, .5), (-.30, .45)], lh=(-.30, .40, 'fist'),
-                           r=[(.12, .54), (.215, .6), (.165, .675)], rh=(.165, .685, 'hand')),
-        'stand': dict(l=[(-.12, .54), (-.19, .62), (-.17, .70)], lh=(-.17, .715, 'hand'),
-                      r=[(.12, .54), (.19, .62), (.17, .70)], rh=(.17, .715, 'hand')),
-        'cheer': dict(l=[(-.12, .54), (-.24, .58), (-.30, .46), (-.30, .40)], lh=(-.30, .35, 'fist'),
-                      r=[(.12, .54), (.24, .58), (.30, .46), (.30, .40)], rh=(.30, .35, 'fist')),
-        'run': dict(l=[(-.12, .54), (-.2, .63), (-.27, .58)], lh=(-.285, .555, 'fist'),
-                    r=[(.12, .54), (.23, .5), (.29, .58)], rh=(.30, .6, 'fist')),
-        'reach': dict(l=[(-.12, .54), (-.2, .64), (-.19, .70)], lh=(-.19, .715, 'hand'),
-                      r=[(.12, .54), (.26, .52), (.38, .48)], rh=(.40, .47, 'hand')),
-        'globe_up': dict(l=[(-.12, .54), (-.30, .40), (-.27, .12), (-.20, -.06)], lh=(-.20, -.06, 'hand'),
-                         r=[(.12, .54), (.30, .40), (.27, .12), (.20, -.06)], rh=(.20, -.06, 'hand')),
-        'cross': dict(l=[(-.12, .54), (-.02, .62), (.1, .64)], lh=(.115, .645, 'hand'),
-                      r=[(.12, .54), (.02, .6), (-.1, .64)], rh=(-.115, .645, 'hand')),
-        'fight': dict(l=[(-.13, .54), (-.24, .62), (-.2, .54)], lh=(-.18, .47, 'fist'),
-                      r=[(.13, .54), (.24, .62), (.2, .54)], rh=(.18, .47, 'fist')),
-        'board': dict(l=[(-.12, .54), (-.2, .63), (-.1, .66)], lh=(-.08, .665, 'hand'),
-                      r=[(.12, .54), (.2, .63), (.1, .66)], rh=(.08, .665, 'hand')),
-    }[pose]
-    sleeve = spec.get('sleeve')
+        # --- lengan ---
+        aw = max(3, f(0.066))
+        hand_pal = spec.get('hand', skin)
+        poses = {
+            'stand_fist': dict(l=[(-.12, .54), (-.24, .58), (-.29, .5), (-.30, .45)], lh=(-.30, .40, 'fist'),
+                               r=[(.12, .54), (.215, .6), (.165, .675)], rh=(.165, .685, 'hand')),
+            'stand': dict(l=[(-.12, .54), (-.19, .62), (-.17, .70)], lh=(-.17, .715, 'hand'),
+                          r=[(.12, .54), (.19, .62), (.17, .70)], rh=(.17, .715, 'hand')),
+            'cheer': dict(l=[(-.12, .54), (-.24, .58), (-.30, .46), (-.30, .40)], lh=(-.30, .35, 'fist'),
+                          r=[(.12, .54), (.24, .58), (.30, .46), (.30, .40)], rh=(.30, .35, 'fist')),
+            'run': dict(l=[(-.12, .54), (-.2, .63), (-.27, .58)], lh=(-.285, .555, 'fist'),
+                        r=[(.12, .54), (.23, .5), (.29, .58)], rh=(.30, .6, 'fist')),
+            'reach': dict(l=[(-.12, .54), (-.2, .64), (-.19, .70)], lh=(-.19, .715, 'hand'),
+                          r=[(.12, .54), (.26, .52), (.38, .48)], rh=(.40, .47, 'hand')),
+            'globe_up': dict(l=[(-.12, .54), (-.30, .40), (-.27, .12), (-.20, -.06)], lh=(-.20, -.06, 'hand'),
+                             r=[(.12, .54), (.30, .40), (.27, .12), (.20, -.06)], rh=(.20, -.06, 'hand')),
+            'cross': dict(l=[(-.12, .54), (-.02, .62), (.1, .64)], lh=(.115, .645, 'hand'),
+                          r=[(.12, .54), (.02, .6), (-.1, .64)], rh=(-.115, .645, 'hand')),
+            'fight': dict(l=[(-.13, .54), (-.24, .62), (-.2, .54)], lh=(-.18, .47, 'fist'),
+                          r=[(.13, .54), (.24, .62), (.2, .54)], rh=(.18, .47, 'fist')),
+            'surprise': dict(l=[(-.12, .54), (-.26, .5), (-.31, .36)], lh=(-.32, .31, 'hand'),
+                             r=[(.12, .54), (.26, .5), (.31, .36)], rh=(.32, .31, 'hand')),
+            'hips': dict(l=[(-.12, .54), (-.23, .6), (-.18, .68)], lh=(-.17, .69, 'hand'),
+                         r=[(.12, .54), (.23, .6), (.18, .68)], rh=(.17, .69, 'hand')),
+            'board': dict(l=[(-.12, .54), (-.2, .63), (-.1, .66)], lh=(-.08, .665, 'hand'),
+                          r=[(.12, .54), (.2, .63), (.1, .66)], rh=(.08, .665, 'hand')),
+        }[pose]
+        sleeve = spec.get('sleeve')
 
-    def draw_hand(side):
-        hx, hy, kind = poses[side + 'h']
-        hx, hy = CX + f(hx), f(hy)
-        if kind == 'fist':
-            if spec.get('wrap'):
-                c.paint(c.rect(hx - f(0.04), hy + f(0.04), hx + f(0.04), hy + f(0.04) + 3), spec['wrap'], shade=False)
-            c.paint(c.ell(hx, hy, f(0.06), f(0.055)), hand_pal if not spec.get('wrap') else spec['wrap'])
-            c.line((int(hx) - 1, int(hy) + 1), (int(hx) + 1, int(hy) + 1), skin[2])
-        else:
-            c.paint(c.ell(hx, hy, f(0.045), f(0.04)), hand_pal)
+        def draw_hand(side):
+            hx, hy, kind = poses[side + 'h']
+            hx, hy = CX + f(hx), f(hy)
+            if kind == 'fist':
+                if spec.get('wrap'):
+                    c.paint(c.rect(hx - f(0.04), hy + f(0.04), hx + f(0.04), hy + f(0.04) + 3), spec['wrap'], shade=False)
+                c.paint(c.ell(hx, hy, f(0.06), f(0.055)), hand_pal if not spec.get('wrap') else spec['wrap'])
+                c.line((int(hx) - 1, int(hy) + 1), (int(hx) + 1, int(hy) + 1), skin[2])
+            else:
+                c.paint(c.ell(hx, hy, f(0.045), f(0.04)), hand_pal)
 
-    for side in ('r', 'l'):
-        pts = [(CX + f(x), f(y)) for x, y in poses[side]]
-        c.paint(c.tube(pts, aw + (1 if spec.get('arm_thick') else 0)), skin)
-        if sleeve:
-            c.paint(c.tube(pts[:2], aw + 1), sleeve)
-        draw_hand(side)
+        for side in ('r', 'l'):
+            pts = [(CX + f(x), f(y)) for x, y in poses[side]]
+            c.paint(c.tube(pts, aw + (1 if spec.get('arm_thick') else 0)), skin)
+            if sleeve:
+                c.paint(c.tube(pts[:2], aw + 1), sleeve)
+            draw_hand(side)
 
     # --- kepala ---
     head = c.ell(CX, hcy, hrx, hry)
@@ -366,10 +371,43 @@ def build(spec):
         c.line((34, ey - 1), (27, ey + 2), OUT, th=2)
         c.stamp(int(CX - 4.5), my + 1, ["OOOOOOOOO", "OwOwOwOwO", "OOOOOOOOO"], KEY)
         blush = False
+    elif face == 'shock':
+        eye = [".OOOO.", "OwwwwO", "OwppwO", "OwppwO", "OwwwwO", ".OOOO."]
+        for ex in (14, 28):
+            c.stamp(ex, ey + 1, eye, KEY)
+            c.line((ex + 1, ey - 2), (ex + 4, ey - 2), OUT)          # alis terangkat
+        c.stamp(22, 25, [".OOO.", "OkkkO", "OkkkO", ".OOO."], KEY)
+        c.stamp(37, 12, [".O.", "OlO", "OlO", ".O."], KEY)           # tetes keringat
+        blush = False
+    elif face == 'laugh':
+        arc = [".OOOO.", "O....O"]
+        for ex in (14, 28):
+            c.stamp(ex, ey + 1, arc, KEY)
+        for tx in (13, 34):                                           # air mata
+            for ty in range(ey + 3, ey + 7):
+                c.put(tx, ty, KEY['l'])
+        c.stamp(int(CX - 5.5), my - 1, ["OOOOOOOOOOO", "OwwwwwwwwwO", "OkkkkkkkkkO", ".OkkttkkkO.", "..OOOOOOO.."], KEY)
+        blush = True
+    elif face == 'defeat':
+        x_eye = ["O...O", ".O.O.", "..O..", ".O.O.", "O...O"]
+        c.stamp(15, ey + 2, x_eye, KEY)
+        c.stamp(28, ey + 2, x_eye, KEY)
+        c.stamp(20, 26, ["O.O.O.O", ".O.O.O."], KEY)
+        blush = False
     if blush and face != 'calm':
         for ex, sgn in ((14, -1), (28, 1)):
             c.put(ex - 1 if sgn < 0 else ex + 6, ey + 7, BLUSH)
             c.put(ex if sgn < 0 else ex + 5, ey + 7, BLUSH)
+    if spec.get('glasses') and face != 'smug':
+        rim = [".OOOOOOO.", "O.......O", "O.......O", "O.......O", "O.......O", "O.......O", "O.......O", ".OOOOOOO."]
+        c.stamp(12, ey - 1, rim, KEY)
+        c.stamp(27, ey - 1, rim, KEY)
+        c.line((21, ey + 2), (26, ey + 2), OUT)
+    if spec.get('stars'):
+        spots = ((6, -2), (42, -2)) if spec.get('hat') else ((8, 4), (24, -6), (40, 4))
+        for sx, yy in spots:
+            for dx, dy in ((0, 0), (1, 0), (-1, 0), (0, 1), (0, -1)):
+                c.put(sx + dx, yy + dy, (255, 214, 64, 255))
     if pose == 'globe_up':
         canvas_globe(c, CX, -4, 8)
         draw_hand('l')
@@ -384,7 +422,7 @@ def build(spec):
 # ---------------- spesifikasi karakter ----------------
 HERO = dict(hair='spiky', hair_pal=HAIR, band=RED, top=WHITE, stripe=RED, bottom=NAVY, shoe=RED, face='hype')
 BOB = dict(hair='spiky', hair_pal=pal((28, 26, 36)), spikes=6, peak=1.5, top=WHITE, vest=pal((70, 78, 120)),
-           neck=BLUE, neck_kind='bow', bottom=DGREY, long_pants=True, shoe=BLACKP, face='smug', pose='cross')
+           neck=BLUE, neck_kind='bow', bottom=DGREY, long_pants=True, shoe=BLACKP, face='smug', pose='cross', glasses=True)
 ASEP = dict(hair='swept', hair_pal=BROWNH, top=GREEN, bottom=KHAKI, shoe=BROWN, face='calm', pose='board')
 CHEF = dict(hat='chef', top=WHITE, apron=pal((248, 248, 252)), neck=RED, neck_kind='scarf', bottom=pal((70, 70, 90)),
             long_pants=True, shoe=BLACKP, face='cheer', pose='stand', torso_w=0.15, arm_thick=True)
@@ -396,3 +434,11 @@ def with_pose(spec, **kw):
     d = dict(spec)
     d.update(kw)
     return d
+
+
+def with_expression(spec, state):
+    """Variasi ekspresi boss: idle (asli), shock, laugh, defeat."""
+    if state == 'idle':
+        return dict(spec)
+    pose, face = {'shock': ('surprise', 'shock'), 'laugh': ('hips', 'laugh'), 'defeat': ('stand', 'defeat')}[state]
+    return with_pose(spec, pose=pose, face=face, stars=(state == 'defeat'))

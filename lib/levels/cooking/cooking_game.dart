@@ -367,7 +367,7 @@ class _KitchenBackground extends PositionComponent {
   _KitchenBackground(this._image);
 
   final Image _image;
-  final Paint _paint = Paint()..filterQuality = FilterQuality.low;
+  final Paint _paint = Paint()..filterQuality = FilterQuality.none; // pixel art: tanpa penghalusan
 
   @override
   void render(Canvas canvas) {

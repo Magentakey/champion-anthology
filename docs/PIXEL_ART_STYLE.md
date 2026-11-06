@@ -188,6 +188,9 @@ Ukuran panel cerita (logis → PNG 3×): panel 1 = 216×87 → 648×261; panel 2
 ```bash
 python tools/art/pixel_font.py        # font: assets/fonts/PixelChampion.ttf (butuh: pip install fonttools)
 python tools/art/pixel_export.py      # aset game: home_bg, btn_*, panel_1..4 (diperbesar 3x) -> assets/images/
+python tools/art/pixel_bosses.py      # boss Bob, Asep, Chef (4 ekspresi, 512x512, sprite 8x) -> assets/images/{genius,maze,cooking}/
+python tools/art/pixel_cooking.py     # Level 4: 16 ikon bahan, 3 stasiun, latar dapur -> assets/images/cooking/
+python tools/art/pixel_icon.py        # ikon aplikasi -> assets/icon/ (lalu: dart run flutter_launcher_icons)
 python tools/art/pixel_scenes.py      # mockup penuh + lembar karakter -> docs/preview/ (tidak masuk game)
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
 ```
@@ -232,8 +235,14 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | Font piksel `PixelChampion.ttf` dan widget `PixelUi` / `PixelButton` | Selesai |
 | Menu utama (latar, judul, tombol) | **Terpasang di game** |
 | Storyboard (4 panel, bingkai, keterangan, penanda halaman) | **Terpasang di game** |
-| Gambar boss Bob, Asep, Chef (4 ekspresi) | Belum |
-| Rock sebagai sprite per frame untuk pertarungan | Belum |
-| Ikon bahan, stasiun, latar dapur (Level 4) | Belum |
+| Gambar boss Bob, Asep, Chef (4 ekspresi: idle, kaget, tertawa, kalah) | **Terpasang (aset)** |
+| Rock sebagai sprite per frame untuk pertarungan (dan pemain, arena, potret Level 1) | Belum (dikerjakan paling akhir) |
+| Ikon bahan, stasiun, latar dapur, chef (Level 4) | **Terpasang (aset)** |
 | Pilih level, intro boss, jeda dan hasil, HUD level (gaya teks dan tombol) | Belum |
-| Ikon aplikasi | Belum |
+| Ikon aplikasi (wajah pemain + sinar matahari; latar adaptif `#FFAA38`) | **Terpasang (aset)** |
+
+### Ekspresi boss
+
+Empat keadaan baku untuk boss: `idle` (pose dan wajah asli), `shock` (pose `surprise`, mata bulat putih, mulut "o", tetes keringat),
+`laugh` (pose `hips`, mata menutup, air mata, mulut lebar), `defeat` (pose `stand`, mata X, mulut bergelombang, bintang pusing).
+Aksesori khas tetap terlihat di semua ekspresi (kacamata Bob, topi koki Chef, papan labirin Asep jatuh ke lantai saat bereaksi).
