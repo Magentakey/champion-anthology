@@ -38,7 +38,7 @@ G = {
     '4': "...#.|..##.|.#.#.|#..#.|#####|...#.|...#.", '5': "#####|#....|####.|....#|....#|#...#|.###.",
     '6': ".###.|#....|#....|####.|#...#|#...#|.###.", '7': "#####|....#|...#.|..#..|.#...|.#...|.#...",
     '8': ".###.|#...#|#...#|.###.|#...#|#...#|.###.", '9': ".###.|#...#|#...#|.####|....#|....#|.###.",
-    '>': "#....|.#...|..#..|...#.|..#..|.#...|#....", '?': ".###.|#...#|....#|...#.|..#..|.....|..#..",
+    '>': "#....|.#...|..#..|...#.|..#..|.#...|#....", '<': "...#.|..#..|.#...|#....|.#...|..#..|...#.", '?': ".###.|#...#|....#|...#.|..#..|.....|..#..",
     ' ': ".....|.....|.....|.....|.....|.....|.....", 'V_': "",
 }
 GLYPH = {ch: [row for row in v.split('|')] for ch, v in G.items() if v}
@@ -447,14 +447,45 @@ def storyboard(w=240, h=426):
     return sc
 
 
-def button_image(base, hi, lo):
-    """Tombol 104x26 + bayangan jatuh 2 piksel (106x28), tanpa label (label = teks Flutter)."""
-    sc = Scene(106, 28)
-    sc.rect(2, 2, 106, 28, C(24, 16, 44))
-    sc.rect(0, 0, 104, 26, OUT)
-    sc.rect(1, 1, 103, 25, base)
-    sc.rect(1, 1, 103, 3, hi)
-    sc.rect(1, 22, 103, 25, lo)
+def button_image(base, hi, lo, w=104):
+    """Tombol (default 104x26) + bayangan jatuh 2 piksel, tanpa label (label = teks Flutter)."""
+    sc = Scene(w + 2, 28)
+    sc.rect(2, 2, w + 2, 28, C(24, 16, 44))
+    sc.rect(0, 0, w, 26, OUT)
+    sc.rect(1, 1, w - 1, 25, base)
+    sc.rect(1, 1, w - 1, 3, hi)
+    sc.rect(1, 22, w - 1, 25, lo)
+    return sc
+
+
+def menu_bg(w=240, h=426):
+    """Latar malam untuk layar menu (pilih level, intro boss): langit bintang, bulan, bukit gelap."""
+    sc = Scene(w, h)
+    sky = [C(24, 22, 72), C(36, 30, 92), C(52, 40, 112), C(74, 48, 128), C(100, 58, 138)]
+    sc.vgrad(0, 0, w, 372, sky)
+    rnd = random.Random(21)
+    for _ in range(46):
+        x, y = rnd.randint(2, w - 3), rnd.randint(2, 250)
+        if rnd.random() < 0.2:
+            star4(sc, x, y, C(255, 244, 214))
+        else:
+            sc.set(x, y, C(255, 244, 214) if rnd.random() < 0.6 else C(170, 150, 220))
+    mx, my = 204, 60
+    orig = {(x, y): sc.g[y][x] for y in range(my - 14, my + 15) for x in range(mx - 14, mx + 15)}
+    sc.ell(mx, my, 13, 13, C(255, 244, 200))
+    for (x, y), col in orig.items():                  # gigitan bulan: kembalikan warna langit asli
+        if ((x + 0.5 - (mx + 5)) / 11) ** 2 + ((y + 0.5 - (my - 3)) / 11) ** 2 <= 1.0:
+            sc.g[y][x] = col
+    for x in range(w):
+        y1 = 338 + int(7 * math.sin(x / 20.0) + 3 * math.sin(x / 6.0))
+        for y in range(y1, 370):
+            sc.set(x, y, C(70, 44, 110))
+    for x in range(w):
+        y2 = 356 + int(4 * math.sin(x / 13.0 + 1))
+        for y in range(y2, h):
+            sc.set(x, y, C(40, 28, 78))
+    for x in range(0, w, 12):
+        sc.rect(x, 380, x + 6, 381, C(60, 44, 104))
     return sc
 
 

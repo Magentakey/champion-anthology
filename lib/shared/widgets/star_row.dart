@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'pixel_ui.dart';
+
+/// Tiga bintang piksel; [stars] yang terisi berwarna emas. [size] = ukuran tiap bintang (dp).
 class StarRow extends StatelessWidget {
   final int stars;
   final double size;
@@ -10,14 +13,12 @@ class StarRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: List.generate(
-        3,
-        (i) => Icon(
-          i < stars ? Icons.star : Icons.star_border,
-          size: size,
-          color: i < stars ? Colors.blue : Colors.grey,
-        ),
-      ),
+      children: [
+        for (var i = 0; i < 3; i++) ...[
+          if (i > 0) SizedBox(width: size * 0.12),
+          PixelStar(filled: i < stars, size: size),
+        ],
+      ],
     );
   }
 }

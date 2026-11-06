@@ -11,6 +11,7 @@ import '../core/level/level_session.dart';
 import '../core/save/progress_repository.dart';
 import '../levels/level_registry.dart';
 import '../shared/widgets/level_overlays.dart';
+import '../shared/widgets/pixel_ui.dart';
 
 /// Layar gameplay generik: menjalankan level apa pun dari registry.
 /// Flow: langsung main Step 1 -> 2 -> 3. Kalah = selesai, bintang = step yang dimenangkan.
@@ -114,14 +115,16 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
     final session = _session;
 
     if (game == null || session == null) {
+      final u = PixelUi.overlayUnit(context);
       return Scaffold(
+        backgroundColor: PixelUi.night,
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(AppText.levelUnavailable),
-              const SizedBox(height: 16),
-              FilledButton(onPressed: _exit, child: const Text(AppText.backButton)),
+              Text(AppText.levelUnavailable, style: PixelUi.text(u)),
+              SizedBox(height: 12 * u),
+              PixelButton(label: AppText.backButton, onPressed: _exit, secondary: true, unit: u),
             ],
           ),
         ),
@@ -141,7 +144,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                 key: ValueKey(_runId),
                 game: game,
                 loadingBuilder: (_) =>
-                    const Center(child: CircularProgressIndicator()),
+                    const Center(child: CircularProgressIndicator(color: PixelUi.cream)),
               ),
             ),
             Positioned.fill(child: game.buildHud(context)),
@@ -154,10 +157,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                     child: ListenableBuilder(
                       listenable: session,
                       builder: (context, _) => session.isPlaying
-                          ? IconButton(
-                              icon: const Icon(Icons.pause_circle_outline, size: 32),
-                              onPressed: _pause,
-                            )
+                          ? PixelPauseButton(label: AppText.paused, onPressed: _pause)
                           : const SizedBox.shrink(),
                     ),
                   ),

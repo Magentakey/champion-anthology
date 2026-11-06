@@ -1,35 +1,31 @@
-import 'dart:ui' show ImageFilter;
-
 import 'package:flutter/material.dart';
 
 import '../../app/strings.dart';
 import '../../core/audio/audio_service.dart';
+import 'pixel_ui.dart';
 import 'star_row.dart';
 
+/// Latar gelap untuk overlay jeda dan hasil. Tanpa blur agar tetap bergaya piksel (dan lebih ringan).
 class _Scrim extends StatelessWidget {
-  const _Scrim({required this.child});
+  const _Scrim({required this.unit, required this.child});
 
+  final double unit;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    // Layar landscape pendek (~360 dp): panel dirapatkan dan bisa digulir agar tidak terpotong.
-    final compact = MediaQuery.sizeOf(context).height < 500;
-    // Blur semua yang ada di belakang overlay (arena Flame + HUD); panel tetap tajam.
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: ColoredBox(
-          color: const Color(0x55000000),
-          child: Center(
-            child: SingleChildScrollView(
-              child: Container(
-                margin: EdgeInsets.all(compact ? 12 : 32),
-                padding: EdgeInsets.all(compact ? 16 : 24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                ),
+    // Layar landscape pendek (~360 dp): panel dibuat bisa digulir agar tidak terpotong.
+    return ColoredBox(
+      color: const Color(0xCC161228),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(8 * unit),
+            child: PixelFrame(
+              unit: unit,
+              padding: EdgeInsets.fromLTRB(12 * unit, 10 * unit, 12 * unit, 12 * unit),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 164 * unit),
                 child: child,
               ),
             ),
@@ -54,25 +50,33 @@ class PauseOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final u = PixelUi.overlayUnit(context);
     return _Scrim(
+      unit: u,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(AppText.paused, style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 20),
-          FilledButton(onPressed: onResume, child: const Text(AppText.resume)),
-          const SizedBox(height: 12),
-          FilledButton(onPressed: onRestart, child: const Text(AppText.restart)),
-          const SizedBox(height: 12),
+          Text(
+            AppText.paused,
+            style: PixelUi.text(u, scale: 3, color: PixelUi.gold, outline: PixelUi.goldOutline, shadow: PixelUi.dark),
+          ),
+          SizedBox(height: 10 * u),
+          PixelButton(label: AppText.resume, onPressed: onResume, wide: true, unit: u),
+          SizedBox(height: 6 * u),
+          PixelButton(label: AppText.restart, onPressed: onRestart, wide: true, secondary: true, unit: u),
+          SizedBox(height: 6 * u),
           ValueListenableBuilder<bool>(
             valueListenable: AudioService.instance.muted,
-            builder: (context, muted, _) => FilledButton(
+            builder: (context, muted, _) => PixelButton(
+              label: muted ? AppText.soundOff : AppText.soundOn,
               onPressed: () => AudioService.instance.setMuted(!muted),
-              child: Text(muted ? AppText.soundOff : AppText.soundOn),
+              wide: true,
+              secondary: true,
+              unit: u,
             ),
           ),
-          const SizedBox(height: 12),
-          FilledButton(onPressed: onExit, child: const Text(AppText.exit)),
+          SizedBox(height: 6 * u),
+          PixelButton(label: AppText.exit, onPressed: onExit, wide: true, secondary: true, unit: u),
         ],
       ),
     );
@@ -101,31 +105,50 @@ class ResultOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final u = PixelUi.overlayUnit(context);
+    final perfect = stars >= 3;
+    final title = perfect ? AppText.perfectClear : AppText.lostAtStep(step, stepLabel);
     return _Scrim(
+      unit: u,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            stars >= 3 ? AppText.perfectClear : AppText.lostAtStep(step, stepLabel),
-            style: Theme.of(context).textTheme.headlineSmall,
+          // Judul panjang (mis. "Kalah di Step 3") mengecil otomatis agar muat di panel.
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              title,
+              style: PixelUi.text(
+                u,
+                scale: perfect ? 3 : 2,
+                color: perfect ? PixelUi.gold : PixelUi.cream,
+                outline: perfect ? PixelUi.goldOutline : PixelUi.outline,
+                shadow: PixelUi.dark,
+              ),
+            ),
           ),
-          const SizedBox(height: 16),
-          StarRow(stars: stars, size: 40),
+          SizedBox(height: 10 * u),
+          StarRow(stars: stars, size: 22 * u),
           if (message != null) ...[
-            const SizedBox(height: 16),
-            Text(
-              bossName == null ? '"$message"' : '$bossName:\n"$message"',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontStyle: FontStyle.italic,
-                color: Colors.black87,
+            SizedBox(height: 10 * u),
+            PixelFrame(
+              unit: u,
+              fill: PixelUi.paper,
+              padding: EdgeInsets.all(6 * u),
+              child: SizedBox(
+                width: double.infinity,
+                child: Text(
+                  bossName == null ? '"$message"' : '$bossName:\n"$message"',
+                  textAlign: TextAlign.center,
+                  style: PixelUi.text(u, color: PixelUi.ink, height: 1.2),
+                ),
               ),
             ),
           ],
-          const SizedBox(height: 24),
-          FilledButton(onPressed: onRestart, child: const Text(AppText.restart)),
-          const SizedBox(height: 12),
-          FilledButton(onPressed: onExit, child: const Text(AppText.toLevelSelect)),
+          SizedBox(height: 12 * u),
+          PixelButton(label: AppText.restart, onPressed: onRestart, wide: true, unit: u),
+          SizedBox(height: 6 * u),
+          PixelButton(label: AppText.toLevelSelect, onPressed: onExit, wide: true, secondary: true, unit: u),
         ],
       ),
     );

@@ -73,6 +73,7 @@ lib/
 └── shared/widgets/           # StarRow, overlay jeda/hasil, efek getar
 assets/
 ├── images/home/              # latar menu piksel (home_bg.png) dan tombol (btn_*.png)
+├── images/ui/                # latar malam untuk pilih level dan intro boss (bg_night.png)
 ├── images/genius/            # ekspresi Bob (boss_*.png)
 ├── images/maze/              # ekspresi Asep (boss_*.png)
 ├── images/cooking/           # chef, ikon bahan, stasiun, latar dapur
@@ -104,7 +105,7 @@ Lihat [`docs/PANDUAN_PENGEMBANGAN.md`](docs/PANDUAN_PENGEMBANGAN.md) untuk:
 
 ## Aset dan lisensi
 
-- Gambar dibuat sendiri lewat skrip. Menu utama dan storyboard sudah bergaya pixel art 48 px (`python tools/art/pixel_font.py` lalu `python tools/art/pixel_export.py`, aturan di [`docs/PIXEL_ART_STYLE.md`](docs/PIXEL_ART_STYLE.md)); boss, level, dan ikon masih gaya stickman lama (`tools/art/generate_art.py`, [`docs/ART_STYLE.md`](docs/ART_STYLE.md)) dan akan dimigrasi bertahap. Semua gambar bisa diganti art final dengan menimpa file bernama sama.
+- Gambar dibuat sendiri lewat skrip. Menu utama, storyboard, pilih level, intro boss, overlay jeda/hasil, boss Bob/Asep/Chef, aset Level 4, dan ikon sudah bergaya pixel art 48 px (`python tools/art/pixel_font.py` lalu `python tools/art/pixel_export.py`, aturan di [`docs/PIXEL_ART_STYLE.md`](docs/PIXEL_ART_STYLE.md)); HUD tiap level dan seluruh Level 1 (Rock) masih gaya stickman lama (`tools/art/generate_art.py`, [`docs/ART_STYLE.md`](docs/ART_STYLE.md)) dan akan dimigrasi bertahap. Semua gambar bisa diganti art final dengan menimpa file bernama sama.
 - Efek suara dan musik latar Level 1 dibuat sendiri secara sintetis lewat `tools/audio/generate_fight_audio.py`; tidak ada file audio dari pihak lain.
 - Lisensi proyek: belum ditentukan.
 

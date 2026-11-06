@@ -3,10 +3,15 @@ import 'package:champion_anthology/app/router.dart';
 import 'package:champion_anthology/app/strings.dart';
 import 'package:champion_anthology/core/save/progress_repository.dart';
 import 'package:champion_anthology/levels/fight/fight_dialog.dart';
+import 'package:champion_anthology/shared/widgets/pixel_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+/// Bintang emas (terisi) dan gembok piksel pada layar pilih level.
+Finder filledStars() => find.byWidgetPredicate((w) => w is PixelStar && w.filled);
+Finder locks() => find.byType(PixelLock);
 
 Future<void> pumpApp(WidgetTester tester, Map<String, Object> initial) async {
   // Ukuran layar HP (360x800 dp) agar layout sama seperti di perangkat.
@@ -77,11 +82,11 @@ void main() {
     await pumpApp(tester, {'stars_fight': 1, 'stars_genius': 2});
     await playThroughStory(tester);
 
-    expect(find.byIcon(Icons.star), findsNWidgets(3)); // 1 bintang Fight + 2 bintang Bob
-    expect(find.byIcon(Icons.lock), findsNWidgets(1)); // hanya level 4 yang masih terkunci
+    expect(filledStars(), findsNWidgets(3)); // 1 bintang Fight + 2 bintang Bob
+    expect(locks(), findsNWidgets(1)); // hanya level 4 yang masih terkunci
 
     // Level 4 sudah tersedia; terkunci karena Asep (level 3) belum punya bintang.
-    await tester.tap(find.byIcon(Icons.lock).first);
+    await tester.tap(locks().first);
     await tester.pump();
     expect(find.text(AppText.finishPreviousLevel), findsOneWidget);
 
@@ -103,9 +108,9 @@ void main() {
     await pumpApp(tester, {});
     await playThroughStory(tester);
 
-    expect(find.byIcon(Icons.lock), findsNWidgets(3)); // Bob, Maze, Cooking
+    expect(locks(), findsNWidgets(3)); // Bob, Maze, Cooking
 
-    await tester.tap(find.byIcon(Icons.lock).first); // slot Bob
+    await tester.tap(locks().first); // slot Bob
     await tester.pump();
     expect(find.text(AppText.finishPreviousLevel), findsOneWidget);
   });

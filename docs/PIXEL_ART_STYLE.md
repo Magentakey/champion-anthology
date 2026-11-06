@@ -179,6 +179,9 @@ Utama (Main): merah `#E24038` / terang `#FF826C` / gelap `#A01E2C`. Sekunder (Ke
 ## 10. Layout layar rujukan
 
 - **Home (240×426):** judul di atas, tombol di tengah-atas, pemain 2× memegang bola dunia di panggung bundar dengan matahari terbit di belakang, bukit dan tanah gelap di bawah, versi di dasar.
+- **Pilih level (240×426):** latar malam `ui/bg_night.png`, "< Kembali" kiri atas, judul emas, grid 3×3 (kotak 64×64 berbingkai; terbuka = krem dengan angka 3×, terkunci = gelap dengan gembok), tiga bintang di atas tiap kotak.
+- **Intro boss (240×426):** bingkai nama boss (huruf 2×, atau 1× jika nama lebih dari 16 huruf), potret boss 120×120, bingkai dialog krem, bingkai tips gelap, tombol Mulai.
+- **Overlay jeda dan hasil:** latar gelap tanpa blur, satu bingkai pusat dengan judul (3× emas, atau 2× untuk "Kalah di Step N"), bintang, kutipan boss pada bingkai krem, dan tombol lebar bertumpuk.
 - **Storyboard (240×426):** "Lewati >>" kanan atas; panel 1 lebar; panel 2 lebar (barisan master dan pemain); panel 3 dan 4 berdampingan; "Ketuk untuk lanjut" dan empat penanda halaman di bawah.
 
 Ukuran panel cerita (logis → PNG 3×): panel 1 = 216×87 → 648×261; panel 2 = 216×100 → 648×300; panel 3 dan 4 = 106×137 → 318×411.
@@ -187,11 +190,12 @@ Ukuran panel cerita (logis → PNG 3×): panel 1 = 216×87 → 648×261; panel 2
 
 ```bash
 python tools/art/pixel_font.py        # font: assets/fonts/PixelChampion.ttf (butuh: pip install fonttools)
-python tools/art/pixel_export.py      # aset game: home_bg, btn_*, panel_1..4 (diperbesar 3x) -> assets/images/
+python tools/art/pixel_export.py      # aset game: home_bg, btn_* (+wide), ui/bg_night, panel_1..4 (diperbesar 3x) -> assets/images/
 python tools/art/pixel_bosses.py      # boss Bob, Asep, Chef (4 ekspresi, 512x512, sprite 8x) -> assets/images/{genius,maze,cooking}/
 python tools/art/pixel_cooking.py     # Level 4: 16 ikon bahan, 3 stasiun, latar dapur -> assets/images/cooking/
 python tools/art/pixel_icon.py        # ikon aplikasi -> assets/icon/ (lalu: dart run flutter_launcher_icons)
 python tools/art/pixel_scenes.py      # mockup penuh + lembar karakter -> docs/preview/ (tidak masuk game)
+python tools/art/pixel_ui_mock.py     # perkiraan layar pilih level dan intro boss -> docs/preview/
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
 ```
 
@@ -202,7 +206,10 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 
 - Semua layar piksel memakai kisi rujukan **240×426 piksel logis**. `PixelUi.unit(context)` (di `lib/shared/widgets/pixel_ui.dart`) memberi ukuran 1 piksel logis dalam dp; seluruh layout dihitung dari unit ini.
 - Teks: `PixelUi.text(u, scale: 1|2|3, outline: ..., shadow: ...)`. Font `PixelChampion` hanya punya huruf besar; huruf kecil tampil sebagai huruf besar, jadi teks di `strings.dart` tidak perlu diubah. `fontSize = 10 × skala × unit`. Tebal tepi = skala.
-- Tombol: `PixelButton` (gambar `btn_primary.png` / `btn_secondary.png` + label teks, sehingga mudah diuji dan terbaca pembaca layar).
+- Tombol: `PixelButton` (gambar `btn_primary` / `btn_secondary`, atau `wide: true` untuk `btn_wide_*` 160 piksel, + label teks, sehingga mudah diuji dan terbaca pembaca layar). Parameter `unit` mengganti ukuran piksel (dipakai overlay).
+- Komponen lain di `pixel_ui.dart`: `PixelFrame` (bingkai krem + garis gelap + isi), `PixelStar` dan `StarRow` (bintang), `PixelLock` (gembok), `PixelTextButton` (mis. "< Kembali"), `PixelPauseButton` (tombol jeda).
+- Layar portrait memakai `PixelUi.unit` (kisi 240×426). Overlay dan layar landscape memakai `PixelUi.overlayUnit` (sisi terpendek ÷ 240, dijepit 1,4 sampai 3) supaya tombol tetap besar.
+- Pesan singkat (SnackBar) bergaya piksel lewat `snackBarTheme` di `theme.dart`.
 - Gambar: selalu `filterQuality: FilterQuality.none`. Rasio gambar harus sama dengan kotaknya (panel cerita memakai `BoxFit.fill`).
 - Home: latar `home_bg.png` (tanpa teks) dengan `BoxFit.cover` dan `Alignment.bottomCenter`; judul dan tombol berupa widget.
 - Storyboard: panel di `_panelRects` (`storyboard_screen.dart`) pada kisi 240×426; ukuran PNG panel = ukuran kotak × 3.
@@ -238,7 +245,8 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | Gambar boss Bob, Asep, Chef (4 ekspresi: idle, kaget, tertawa, kalah) | **Terpasang (aset)** |
 | Rock sebagai sprite per frame untuk pertarungan (dan pemain, arena, potret Level 1) | Belum (dikerjakan paling akhir) |
 | Ikon bahan, stasiun, latar dapur, chef (Level 4) | **Terpasang (aset)** |
-| Pilih level, intro boss, jeda dan hasil, HUD level (gaya teks dan tombol) | Belum |
+| Pilih level, intro boss, overlay jeda dan hasil, tombol jeda, bintang dan gembok | **Terpasang di game** |
+| HUD tiap level (kartu soal Bob, tombol arah Asep, kartu pesanan dan baki Chef, HUD Rock) | Belum |
 | Ikon aplikasi (wajah pemain + sinar matahari; latar adaptif `#FFAA38`) | **Terpasang (aset)** |
 
 ### Ekspresi boss

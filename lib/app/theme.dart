@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 
+import '../shared/widgets/pixel_ui.dart';
+
 ThemeData buildTheme() {
   return ThemeData(
     useMaterial3: true,
-    scaffoldBackgroundColor: const Color(0xFFFFEBEE),
+    scaffoldBackgroundColor: PixelUi.night,
     colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-    filledButtonTheme: FilledButtonThemeData(
-      style: FilledButton.styleFrom(
-        backgroundColor: Colors.grey.shade300,
-        foregroundColor: Colors.black87,
-        minimumSize: const Size(160, 48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
+    // Pesan singkat (mis. "Segera hadir") ikut bergaya piksel: kotak gelap berbingkai krem, font piksel.
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: PixelUi.dark,
+      behavior: SnackBarBehavior.floating,
+      elevation: 0,
+      shape: RoundedRectangleBorder(side: BorderSide(color: PixelUi.cream, width: 2)),
+      contentTextStyle: TextStyle(fontFamily: PixelUi.fontFamily, fontSize: 14, color: PixelUi.cream),
     ),
   );
 }
