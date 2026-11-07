@@ -1,3 +1,5 @@
+import 'package:champion_anthology/shared/widgets/boss_widgets.dart';
+import 'package:champion_anthology/shared/widgets/pixel_pattern.dart';
 import 'package:champion_anthology/shared/widgets/pixel_ui.dart';
 import 'package:champion_anthology/shared/widgets/star_row.dart';
 import 'package:flutter/material.dart';
@@ -47,6 +49,80 @@ void main() {
 
 // ---- widget piksel tambahan ----
 void pixelWidgetTests() {
+  group('PixelPatterns', () {
+    final all = {
+      'star': PixelPatterns.star,
+      'lock': PixelPatterns.lock,
+      'heart': PixelPatterns.heart,
+      'arrowUp': PixelPatterns.arrowUp,
+      'arrowDown': PixelPatterns.arrowDown,
+      'arrowLeft': PixelPatterns.arrowLeft,
+      'arrowRight': PixelPatterns.arrowRight,
+      'check': PixelPatterns.check,
+      'fire': PixelPatterns.fire,
+      'playerHead': PixelPatterns.playerHead,
+    };
+
+    test('semua pola berbentuk persegi panjang (tiap baris sama lebar)', () {
+      all.forEach((name, rows) {
+        expect(rows.map((r) => r.length).toSet().length, 1, reason: name);
+        expect(rows, isNotEmpty, reason: name);
+      });
+    });
+
+    test('kepala pemain 9x9 dan panah saling cermin', () {
+      expect(PixelPatterns.playerHead.length, 9);
+      expect(PixelPatterns.playerHead.first.length, 9);
+      expect(PixelPatterns.arrowDown, PixelPatterns.arrowUp.reversed.toList());
+      expect(
+        PixelPatterns.arrowRight,
+        [for (final r in PixelPatterns.arrowLeft) r.split('').reversed.join()],
+      );
+    });
+  });
+
+  testWidgets('gelembung ucapan dan banner step menampilkan teks', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: [
+              SizedBox(height: 200, child: StepBannerCard(step: 2, label: 'Sedang')),
+              BossSpeechBubble(text: 'Halo, juara!'),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('STEP 2'), findsOneWidget);
+    expect(find.text('Sedang'), findsOneWidget);
+    expect(find.text('Halo, juara!'), findsOneWidget);
+  });
+
+  testWidgets('PixelBar, PixelHeart, dan PixelIcon tergambar dengan ukuran yang benar', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Column(
+            children: const [
+              PixelBar(value: 0.5, color: Colors.red, unit: 1.5),
+              PixelHeart(filled: true, size: 16),
+              PixelIcon(rows: PixelPatterns.arrowUp, size: 18),
+            ],
+          ),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byType(PixelBar)).height, 12); // 8 piksel x 1,5
+    expect(tester.getSize(find.byType(PixelHeart)).height, 16);
+    // PixelHeart memakai PixelIcon di dalamnya, jadi ada dua PixelIcon; yang terakhir adalah panah yang ditulis langsung.
+    expect(find.byType(PixelIcon), findsNWidgets(2));
+    // 7 baris + 2 garis tepi = 9 sel; lebar 7 + 2 = 9 sel -> persegi
+    expect(tester.getSize(find.byType(PixelIcon).last).width, 18);
+    expect(tester.takeException(), isNull);
+  });
+
   group('StarRow dan PixelStar', () {
     testWidgets('menampilkan 3 bintang, sebanyak jumlah bintang yang terisi', (tester) async {
       await tester.pumpWidget(const MaterialApp(home: Scaffold(body: StarRow(stars: 2, size: 20))));

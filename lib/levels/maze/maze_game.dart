@@ -9,6 +9,7 @@ import 'package:flutter/services.dart'
     show HapticFeedback, KeyDownEvent, KeyEvent, KeyUpEvent, LogicalKeyboardKey;
 
 import '../../core/audio/audio_service.dart';
+import '../../core/level/cover_background.dart';
 import '../../core/level/level_game.dart';
 import '../../core/level/level_session.dart';
 import '../../core/level/star_calculator.dart';
@@ -38,6 +39,7 @@ class MazeGame extends LevelGame with KeyboardEvents {
   /// true selama banner step menutupi labirin (waktu belum berjalan).
   final ValueNotifier<bool> showBanner = ValueNotifier(false);
 
+  late final CoverBackground _background;
   late final MazeBoss _boss;
   late final MazeTimeBar _timeBar;
   late final MazeComponent _maze;
@@ -63,10 +65,11 @@ class MazeGame extends LevelGame with KeyboardEvents {
         'maze/boss_shock.png',
         'maze/boss_laugh.png',
         'maze/boss_defeat.png',
+        'ui/bg_night.png',
       ];
 
   @override
-  Color backgroundColor() => const Color(0xFFFFEBEE);
+  Color backgroundColor() => const Color(0xFF161228);
 
   @override
   Widget buildHud(BuildContext context) => MazeHud(game: this);
@@ -78,6 +81,7 @@ class MazeGame extends LevelGame with KeyboardEvents {
   Future<void> onLoad() async {
     await loadAssets();
     Sprite spriteOf(String file) => Sprite(levelImages.fromCache('maze/$file.png'));
+    _background = CoverBackground(levelImages.fromCache('ui/bg_night.png'));
     _boss = MazeBoss(
       sprites: {
         MazeMood.idle: spriteOf('boss_idle'),
@@ -88,7 +92,7 @@ class MazeGame extends LevelGame with KeyboardEvents {
     );
     _timeBar = MazeTimeBar();
     _maze = MazeComponent();
-    await addAll([_maze, _boss, _timeBar]);
+    await addAll([_background, _maze, _boss, _timeBar]);
     _ready = true;
     _layout(size);
     startStep(session.step);
@@ -101,6 +105,7 @@ class MazeGame extends LevelGame with KeyboardEvents {
   }
 
   void _layout(Vector2 s) {
+    _background.size = s;
     final side = min(s.x * 0.5, s.y * MazeLayout.bossHeight);
     _boss.size = Vector2.all(side);
     _boss.position = Vector2(s.x * MazeLayout.bossCenterX, s.y * MazeLayout.bossCenterY);

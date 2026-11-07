@@ -196,6 +196,7 @@ python tools/art/pixel_cooking.py     # Level 4: 16 ikon bahan, 3 stasiun, latar
 python tools/art/pixel_icon.py        # ikon aplikasi -> assets/icon/ (lalu: dart run flutter_launcher_icons)
 python tools/art/pixel_scenes.py      # mockup penuh + lembar karakter -> docs/preview/ (tidak masuk game)
 python tools/art/pixel_ui_mock.py     # perkiraan layar pilih level dan intro boss -> docs/preview/
+python tools/art/pixel_hud_mock.py    # perkiraan HUD Level 2 sampai 4 -> docs/preview/
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
 ```
 
@@ -207,6 +208,8 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 - Semua layar piksel memakai kisi rujukan **240×426 piksel logis**. `PixelUi.unit(context)` (di `lib/shared/widgets/pixel_ui.dart`) memberi ukuran 1 piksel logis dalam dp; seluruh layout dihitung dari unit ini.
 - Teks: `PixelUi.text(u, scale: 1|2|3, outline: ..., shadow: ...)`. Font `PixelChampion` hanya punya huruf besar; huruf kecil tampil sebagai huruf besar, jadi teks di `strings.dart` tidak perlu diubah. `fontSize = 10 × skala × unit`. Tebal tepi = skala.
 - Tombol: `PixelButton` (gambar `btn_primary` / `btn_secondary`, atau `wide: true` untuk `btn_wide_*` 160 piksel, + label teks, sehingga mudah diuji dan terbaca pembaca layar). Parameter `unit` mengganti ukuran piksel (dipakai overlay).
+- Pola piksel dari teks ada di `pixel_pattern.dart`: `PixelPatterns` (bintang, gembok, hati, panah, centang, api, kepala pemain), `drawPixelPattern` (dipakai juga oleh komponen Flame labirin), `PixelIcon`, `PixelBar` (bar progres berblok), dan `PixelHeart`.
+- Di Flame: `drawPixelTimeBar` (bar waktu berblok, dipakai semua level), `CoverBackground` (gambar latar cover tanpa penghalusan), dan `BossSprite`/komponen boss yang memakai `FilterQuality.none`. Level Bob dan Asep memakai latar `ui/bg_night.png`, Level Chef memakai latar dapur.
 - Komponen lain di `pixel_ui.dart`: `PixelFrame` (bingkai krem + garis gelap + isi), `PixelStar` dan `StarRow` (bintang), `PixelLock` (gembok), `PixelTextButton` (mis. "< Kembali"), `PixelPauseButton` (tombol jeda).
 - Layar portrait memakai `PixelUi.unit` (kisi 240×426). Overlay dan layar landscape memakai `PixelUi.overlayUnit` (sisi terpendek ÷ 240, dijepit 1,4 sampai 3) supaya tombol tetap besar.
 - Pesan singkat (SnackBar) bergaya piksel lewat `snackBarTheme` di `theme.dart`.
@@ -246,7 +249,8 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | Rock sebagai sprite per frame untuk pertarungan (dan pemain, arena, potret Level 1) | Belum (dikerjakan paling akhir) |
 | Ikon bahan, stasiun, latar dapur, chef (Level 4) | **Terpasang (aset)** |
 | Pilih level, intro boss, overlay jeda dan hasil, tombol jeda, bintang dan gembok | **Terpasang di game** |
-| HUD tiap level (kartu soal Bob, tombol arah Asep, kartu pesanan dan baki Chef, HUD Rock) | Belum |
+| HUD Level 2 sampai 4 (kartu soal dan tombol jawaban Bob, tombol arah dan labirin Asep, kartu pesanan, stasiun, baki, dan panel cooking check Chef, bar waktu, gelembung, banner step) | **Terpasang di game** |
+| HUD Level 1 (Rock) dan seluruh visual pertarungan | Belum (dikerjakan paling akhir) |
 | Ikon aplikasi (wajah pemain + sinar matahari; latar adaptif `#FFAA38`) | **Terpasang (aset)** |
 
 ### Ekspresi boss

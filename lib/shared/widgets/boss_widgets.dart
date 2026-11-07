@@ -1,8 +1,10 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 
+import 'pixel_pattern.dart';
+import 'pixel_ui.dart';
+
 /// Gelembung ucapan boss di sebelah kanan karakternya; [text] null = sembunyi.
+/// Bingkai krem bergaya piksel dengan ekor kecil yang menunjuk ke boss (kiri).
 class BossSpeechBubble extends StatelessWidget {
   const BossSpeechBubble({super.key, required this.text});
 
@@ -31,39 +33,28 @@ class _BubbleBody extends StatelessWidget {
 
   final String text;
 
+  static const _tail = <String>['..#', '.##', '###', '.##', '..#'];
+
   @override
   Widget build(BuildContext context) {
-    final border = BorderSide(color: Colors.grey.shade500);
+    final u = PixelUi.unit(context);
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.fromBorderSide(border),
-          ),
+        Positioned(
+          left: -4 * u,
+          top: 10 * u,
+          child: PixelIcon(rows: _tail, size: 7 * u, color: PixelUi.paper),
+        ),
+        PixelFrame(
+          unit: u,
+          fill: PixelUi.paper,
+          padding: EdgeInsets.all(4 * u),
           child: Text(
             text,
-            maxLines: 4,
+            maxLines: 5,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 14, color: Colors.black87),
-          ),
-        ),
-        Positioned(
-          left: -6,
-          top: 20,
-          child: Transform.rotate(
-            angle: math.pi / 4,
-            child: Container(
-              width: 12,
-              height: 12,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(left: border, bottom: border),
-              ),
-            ),
+            style: PixelUi.text(u, color: PixelUi.ink, height: 1.15),
           ),
         ),
       ],
@@ -80,6 +71,7 @@ class StepBannerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final u = PixelUi.unit(context);
     return TweenAnimationBuilder<double>(
       key: ValueKey(step),
       tween: Tween(begin: 0.6, end: 1.0),
@@ -89,22 +81,26 @@ class StepBannerCard extends StatelessWidget {
         opacity: scale.clamp(0.0, 1.0),
         child: Transform.scale(scale: scale, child: child),
       ),
-      child: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.blue.shade100,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'STEP $step',
-              style: const TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: Colors.black87),
+      child: SizedBox.expand(
+        child: PixelFrame(
+          unit: u,
+          padding: EdgeInsets.all(4 * u),
+          child: Center(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'STEP $step',
+                    style: PixelUi.text(u, scale: 3, color: PixelUi.gold, outline: PixelUi.goldOutline, shadow: PixelUi.outline),
+                  ),
+                  SizedBox(height: 6 * u),
+                  Text(label, style: PixelUi.text(u, scale: 2, color: PixelUi.cream)),
+                ],
+              ),
             ),
-            const SizedBox(height: 4),
-            Text(label, style: const TextStyle(fontSize: 18, color: Colors.black54)),
-          ],
+          ),
         ),
       ),
     );

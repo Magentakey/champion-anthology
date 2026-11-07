@@ -3,9 +3,10 @@ import 'dart:ui';
 
 import 'package:flame/components.dart';
 
+import '../../shared/widgets/pixel_pattern.dart';
 import 'maze_grid.dart';
 
-/// Menggambar papan labirin, pemain (bulat putih berikat kepala merah), dan tujuan (bintang emas).
+/// Menggambar papan labirin bergaya piksel, pemain (kepala berikat kepala merah), dan tujuan (bintang emas).
 /// Dinding digabung jadi satu [Path] yang dibuat ulang hanya saat labirin atau ukuran berubah.
 class MazeComponent extends PositionComponent {
   MazeGrid? _grid;
@@ -20,29 +21,31 @@ class MazeComponent extends PositionComponent {
   double _cell = 0;
   Offset _origin = Offset.zero;
   Path _walls = Path();
-  Path _star = Path();
 
   static const _pad = 6.0;
 
-  final Paint _boardFill = Paint()..color = const Color(0xFFFAFAFA);
-  final Paint _boardEdge = Paint()
-    ..color = const Color(0xFFBDBDBD)
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 2;
+  // Semua paint tanpa antialiasing agar tepinya tetap tajam (pixel art).
+  final Paint _ring = Paint()
+    ..isAntiAlias = false
+    ..color = const Color(0xFFFFF4D6);
+  final Paint _dark = Paint()
+    ..isAntiAlias = false
+    ..color = const Color(0xFF1A142C);
+  final Paint _boardFill = Paint()
+    ..isAntiAlias = false
+    ..color = const Color(0xFFFAF0D6);
   final Paint _wall = Paint()
-    ..color = const Color(0xFF141418)
+    ..isAntiAlias = false
+    ..color = const Color(0xFF281E3C)
     ..style = PaintingStyle.stroke
-    ..strokeCap = StrokeCap.round
-    ..strokeJoin = StrokeJoin.round;
-  final Paint _startTile = Paint()..color = const Color(0xFFC8E6C9);
-  final Paint _goalTile = Paint()..color = const Color(0xFFFFF3C4);
-  final Paint _gold = Paint()..color = const Color(0xFFFFC107);
-  final Paint _ink = Paint()
-    ..color = const Color(0xFF141418)
-    ..style = PaintingStyle.stroke
-    ..strokeJoin = StrokeJoin.round;
-  final Paint _head = Paint()..color = const Color(0xFFFFFFFF);
-  final Paint _band = Paint()..color = const Color(0xFFD62828);
+    ..strokeCap = StrokeCap.square
+    ..strokeJoin = StrokeJoin.miter;
+  final Paint _startTile = Paint()
+    ..isAntiAlias = false
+    ..color = const Color(0xFFC8E6C9);
+  final Paint _goalTile = Paint()
+    ..isAntiAlias = false
+    ..color = const Color(0xFFFFF3C4);
 
   /// Labirin baru; pemain kembali ke start.
   void setGrid(MazeGrid grid) {
@@ -105,20 +108,6 @@ class MazeComponent extends PositionComponent {
       }
     }
     _walls = path;
-
-    final r = _cell * 0.36;
-    final star = Path();
-    for (var i = 0; i < 10; i++) {
-      final rad = i.isEven ? r : r * 0.45;
-      final a = -math.pi / 2 + i * math.pi / 5;
-      final p = Offset(math.cos(a) * rad, math.sin(a) * rad);
-      if (i == 0) {
-        star.moveTo(p.dx, p.dy);
-      } else {
-        star.lineTo(p.dx, p.dy);
-      }
-    }
-    _star = star..close();
   }
 
   @override
@@ -127,17 +116,17 @@ class MazeComponent extends PositionComponent {
     if (g == null) return;
     if (_dirty || _builtFor.x != size.x || _builtFor.y != size.y) _rebuild(g);
 
-    final board = RRect.fromRectAndRadius(
-      Rect.fromLTWH(
-        _origin.dx - _pad,
-        _origin.dy - _pad,
-        _cell * g.cols + 2 * _pad,
-        _cell * g.rows + 2 * _pad,
-      ),
-      const Radius.circular(10),
+    // Bingkai papan: cincin krem 1 sel, garis gelap 1 sel, lalu isi.
+    final ringT = math.max(2.0, _cell * 0.12);
+    final board = Rect.fromLTWH(
+      _origin.dx - _pad,
+      _origin.dy - _pad,
+      _cell * g.cols + 2 * _pad,
+      _cell * g.rows + 2 * _pad,
     );
-    canvas.drawRRect(board, _boardFill);
-    canvas.drawRRect(board, _boardEdge);
+    canvas.drawRect(board.inflate(ringT * 2), _ring);
+    canvas.drawRect(board.inflate(ringT), _dark);
+    canvas.drawRect(board, _boardFill);
 
     canvas.save();
     canvas.translate(_origin.dx, _origin.dy);
@@ -145,31 +134,35 @@ class MazeComponent extends PositionComponent {
     canvas.drawRect(Rect.fromLTWH(g.startX * _cell, g.startY * _cell, _cell, _cell), _startTile);
     canvas.drawRect(Rect.fromLTWH(g.goalX * _cell, g.goalY * _cell, _cell, _cell), _goalTile);
 
-    final lw = math.max(2.0, _cell * 0.12);
-    canvas.drawPath(_walls, _wall..strokeWidth = lw);
+    canvas.drawPath(_walls, _wall..strokeWidth = math.max(2.0, (_cell * 0.12).roundToDouble()));
 
-    // tujuan: bintang emas berdenyut
-    canvas.save();
-    canvas.translate((g.goalX + 0.5) * _cell, (g.goalY + 0.5) * _cell);
+    // tujuan: bintang emas berdenyut (pola piksel)
     final pulse = 1 + 0.08 * math.sin(_t * 5);
-    canvas.scale(pulse, pulse);
-    canvas.drawPath(_star, _gold);
-    canvas.drawPath(_star, _ink..strokeWidth = math.max(1.5, _cell * 0.05));
-    canvas.restore();
-
-    // pemain
-    final center = Offset((_vx + 0.5) * _cell, (_vy + 0.5) * _cell);
-    final radius = _cell * 0.32;
-    final headRect = Rect.fromCircle(center: center, radius: radius);
-    canvas.drawOval(headRect, _head);
-    canvas.save();
-    canvas.clipPath(Path()..addOval(headRect));
-    canvas.drawRect(
-      Rect.fromLTRB(center.dx - radius, center.dy - radius * 0.55, center.dx + radius, center.dy - radius * 0.1),
-      _band,
+    final starSize = _cell * 0.86 * pulse;
+    drawPixelPattern(
+      canvas,
+      PixelPatterns.star,
+      Rect.fromCenter(
+        center: Offset((g.goalX + 0.5) * _cell, (g.goalY + 0.5) * _cell),
+        width: starSize,
+        height: starSize,
+      ),
+      (_) => const Color(0xFFFFC107),
     );
-    canvas.restore();
-    canvas.drawOval(headRect, _ink..strokeWidth = math.max(1.5, _cell * 0.07));
+
+    // pemain: kepala piksel dengan ikat kepala merah
+    final playerSize = _cell * 0.86;
+    drawPixelPattern(
+      canvas,
+      PixelPatterns.playerHead,
+      Rect.fromCenter(
+        center: Offset((_vx + 0.5) * _cell, (_vy + 0.5) * _cell),
+        width: playerSize,
+        height: playerSize,
+      ),
+      PixelPatterns.playerColor,
+      outline: false,
+    );
 
     canvas.restore();
   }

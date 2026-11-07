@@ -8,6 +8,8 @@ import 'package:flutter/material.dart' show BuildContext, Curves, Widget;
 import 'package:flutter/services.dart' show rootBundle;
 
 import '../../core/audio/audio_service.dart';
+import '../../core/level/boss_sprite.dart' show drawPixelTimeBar;
+import '../../core/level/cover_background.dart';
 import '../../core/level/level_game.dart';
 import '../../core/level/level_session.dart';
 import '../../core/level/star_calculator.dart';
@@ -44,6 +46,7 @@ class GeniusGame extends LevelGame {
   String? _lastLine;
   String? _resultLine;
 
+  late final CoverBackground _background;
   late final BossComponent _boss;
   late final TimeBarComponent _timeBar;
   bool _ready = false;
@@ -63,10 +66,11 @@ class GeniusGame extends LevelGame {
         'genius/boss_shock.png',
         'genius/boss_laugh.png',
         'genius/boss_defeat.png',
+        'ui/bg_night.png',
       ];
 
   @override
-  Color backgroundColor() => const Color(0xFFFFEBEE);
+  Color backgroundColor() => const Color(0xFF161228);
 
   @override
   Widget buildHud(BuildContext context) => GeniusHud(game: this);
@@ -77,6 +81,7 @@ class GeniusGame extends LevelGame {
     await loadAssets();
     Sprite spriteOf(String file) =>
         Sprite(levelImages.fromCache('genius/$file.png'));
+    _background = CoverBackground(levelImages.fromCache('ui/bg_night.png'));
     _boss = BossComponent(
       sprites: {
         BossMood.idle: spriteOf('boss_idle'),
@@ -86,7 +91,7 @@ class GeniusGame extends LevelGame {
       },
     );
     _timeBar = TimeBarComponent();
-    await addAll([_boss, _timeBar]);
+    await addAll([_background, _boss, _timeBar]);
     _ready = true;
     _layout(size);
     startStep(session.step);
@@ -99,6 +104,7 @@ class GeniusGame extends LevelGame {
   }
 
   void _layout(Vector2 s) {
+    _background.size = s;
     final side = min(s.x * 0.5, s.y * ArenaLayout.bossHeight);
     _boss.size = Vector2.all(side);
     _boss.position = Vector2(
@@ -288,7 +294,11 @@ enum BossMood { idle, shock, laugh, defeat }
 class BossComponent extends SpriteComponent {
   BossComponent({required Map<BossMood, Sprite> sprites})
       : _sprites = sprites,
-        super(sprite: sprites[BossMood.idle], anchor: Anchor.center);
+        super(
+          sprite: sprites[BossMood.idle],
+          anchor: Anchor.center,
+          paint: Paint()..filterQuality = FilterQuality.none,
+        );
 
   final Map<BossMood, Sprite> _sprites;
   int _moodToken = 0;
@@ -340,17 +350,6 @@ class BossComponent extends SpriteComponent {
 class TimeBarComponent extends PositionComponent {
   double fraction = 1;
 
-  final Paint _bg = Paint()..color = const Color(0xFFBDBDBD);
-  final Paint _fill = Paint()..color = const Color(0xFF1976D2);
-  final Paint _danger = Paint()..color = const Color(0xFFD32F2F);
-
   @override
-  void render(Canvas canvas) {
-    final f = fraction.clamp(0.0, 1.0);
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), _bg);
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.x * f, size.y),
-      f > 0.3 ? _fill : _danger,
-    );
-  }
+  void render(Canvas canvas) => drawPixelTimeBar(canvas, size.x, size.y, fraction);
 }

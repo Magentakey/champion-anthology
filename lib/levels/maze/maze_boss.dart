@@ -4,6 +4,8 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart' show Curves;
 
+import '../../core/level/boss_sprite.dart' show drawPixelTimeBar;
+
 enum MazeMood { idle, shock, laugh, defeat }
 
 /// Asep the Mazelogist (sprite 4 ekspresi).
@@ -11,7 +13,11 @@ enum MazeMood { idle, shock, laugh, defeat }
 class MazeBoss extends SpriteComponent {
   MazeBoss({required Map<MazeMood, Sprite> sprites})
       : _sprites = sprites,
-        super(sprite: sprites[MazeMood.idle], anchor: Anchor.center);
+        super(
+          sprite: sprites[MazeMood.idle],
+          anchor: Anchor.center,
+          paint: Paint()..filterQuality = FilterQuality.none,
+        );
 
   final Map<MazeMood, Sprite> _sprites;
   int _moodToken = 0;
@@ -59,21 +65,10 @@ class MazeBoss extends SpriteComponent {
   }
 }
 
-/// Bar waktu (sama dengan Bob): biru, jadi merah saat tersisa kurang dari 30%.
+/// Bar waktu piksel (sama untuk semua level).
 class MazeTimeBar extends PositionComponent {
   double fraction = 1;
 
-  final Paint _bg = Paint()..color = const Color(0xFFBDBDBD);
-  final Paint _fill = Paint()..color = const Color(0xFF1976D2);
-  final Paint _danger = Paint()..color = const Color(0xFFD32F2F);
-
   @override
-  void render(Canvas canvas) {
-    final f = fraction.clamp(0.0, 1.0);
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), _bg);
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.x * f, size.y),
-      f > 0.3 ? _fill : _danger,
-    );
-  }
+  void render(Canvas canvas) => drawPixelTimeBar(canvas, size.x, size.y, fraction);
 }

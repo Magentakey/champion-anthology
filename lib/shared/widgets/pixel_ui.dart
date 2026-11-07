@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'pixel_pattern.dart';
+
 /// Gaya dan widget pixel art (aturan lengkap: docs/PIXEL_ART_STYLE.md).
 ///
 /// Semua layar piksel memakai kisi rujukan 240x426 "piksel logis". [PixelUi.unit] memberi ukuran
@@ -185,43 +187,6 @@ class PixelFrame extends StatelessWidget {
   }
 }
 
-/// Gambar piksel dari pola teks (`#` terisi) dengan garis tepi gelap 1 sel di sekelilingnya.
-class _PixelIconPainter extends CustomPainter {
-  _PixelIconPainter({required this.rows, required this.colorOf, required this.cols});
-
-  final List<String> rows;
-  final int cols;
-  final Color Function(String ch) colorOf;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final cell = size.width / (cols + 2);
-    final paint = Paint()..isAntiAlias = false;
-    bool filled(int x, int y) {
-      if (y < 0 || y >= rows.length || x < 0 || x >= cols) return false;
-      return rows[y][x] != '.';
-    }
-
-    void cellAt(int gx, int gy, Color c) {
-      paint.color = c;
-      canvas.drawRect(Rect.fromLTWH(gx * cell, gy * cell, cell + 0.5, cell + 0.5), paint);
-    }
-
-    for (var y = -1; y <= rows.length; y++) {
-      for (var x = -1; x <= cols; x++) {
-        if (filled(x, y)) {
-          cellAt(x + 1, y + 1, colorOf(rows[y][x]));
-        } else if (filled(x - 1, y) || filled(x + 1, y) || filled(x, y - 1) || filled(x, y + 1)) {
-          cellAt(x + 1, y + 1, PixelUi.outline);
-        }
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _PixelIconPainter oldDelegate) => true; // warna bisa berubah (bintang terisi)
-}
-
 /// Bintang piksel: [filled] = emas, selain itu kosong (gelap).
 class PixelStar extends StatelessWidget {
   const PixelStar({super.key, required this.filled, this.size = 16});
@@ -231,25 +196,12 @@ class PixelStar extends StatelessWidget {
   /// Lebar dan tinggi (dp), termasuk garis tepi.
   final double size;
 
-  static const _rows = <String>[
-    '...#...',
-    '..###..',
-    '#######',
-    '.#####.',
-    '..###..',
-    '.##.##.',
-    '.#...#.',
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final color = filled ? const Color(0xFFFFD640) : const Color(0xFF50466E);
-    return SizedBox(
-      width: size,
-      height: size,
-      child: CustomPaint(
-        painter: _PixelIconPainter(rows: _rows, cols: 7, colorOf: (_) => color),
-      ),
+    return PixelIcon(
+      rows: PixelPatterns.star,
+      size: size,
+      color: filled ? const Color(0xFFFFD640) : const Color(0xFF50466E),
     );
   }
 }
@@ -261,31 +213,12 @@ class PixelLock extends StatelessWidget {
   /// Tinggi (dp); lebar mengikuti pola.
   final double size;
 
-  static const _rows = <String>[
-    '..####..',
-    '.##..##.',
-    '.#....#.',
-    '########',
-    '########',
-    '###kk###',
-    '###kk###',
-    '########',
-    '########',
-  ];
-
   @override
   Widget build(BuildContext context) {
-    final cell = size / 11;
-    return SizedBox(
-      width: cell * 10,
-      height: size,
-      child: CustomPaint(
-        painter: _PixelIconPainter(
-          rows: _rows,
-          cols: 8,
-          colorOf: (ch) => ch == 'k' ? PixelUi.dark : const Color(0xFFA8A0C8),
-        ),
-      ),
+    return PixelIcon(
+      rows: PixelPatterns.lock,
+      size: size,
+      colorOf: (ch) => ch == 'k' ? PixelUi.dark : const Color(0xFFA8A0C8),
     );
   }
 }

@@ -12,7 +12,11 @@ enum BossExpression { idle, shock, laugh, defeat }
 class BossSprite extends SpriteComponent {
   BossSprite({required Map<BossExpression, Sprite> sprites})
       : _sprites = sprites,
-        super(sprite: sprites[BossExpression.idle], anchor: Anchor.center);
+        super(
+          sprite: sprites[BossExpression.idle],
+          anchor: Anchor.center,
+          paint: Paint()..filterQuality = FilterQuality.none, // pixel art: tanpa penghalusan
+        );
 
   final Map<BossExpression, Sprite> _sprites;
   int _token = 0;
@@ -60,21 +64,31 @@ class BossSprite extends SpriteComponent {
   }
 }
 
-/// Bar waktu: biru, jadi merah saat tersisa kurang dari 30%.
+/// Menggambar bar waktu piksel: bingkai gelap, latar redup, dan blok-blok. Biru, lalu merah saat
+/// tersisa kurang dari 30%. Dipakai semua level agar tampilannya seragam.
+void drawPixelTimeBar(Canvas canvas, double width, double height, double fraction) {
+  final f = fraction.clamp(0.0, 1.0);
+  final paint = Paint()..isAntiAlias = false;
+  paint.color = const Color(0xFF18122A);
+  canvas.drawRect(Rect.fromLTWH(0, 0, width, height), paint);
+  final t = (height / 6).roundToDouble().clamp(1.0, 4.0);
+  final inner = Rect.fromLTWH(t, t, width - 2 * t, height - 2 * t);
+  paint.color = const Color(0xFF50466E);
+  canvas.drawRect(inner, paint);
+  const segments = 24;
+  final gap = t;
+  final blockW = (inner.width - gap * (segments - 1)) / segments;
+  final lit = (f * segments).ceil();
+  paint.color = f > 0.3 ? const Color(0xFF3C7CE0) : const Color(0xFFE03C3C);
+  for (var i = 0; i < lit; i++) {
+    canvas.drawRect(Rect.fromLTWH(inner.left + i * (blockW + gap), inner.top, blockW, inner.height), paint);
+  }
+}
+
+/// Bar waktu level (lihat [drawPixelTimeBar]).
 class LevelTimeBar extends PositionComponent {
   double fraction = 1;
 
-  final Paint _bg = Paint()..color = const Color(0xFFBDBDBD);
-  final Paint _fill = Paint()..color = const Color(0xFF1976D2);
-  final Paint _danger = Paint()..color = const Color(0xFFD32F2F);
-
   @override
-  void render(Canvas canvas) {
-    final f = fraction.clamp(0.0, 1.0);
-    canvas.drawRect(Rect.fromLTWH(0, 0, size.x, size.y), _bg);
-    canvas.drawRect(
-      Rect.fromLTWH(0, 0, size.x * f, size.y),
-      f > 0.3 ? _fill : _danger,
-    );
-  }
+  void render(Canvas canvas) => drawPixelTimeBar(canvas, size.x, size.y, fraction);
 }

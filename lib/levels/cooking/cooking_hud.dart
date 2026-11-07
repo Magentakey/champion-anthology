@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import '../../core/level/star_calculator.dart';
 import '../../shared/widgets/boss_widgets.dart';
 import '../../shared/widgets/hit_effect.dart';
+import '../../shared/widgets/pixel_pattern.dart';
+import '../../shared/widgets/pixel_ui.dart';
 import 'cooking_checks.dart';
 import 'cooking_config.dart';
 import 'cooking_game.dart';
 import 'cooking_models.dart';
 
-/// HUD Flutter di atas arena Flame: info step dan waktu, gelembung ucapan Chef, kartu pesanan,
+/// HUD bergaya piksel di atas arena Flame: info step dan waktu, gelembung ucapan Chef, kartu pesanan,
 /// tiga stasiun (target geser), baki bahan, dan panel cooking check.
 class CookingHud extends StatelessWidget {
   const CookingHud({super.key, required this.game});
@@ -18,6 +20,7 @@ class CookingHud extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topPad = MediaQuery.of(context).padding.top;
+    final u = PixelUi.unit(context);
 
     return HitEffect(
       trigger: game.wrongCount,
@@ -44,12 +47,12 @@ class CookingHud extends StatelessWidget {
                 Positioned(
                   top: topPad + 8,
                   left: 16,
-                  child: _TopBar(step: step, seconds: game.secondsLeft.value),
+                  child: _TopBar(step: step, seconds: game.secondsLeft.value, unit: u),
                 ),
                 Positioned(
                   top: topPad + 4,
-                  left: 160,
-                  child: _TimePopup(event: game.timeEvent),
+                  left: 170,
+                  child: _TimePopup(event: game.timeEvent, unit: u),
                 ),
                 Positioned(
                   top: h * CookingLayout.bubbleTop,
@@ -64,7 +67,7 @@ class CookingHud extends StatelessWidget {
                     left: side,
                     right: side,
                     height: h * CookingLayout.orderHeight,
-                    child: _OrderCard(order: order, done: game.done.value),
+                    child: _OrderCard(order: order, done: game.done.value, unit: u),
                   ),
                   Positioned(
                     top: h * CookingLayout.lowerTop,
@@ -74,8 +77,8 @@ class CookingHud extends StatelessWidget {
                     child: Row(
                       children: [
                         for (final s in Station.values) ...[
-                          if (s != Station.chop) const SizedBox(width: 10),
-                          Expanded(child: _StationTile(station: s, game: game)),
+                          if (s != Station.chop) SizedBox(width: 6 * u),
+                          Expanded(child: _StationTile(station: s, game: game, unit: u)),
                         ],
                       ],
                     ),
@@ -85,7 +88,7 @@ class CookingHud extends StatelessWidget {
                     left: side,
                     right: side,
                     bottom: h * CookingLayout.lowerBottom,
-                    child: _Tray(ids: game.tray.value, canDrag: game.canAct),
+                    child: _Tray(ids: game.tray.value, canDrag: game.canAct, unit: u),
                   ),
                 ],
                 if (check != null)
@@ -94,7 +97,7 @@ class CookingHud extends StatelessWidget {
                     left: side,
                     right: side,
                     bottom: h * CookingLayout.lowerBottom,
-                    child: _CheckPanel(game: game, check: check),
+                    child: _CheckPanel(game: game, check: check, unit: u),
                   ),
                 if (game.showBanner.value)
                   Positioned(
@@ -117,25 +120,21 @@ class CookingHud extends StatelessWidget {
 }
 
 class _TopBar extends StatelessWidget {
-  const _TopBar({required this.step, required this.seconds});
+  const _TopBar({required this.step, required this.seconds, required this.unit});
 
   final int step;
   final int seconds;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
     final urgent = seconds <= CookingTuning.hurrySeconds;
-    final color = urgent ? Colors.red : Colors.black87;
+    final color = urgent ? const Color(0xFFFF6A5E) : PixelUi.cream;
     return Row(
       children: [
-        Text(
-          'Step $step/${StarCalculator.totalSteps}',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        ),
-        const SizedBox(width: 12),
-        Icon(Icons.timer_outlined, size: 20, color: color),
-        const SizedBox(width: 4),
-        Text('${seconds}s', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: color)),
+        Text('Step $step/${StarCalculator.totalSteps}', style: PixelUi.text(unit)),
+        SizedBox(width: 12 * unit),
+        Text('${seconds}s', style: PixelUi.text(unit, scale: 2, color: color, outline: PixelUi.outline)),
       ],
     );
   }
@@ -143,9 +142,10 @@ class _TopBar extends StatelessWidget {
 
 /// "-3s" merah (penalti) atau "+1s" hijau (bonus) yang melayang naik dan memudar.
 class _TimePopup extends StatelessWidget {
-  const _TimePopup({required this.event});
+  const _TimePopup({required this.event, required this.unit});
 
   final ValueNotifier<TimeEvent?> event;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
@@ -164,10 +164,11 @@ class _TimePopup extends StatelessWidget {
               offset: Offset(0, -18 * t),
               child: Text(
                 '${bonus ? '+' : ''}${e.seconds}s',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: bonus ? Colors.green.shade700 : Colors.red.shade700,
+                style: PixelUi.text(
+                  unit,
+                  scale: 2,
+                  color: bonus ? const Color(0xFF7DE08A) : const Color(0xFFFF6A5E),
+                  outline: PixelUi.outline,
                 ),
               ),
             ),
@@ -179,84 +180,94 @@ class _TimePopup extends StatelessWidget {
 }
 
 Color _stationColor(Station s) => switch (s) {
-      Station.chop => Colors.green.shade200,
-      Station.boil => Colors.blue.shade200,
-      Station.fry => Colors.orange.shade200,
+      Station.chop => const Color(0xFFA5D6A7),
+      Station.boil => const Color(0xFF90CAF9),
+      Station.fry => const Color(0xFFFFCC80),
     };
 
 /// Kartu pesanan: nama masakan dan bahan yang harus dimasak (dicentang jika sudah).
 class _OrderCard extends StatelessWidget {
-  const _OrderCard({required this.order, required this.done});
+  const _OrderCard({required this.order, required this.done, required this.unit});
 
   final Order order;
   final Set<String> done;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade300,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        children: [
-          Text(
-            'PESANAN: ${order.recipe.name.toUpperCase()}',
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, letterSpacing: 0.8),
-          ),
-          const SizedBox(height: 4),
-          Expanded(
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                children: [
-                  for (final i in order.ingredients) _OrderChip(ingredient: i, finished: done.contains(i.id)),
-                ],
+    final u = unit;
+    return SizedBox.expand(
+      child: PixelFrame(
+        unit: u,
+        fill: PixelUi.paper,
+        padding: EdgeInsets.symmetric(horizontal: 6 * u, vertical: 4 * u),
+        child: Column(
+          children: [
+            Text(
+              'PESANAN: ${order.recipe.name.toUpperCase()}',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: PixelUi.text(u, color: PixelUi.ink),
+            ),
+            SizedBox(height: 3 * u),
+            Expanded(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  children: [
+                    for (final i in order.ingredients) _OrderChip(ingredient: i, finished: done.contains(i.id), unit: u),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
 class _OrderChip extends StatelessWidget {
-  const _OrderChip({required this.ingredient, required this.finished});
+  const _OrderChip({required this.ingredient, required this.finished, required this.unit});
 
   final Ingredient ingredient;
   final bool finished;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
+    final u = unit;
     return SizedBox(
-      width: 64,
+      width: 46 * u,
       child: Opacity(
-        opacity: finished ? 0.45 : 1,
+        opacity: finished ? 0.5 : 1,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Stack(
               alignment: Alignment.center,
               children: [
-                Image.asset(ingredient.imageAsset, width: 36, height: 36, gaplessPlayback: true),
-                if (finished) const Icon(Icons.check_circle, color: Colors.green, size: 28),
+                Image.asset(
+                  ingredient.imageAsset,
+                  width: 20 * u,
+                  height: 20 * u,
+                  filterQuality: FilterQuality.none,
+                  gaplessPlayback: true,
+                ),
+                if (finished)
+                  PixelIcon(
+                    rows: PixelPatterns.check,
+                    size: 14 * u,
+                    color: const Color(0xFF3FBF55),
+                  ),
               ],
             ),
-            Text(ingredient.name, style: const TextStyle(fontSize: 11, color: Colors.black87)),
+            Text(ingredient.name, style: PixelUi.text(u, color: PixelUi.ink)),
+            SizedBox(height: u),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-              decoration: BoxDecoration(
-                color: _stationColor(ingredient.station),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                ingredient.station.verb.toUpperCase(),
-                style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.black87),
-              ),
+              padding: EdgeInsets.symmetric(horizontal: 2 * u),
+              color: _stationColor(ingredient.station),
+              child: Text(ingredient.station.verb, style: PixelUi.text(u, color: PixelUi.ink)),
             ),
           ],
         ),
@@ -267,37 +278,41 @@ class _OrderChip extends StatelessWidget {
 
 /// Stasiun masak: target jatuhnya bahan.
 class _StationTile extends StatelessWidget {
-  const _StationTile({required this.station, required this.game});
+  const _StationTile({required this.station, required this.game, required this.unit});
 
   final Station station;
   final CookingGame game;
+  final double unit;
 
   String get _asset => 'assets/images/cooking/station_${station.name}.png';
 
   @override
   Widget build(BuildContext context) {
+    final u = unit;
     return DragTarget<String>(
       onWillAcceptWithDetails: (_) => game.canAct,
       onAcceptWithDetails: (d) => game.drop(d.data, station),
       builder: (context, candidates, rejected) {
         final hot = candidates.isNotEmpty;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 120),
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: hot ? Colors.amber.shade100 : Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: hot ? Colors.orange.shade700 : Colors.transparent, width: 3),
-          ),
-          child: Column(
-            children: [
-              Expanded(child: Image.asset(_asset, fit: BoxFit.contain, gaplessPlayback: true)),
-              Text(
-                station.label,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.black87),
-              ),
-              Text('(${station.verb})', style: const TextStyle(fontSize: 11, color: Colors.black54)),
-            ],
+        return SizedBox.expand(
+          child: PixelFrame(
+            unit: u,
+            fill: hot ? const Color(0xFFFFD98A) : PixelUi.paper,
+            padding: EdgeInsets.all(3 * u),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Image.asset(
+                    _asset,
+                    fit: BoxFit.contain,
+                    filterQuality: FilterQuality.none,
+                    gaplessPlayback: true,
+                  ),
+                ),
+                Text(station.label, style: PixelUi.text(u, color: PixelUi.ink)),
+                Text('(${station.verb})', style: PixelUi.text(u, color: const Color(0xFF6E5A96))),
+              ],
+            ),
           ),
         );
       },
@@ -307,29 +322,33 @@ class _StationTile extends StatelessWidget {
 
 /// Baki bahan (bahan pesanan + pengecoh). Tiap bahan bisa digeser ke stasiun.
 class _Tray extends StatelessWidget {
-  const _Tray({required this.ids, required this.canDrag});
+  const _Tray({required this.ids, required this.canDrag, required this.unit});
 
   final List<String> ids;
   final bool canDrag;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(6),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade300.withValues(alpha: 0.92),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: FittedBox(
-        fit: BoxFit.scaleDown,
-        child: SizedBox(
-          width: 4 * 76,
-          child: Wrap(
-            alignment: WrapAlignment.center,
-            spacing: 0,
-            runSpacing: 4,
-            children: [for (final id in ids) _TrayItem(ingredient: ingredientById(id), canDrag: canDrag)],
+    final u = unit;
+    return SizedBox.expand(
+      child: PixelFrame(
+        unit: u,
+        fill: PixelUi.panelDark,
+        padding: EdgeInsets.all(3 * u),
+        child: Center(
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: SizedBox(
+              width: 4 * 76,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                runSpacing: 4,
+                children: [
+                  for (final id in ids) _TrayItem(ingredient: ingredientById(id), canDrag: canDrag, unit: u),
+                ],
+              ),
+            ),
           ),
         ),
       ),
@@ -338,10 +357,11 @@ class _Tray extends StatelessWidget {
 }
 
 class _TrayItem extends StatelessWidget {
-  const _TrayItem({required this.ingredient, required this.canDrag});
+  const _TrayItem({required this.ingredient, required this.canDrag, required this.unit});
 
   final Ingredient ingredient;
   final bool canDrag;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
@@ -350,8 +370,14 @@ class _TrayItem extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Image.asset(ingredient.imageAsset, width: 56, height: 56, gaplessPlayback: true),
-          Text(ingredient.name, style: const TextStyle(fontSize: 11, color: Colors.black87)),
+          Image.asset(
+            ingredient.imageAsset,
+            width: 56,
+            height: 56,
+            filterQuality: FilterQuality.none,
+            gaplessPlayback: true,
+          ),
+          Text(ingredient.name, style: PixelUi.text(unit)),
         ],
       ),
     );
@@ -362,7 +388,12 @@ class _TrayItem extends StatelessWidget {
       dragAnchorStrategy: (draggable, context, position) => const Offset(34, 34),
       feedback: Material(
         type: MaterialType.transparency,
-        child: Image.asset(ingredient.imageAsset, width: 68, height: 68),
+        child: Image.asset(
+          ingredient.imageAsset,
+          width: 68,
+          height: 68,
+          filterQuality: FilterQuality.none,
+        ),
       ),
       childWhenDragging: Opacity(opacity: 0.3, child: body),
       child: body,
@@ -372,13 +403,15 @@ class _TrayItem extends StatelessWidget {
 
 // ---------------- panel cooking check ----------------
 class _CheckPanel extends StatelessWidget {
-  const _CheckPanel({required this.game, required this.check});
+  const _CheckPanel({required this.game, required this.check, required this.unit});
 
   final CookingGame game;
   final CookingCheck check;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
+    final u = unit;
     final ingredient = game.checkingId == null ? null : ingredientById(game.checkingId!);
     final title = switch (check.station) {
       Station.chop => 'Iris ${ingredient?.name ?? ''}!',
@@ -390,63 +423,51 @@ class _CheckPanel extends StatelessWidget {
       Station.boil => 'Tahan api untuk naik, lepas untuk turun. Jaga di zona hijau!',
       Station.fry => 'Ketuk BALIK! saat jarum di zona emas!',
     };
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF8E1),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade500, width: 2),
-      ),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              if (ingredient != null) Image.asset(ingredient.imageAsset, width: 40, height: 40, gaplessPlayback: true),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              ),
-            ],
-          ),
-          const SizedBox(height: 2),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(hint, style: const TextStyle(fontSize: 12, color: Colors.black54)),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: ListenableBuilder(
-              listenable: game.checkTick,
-              builder: (context, _) => switch (check) {
-                final ChopCheck c => _ChopBody(game: game, check: c),
-                final BoilCheck c => _BoilBody(game: game, check: c),
-                final FryCheck c => _FryBody(game: game, check: c),
-                _ => const SizedBox.shrink(),
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({required this.value, required this.color});
-
-  final double value;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        height: 22,
-        child: Stack(
+    return SizedBox.expand(
+      child: PixelFrame(
+        unit: u,
+        fill: PixelUi.paper,
+        padding: EdgeInsets.all(6 * u),
+        child: Column(
           children: [
-            Container(color: Colors.grey.shade400),
-            FractionallySizedBox(widthFactor: value.clamp(0.0, 1.0), child: Container(color: color)),
+            Row(
+              children: [
+                if (ingredient != null)
+                  Image.asset(
+                    ingredient.imageAsset,
+                    width: 24 * u,
+                    height: 24 * u,
+                    filterQuality: FilterQuality.none,
+                    gaplessPlayback: true,
+                  ),
+                SizedBox(width: 6 * u),
+                Expanded(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: PixelUi.text(u, scale: 2, color: PixelUi.ink),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 3 * u),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(hint, style: PixelUi.text(u, color: const Color(0xFF6E5A96), height: 1.15)),
+            ),
+            SizedBox(height: 6 * u),
+            Expanded(
+              child: ListenableBuilder(
+                listenable: game.checkTick,
+                builder: (context, _) => switch (check) {
+                  final ChopCheck c => _ChopBody(game: game, check: c, unit: u),
+                  final BoilCheck c => _BoilBody(game: game, check: c, unit: u),
+                  final FryCheck c => _FryBody(game: game, check: c, unit: u),
+                  _ => const SizedBox.shrink(),
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -454,11 +475,12 @@ class _ProgressBar extends StatelessWidget {
   }
 }
 
-/// Tombol besar yang bereaksi pada sentuhan awal (tanpa menunggu deteksi ketuk).
+/// Tombol besar piksel yang bereaksi pada sentuhan awal (tanpa menunggu deteksi ketuk).
 class _BigButton extends StatelessWidget {
   const _BigButton({
     required this.label,
     required this.color,
+    required this.unit,
     required this.onDown,
     this.onUp,
     this.pressed = false,
@@ -467,34 +489,42 @@ class _BigButton extends StatelessWidget {
 
   final String label;
   final Color color;
+  final double unit;
   final VoidCallback onDown;
   final VoidCallback? onUp;
   final bool pressed;
-  final IconData? icon;
+  final List<String>? icon;
 
   @override
   Widget build(BuildContext context) {
+    final u = unit;
     return Listener(
       behavior: HitTestBehavior.opaque,
       onPointerDown: (_) => onDown(),
       onPointerUp: (_) => onUp?.call(),
       onPointerCancel: (_) => onUp?.call(),
-      child: AnimatedScale(
-        scale: pressed ? 0.95 : 1,
-        duration: const Duration(milliseconds: 70),
-        child: Container(
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.black87, width: 3),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (icon != null) Icon(icon, size: 44, color: Colors.black87),
-              Text(label, style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black87)),
-            ],
+      child: Transform.translate(
+        offset: Offset(0, pressed ? 3 * u : 0),
+        child: SizedBox.expand(
+          child: PixelFrame(
+            unit: u,
+            fill: color,
+            padding: EdgeInsets.all(4 * u),
+            child: Center(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (icon != null) ...[
+                      PixelIcon(rows: icon!, size: 28 * u, color: const Color(0xFFE65100)),
+                      SizedBox(height: 4 * u),
+                    ],
+                    Text(label, style: PixelUi.text(u, scale: 2, color: PixelUi.ink)),
+                  ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
@@ -503,22 +533,23 @@ class _BigButton extends StatelessWidget {
 }
 
 class _ChopBody extends StatelessWidget {
-  const _ChopBody({required this.game, required this.check});
+  const _ChopBody({required this.game, required this.check, required this.unit});
 
   final CookingGame game;
   final ChopCheck check;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        _ProgressBar(value: check.progress, color: Colors.green.shade500),
-        const SizedBox(height: 12),
+        PixelBar(value: check.progress, color: const Color(0xFF3FBF55), unit: unit),
+        SizedBox(height: 8 * unit),
         Expanded(
           child: _BigButton(
             label: 'KETUK TERUS!',
-            color: Colors.green.shade300,
-            icon: Icons.touch_app,
+            color: const Color(0xFF8FD48F),
+            unit: unit,
             pressed: check.tapCount.isOdd,
             onDown: game.tapCheck,
           ),
@@ -529,17 +560,19 @@ class _ChopBody extends StatelessWidget {
 }
 
 class _BoilBody extends StatelessWidget {
-  const _BoilBody({required this.game, required this.check});
+  const _BoilBody({required this.game, required this.check, required this.unit});
 
   final CookingGame game;
   final BoilCheck check;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
+    final u = unit;
     return Column(
       children: [
-        _ProgressBar(value: check.progress, color: Colors.blue.shade500),
-        const SizedBox(height: 12),
+        PixelBar(value: check.progress, color: const Color(0xFF3C7CE0), unit: u),
+        SizedBox(height: 8 * u),
         Expanded(
           child: Row(
             children: [
@@ -550,28 +583,28 @@ class _BoilBody extends StatelessWidget {
                     Expanded(
                       child: CustomPaint(
                         size: Size.infinite,
-                        painter: _ThermometerPainter(check),
+                        painter: _ThermometerPainter(check, u),
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4 * u),
                     Text(
                       check.danger ? 'AWAS MELUAP!' : (check.inZone ? 'Pas!' : 'Atur suhu'),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: check.danger ? Colors.red : Colors.black87,
+                      style: PixelUi.text(
+                        u,
+                        color: check.danger ? const Color(0xFFD62828) : PixelUi.ink,
                       ),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 8 * u),
               Expanded(
                 flex: 3,
                 child: _BigButton(
                   label: 'TAHAN API',
-                  color: check.holding ? Colors.red.shade300 : Colors.orange.shade200,
-                  icon: Icons.local_fire_department,
+                  color: check.holding ? const Color(0xFFF08A80) : const Color(0xFFFFCC80),
+                  unit: u,
+                  icon: PixelPatterns.fire,
                   pressed: check.holding,
                   onDown: () => game.holdCheck(true),
                   onUp: () => game.holdCheck(false),
@@ -586,39 +619,33 @@ class _BoilBody extends StatelessWidget {
 }
 
 class _ThermometerPainter extends CustomPainter {
-  _ThermometerPainter(this.check);
+  _ThermometerPainter(this.check, this.unit);
 
   final BoilCheck check;
+  final double unit;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final w = size.width.clamp(0.0, 70.0);
+    final paint = Paint()..isAntiAlias = false;
+    final w = size.width.clamp(0.0, 60.0);
     final left = (size.width - w) / 2;
-    final tube = RRect.fromRectAndRadius(Rect.fromLTWH(left, 0, w, size.height), const Radius.circular(12));
-    canvas.drawRRect(tube, Paint()..color = Colors.grey.shade300);
+    final t = unit.clamp(1.0, 5.0);
+
+    paint.color = PixelUi.outline;
+    canvas.drawRect(Rect.fromLTWH(left - t, -t, w + 2 * t, size.height + 2 * t), paint);
+    paint.color = const Color(0xFFD6D0E4);
+    canvas.drawRect(Rect.fromLTWH(left, 0, w, size.height), paint);
 
     double yOf(double v) => size.height * (1 - v);
     final p = check.params;
+    paint.color = const Color(0xFF4CAF50);
+    canvas.drawRect(Rect.fromLTRB(left, yOf(p.zoneHigh), left + w, yOf(p.zoneLow)), paint);
+    paint.color = check.danger ? const Color(0xFFE03C3C) : const Color(0xFFFF7043);
+    canvas.drawRect(Rect.fromLTRB(left + w * 0.3, yOf(check.temperature), left + w * 0.7, size.height), paint);
+    paint.color = PixelUi.outline;
     canvas.drawRect(
-      Rect.fromLTRB(left, yOf(p.zoneHigh), left + w, yOf(p.zoneLow)),
-      Paint()..color = Colors.green.shade400,
-    );
-    final fill = Rect.fromLTRB(left + w * 0.3, yOf(check.temperature), left + w * 0.7, size.height);
-    canvas.drawRect(fill, Paint()..color = check.danger ? Colors.red : Colors.deepOrange);
-    canvas.drawLine(
-      Offset(left - 6, yOf(check.temperature)),
-      Offset(left + w + 6, yOf(check.temperature)),
-      Paint()
-        ..color = Colors.black87
-        ..strokeWidth = 4
-        ..strokeCap = StrokeCap.round,
-    );
-    canvas.drawRRect(
-      tube,
-      Paint()
-        ..color = check.danger ? Colors.red : Colors.black87
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3,
+      Rect.fromLTWH(left - 3 * t, yOf(check.temperature) - t, w + 6 * t, 2 * t),
+      paint,
     );
   }
 
@@ -627,46 +654,44 @@ class _ThermometerPainter extends CustomPainter {
 }
 
 class _FryBody extends StatelessWidget {
-  const _FryBody({required this.game, required this.check});
+  const _FryBody({required this.game, required this.check, required this.unit});
 
   final CookingGame game;
   final FryCheck check;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
+    final u = unit;
     final p = check.params;
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            for (var i = 0; i < p.hitsNeeded; i++)
-              Icon(
-                i < check.hits ? Icons.star : Icons.star_border,
-                size: 30,
-                color: i < check.hits ? Colors.amber.shade700 : Colors.grey,
-              ),
-            const SizedBox(width: 24),
-            for (var i = 0; i <= p.missesAllowed; i++)
-              Icon(
-                Icons.close,
-                size: 26,
-                color: i < check.misses ? Colors.red : Colors.grey.shade400,
-              ),
+            for (var i = 0; i < p.hitsNeeded; i++) ...[
+              if (i > 0) SizedBox(width: 2 * u),
+              PixelStar(filled: i < check.hits, size: 11 * u),
+            ],
+            SizedBox(width: 16 * u),
+            for (var i = 0; i <= p.missesAllowed; i++) ...[
+              if (i > 0) SizedBox(width: 2 * u),
+              PixelHeart(filled: i >= check.misses, size: 8 * u),
+            ],
           ],
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 8 * u),
         SizedBox(
-          height: 64,
+          height: 24 * u,
           width: double.infinity,
-          child: CustomPaint(painter: _FryBarPainter(check)),
+          child: CustomPaint(painter: _FryBarPainter(check, u)),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 8 * u),
         Expanded(
           child: _BigButton(
             label: 'BALIK!',
-            color: Colors.orange.shade300,
-            icon: Icons.flip,
+            color: const Color(0xFFFFCC80),
+            unit: u,
             pressed: check.tapCount.isOdd,
             onDown: game.tapCheck,
           ),
@@ -677,40 +702,36 @@ class _FryBody extends StatelessWidget {
 }
 
 class _FryBarPainter extends CustomPainter {
-  _FryBarPainter(this.check);
+  _FryBarPainter(this.check, this.unit);
 
   final FryCheck check;
+  final double unit;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final bar = RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(12));
-    canvas.drawRRect(bar, Paint()..color = Colors.grey.shade300);
+    final paint = Paint()..isAntiAlias = false;
+    final t = unit.clamp(1.0, 5.0);
+    paint.color = PixelUi.outline;
+    canvas.drawRect(Offset.zero & size, paint);
+    final inner = Rect.fromLTWH(t, t, size.width - 2 * t, size.height - 2 * t);
+    paint.color = const Color(0xFFD6D0E4);
+    canvas.drawRect(inner, paint);
 
     final half = check.params.zoneWidth / 2;
-    final zone = Rect.fromLTRB(
-      size.width * (check.center - half),
-      0,
-      size.width * (check.center + half),
-      size.height,
+    paint.color = const Color(0xFFFFC107);
+    canvas.drawRect(
+      Rect.fromLTRB(
+        inner.left + inner.width * (check.center - half),
+        inner.top,
+        inner.left + inner.width * (check.center + half),
+        inner.bottom,
+      ),
+      paint,
     );
-    canvas.drawRect(zone, Paint()..color = Colors.amber.shade400);
 
-    final x = size.width * check.needle;
-    canvas.drawLine(
-      Offset(x, -4),
-      Offset(x, size.height + 4),
-      Paint()
-        ..color = Colors.black87
-        ..strokeWidth = 6
-        ..strokeCap = StrokeCap.round,
-    );
-    canvas.drawRRect(
-      bar,
-      Paint()
-        ..color = Colors.black87
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3,
-    );
+    final x = inner.left + inner.width * check.needle;
+    paint.color = PixelUi.outline;
+    canvas.drawRect(Rect.fromLTWH(x - t, -t, 2 * t, size.height + 2 * t), paint);
   }
 
   @override
