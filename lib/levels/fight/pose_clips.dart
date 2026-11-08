@@ -92,6 +92,34 @@ class PoseClip {
     return keys.last.pose;
   }
 
+  /// Pose kunci yang ditampilkan pada [tMs] TANPA campuran antar pose (animasi sprite per bingkai):
+  /// pose kunci asal sampai kemajuan (sudah diberi kurva percepatan) mencapai separuh, lalu pose tujuan.
+  /// Waktu fase serangan tidak berubah; hanya gambar yang melompat antar pose kunci.
+  Pose sampleStepped(int tMs) {
+    if (keys.length == 1) return keys.first.pose;
+    if (loop) {
+      final cycle = durationMs;
+      var t = cycle == 0 ? 0 : (tMs < 0 ? 0 : tMs) % cycle;
+      for (var i = 1; i < keys.length; i++) {
+        final seg = keys[i].ms;
+        if (t < seg) return _pick(keys[i - 1], keys[i], t / seg);
+        t -= seg;
+      }
+      final wrap = keys.first.ms;
+      return wrap == 0 ? keys.first.pose : _pick(keys.last, keys.first, t / wrap);
+    }
+    var t = tMs < 0 ? 0 : tMs;
+    for (var i = 1; i < keys.length; i++) {
+      final seg = keys[i].ms;
+      if (seg == 0) continue;
+      if (t < seg) return _pick(keys[i - 1], keys[i], t / seg);
+      t -= seg;
+    }
+    return keys.last.pose;
+  }
+
+  static Pose _pick(PoseKey from, PoseKey to, double u) => applyEase(to.ease, u) < 0.5 ? from.pose : to.pose;
+
   static Pose _blend(PoseKey from, PoseKey to, double u) =>
       Pose.lerp(from.pose, to.pose, applyEase(to.ease, u));
 }

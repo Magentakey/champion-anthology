@@ -371,6 +371,23 @@ def build(spec):
         c.line((34, ey - 1), (27, ey + 2), OUT, th=2)
         c.stamp(int(CX - 4.5), my + 1, ["OOOOOOOOO", "OwOwOwOwO", "OOOOOOOOO"], KEY)
         blush = False
+    elif face == 'fighter':
+        eye = ["OOOOO.", "OyyeeO", "OyyeeO", "OeeeeO", "OeppeO", "OpppeO", ".OOOO."]
+        for ex, sgn in ((14, -1), (28, 1)):
+            c.stamp(ex, ey, eye, KEY)
+            xo = ex - 1 if sgn < 0 else ex + 6
+            c.put(xo, ey, OUT)
+            c.put(xo, ey - 1, OUT)
+        c.stamp(int(CX - 3.5), my + 1, ["O.....O", ".OOOOO."], KEY)
+        blush = True
+    elif face == 'angry_shout':
+        eye = ["OOOOOO", "OwwppO", ".OOOO."]
+        for ex in (14, 28):
+            c.stamp(ex, ey + 2, eye, KEY)
+        c.line((13, ey - 1), (20, ey + 2), OUT, th=2)
+        c.line((34, ey - 1), (27, ey + 2), OUT, th=2)
+        c.stamp(int(CX - 4.5), my, ["OOOOOOOOO", "OwwwwwwwO", "OkkkkkkkO", ".OktttkO.", "..OOOOO.."], KEY)
+        blush = False
     elif face == 'shock':
         eye = [".OOOO.", "OwwwwO", "OwppwO", "OwppwO", "OwwwwO", ".OOOO."]
         for ex in (14, 28):

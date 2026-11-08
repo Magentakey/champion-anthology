@@ -2,12 +2,14 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 
 import '../../core/level/level_session.dart';
+import '../../shared/widgets/pixel_pattern.dart';
+import '../../shared/widgets/pixel_ui.dart';
 import 'fight_config.dart';
 import 'fight_game.dart';
 import 'pad_icons.dart';
 import 'pose_clips.dart';
 
-/// HUD Level Fight (landscape): bar HP dengan potret, banner fase, tombol kontrol,
+/// HUD Level Fight (landscape) bergaya piksel: bar HP dengan potret, banner fase, tombol kontrol,
 /// dan panel uji (tombol DEV, hanya di build debug) untuk memutar animasi dan memaksa hasil.
 class FightHud extends StatelessWidget {
   const FightHud({super.key, required this.game});
@@ -16,6 +18,7 @@ class FightHud extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final u = PixelUi.overlayUnit(context);
     return SafeArea(
       child: Stack(
         children: [
@@ -33,6 +36,7 @@ class FightHud extends StatelessWidget {
                     hp: game.playerHp,
                     color: const Color(0xFFFF7043),
                     mirror: false,
+                    unit: u,
                   ),
                 ),
                 const SizedBox(width: 64),
@@ -45,13 +49,14 @@ class FightHud extends StatelessWidget {
                     mirror: true,
                     notches: [for (final p in fightPhases.take(2)) p.hpFloor],
                     phase: game.phase,
+                    unit: u,
                   ),
                 ),
               ],
             ),
           ),
           // kilat merah tepi layar saat pemain terkena
-          Positioned.fill(child: IgnorePointer(child: _HurtFlash(counter: game.hurtFlash))),
+          Positioned.fill(child: IgnorePointer(child: _HurtFlash(counter: game.hurtFlash, unit: u))),
           // banner fase
           Align(
             alignment: const Alignment(0, -0.35),
@@ -63,12 +68,7 @@ class FightHud extends StatelessWidget {
                 child: Text(
                   text ?? '',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.white,
-                    shadows: [Shadow(color: Colors.black, blurRadius: 6)],
-                  ),
+                  style: PixelUi.text(u, scale: 2, color: PixelUi.cream, outline: PixelUi.outline, shadow: PixelUi.dark),
                 ),
               ),
             ),
@@ -76,7 +76,7 @@ class FightHud extends StatelessWidget {
           // teks besar tengah layar (K.O.!)
           Align(
             alignment: const Alignment(0, -0.1),
-            child: IgnorePointer(child: _Callout(text: game.callout)),
+            child: IgnorePointer(child: _Callout(text: game.callout, unit: u)),
           ),
           Positioned(left: 12, bottom: 10, child: _MovePad(game: game)),
           Positioned(right: 12, bottom: 10, child: _ActionPad(game: game)),
@@ -90,10 +90,12 @@ class FightHud extends StatelessWidget {
 }
 
 // ---------------- efek layar ----------------
+/// Kilat merah di tepi layar saat pemain terkena: bingkai tebal bersudut siku (bukan gradasi halus).
 class _HurtFlash extends StatelessWidget {
-  const _HurtFlash({required this.counter});
+  const _HurtFlash({required this.counter, required this.unit});
 
   final ValueNotifier<int> counter;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
@@ -103,14 +105,11 @@ class _HurtFlash extends StatelessWidget {
           ? const SizedBox.shrink()
           : TweenAnimationBuilder<double>(
               key: ValueKey(n),
-              tween: Tween(begin: 0.4, end: 0),
+              tween: Tween(begin: 0.7, end: 0),
               duration: const Duration(milliseconds: 300),
               builder: (_, v, _) => DecoratedBox(
                 decoration: BoxDecoration(
-                  gradient: RadialGradient(
-                    radius: 1.1,
-                    colors: [Colors.transparent, Colors.red.withValues(alpha: v)],
-                  ),
+                  border: Border.all(color: const Color(0xFFE03C3C).withValues(alpha: v), width: 8 * unit),
                 ),
               ),
             ),
@@ -119,9 +118,10 @@ class _HurtFlash extends StatelessWidget {
 }
 
 class _Callout extends StatelessWidget {
-  const _Callout({required this.text});
+  const _Callout({required this.text, required this.unit});
 
   final ValueNotifier<String?> text;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
@@ -137,15 +137,12 @@ class _Callout extends StatelessWidget {
               builder: (_, scale, child) => Transform.scale(scale: scale, child: child),
               child: Text(
                 t,
-                style: TextStyle(
-                  fontSize: 56,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 2,
-                  color: Colors.white,
-                  shadows: [
-                    Shadow(color: Colors.red.shade900, offset: const Offset(4, 4)),
-                    const Shadow(color: Colors.black, blurRadius: 10),
-                  ],
+                style: PixelUi.text(
+                  unit,
+                  scale: 4,
+                  color: PixelUi.gold,
+                  outline: PixelUi.goldOutline,
+                  shadow: PixelUi.dark,
                 ),
               ),
             ),
@@ -161,6 +158,7 @@ class _Fighter extends StatelessWidget {
     required this.hp,
     required this.color,
     required this.mirror,
+    required this.unit,
     this.notches = const [],
     this.phase,
   });
@@ -170,16 +168,22 @@ class _Fighter extends StatelessWidget {
   final ValueNotifier<double> hp;
   final Color color;
   final bool mirror;
+  final double unit;
   final List<double> notches;
   final ValueNotifier<int>? phase;
 
   @override
   Widget build(BuildContext context) {
-    final portraitWidget = Container(
-      width: 46,
-      height: 46,
-      decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black26),
-      child: Image.asset(portrait, fit: BoxFit.cover),
+    final u = unit;
+    final portraitWidget = SizedBox(
+      width: 30 * u,
+      height: 30 * u,
+      child: PixelFrame(
+        unit: u,
+        fill: PixelUi.panelDark,
+        padding: EdgeInsets.zero,
+        child: Image.asset(portrait, fit: BoxFit.cover, filterQuality: FilterQuality.none),
+      ),
     );
     final bar = Expanded(
       child: Column(
@@ -188,98 +192,117 @@ class _Fighter extends StatelessWidget {
           Row(
             mainAxisAlignment: mirror ? MainAxisAlignment.end : MainAxisAlignment.start,
             children: [
-              Text(
-                name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 13,
-                  shadows: [Shadow(color: Colors.black, blurRadius: 4)],
-                ),
-              ),
+              Text(name, style: PixelUi.text(u, outline: PixelUi.outline)),
               if (phase != null)
                 ValueListenableBuilder<int>(
                   valueListenable: phase!,
                   builder: (_, p, _) => Padding(
-                    padding: const EdgeInsets.only(left: 6, right: 0),
+                    padding: EdgeInsets.only(left: 6 * u),
                     child: Row(
                       children: [
-                        for (var i = 1; i <= 3; i++)
-                          Icon(
-                            i < p ? Icons.star : Icons.star_border,
-                            size: 14,
-                            color: Colors.amber,
-                          ),
+                        for (var i = 1; i <= 3; i++) ...[
+                          if (i > 1) SizedBox(width: u),
+                          PixelStar(filled: i < p, size: 9 * u),
+                        ],
                       ],
                     ),
                   ),
                 ),
             ],
           ),
-          const SizedBox(height: 2),
-          _HpBar(hp: hp, color: color, mirror: mirror, notches: notches),
+          SizedBox(height: 2 * u),
+          _HpBar(hp: hp, color: color, mirror: mirror, notches: notches, unit: u),
         ],
       ),
     );
     return Row(
       children: mirror
-          ? [bar, const SizedBox(width: 8), portraitWidget]
-          : [portraitWidget, const SizedBox(width: 8), bar],
+          ? [bar, SizedBox(width: 6 * u), portraitWidget]
+          : [portraitWidget, SizedBox(width: 6 * u), bar],
     );
   }
 }
 
+/// Bar HP piksel: bingkai gelap, blok-blok berwarna yang berkurang dari sisi dalam, dan
+/// penanda batas fase (garis krem).
 class _HpBar extends StatelessWidget {
-  const _HpBar({required this.hp, required this.color, required this.mirror, required this.notches});
+  const _HpBar({
+    required this.hp,
+    required this.color,
+    required this.mirror,
+    required this.notches,
+    required this.unit,
+  });
 
   final ValueNotifier<double> hp;
   final Color color;
   final bool mirror;
   final List<double> notches;
+  final double unit;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 18,
-      decoration: BoxDecoration(
-        color: Colors.black54,
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Colors.white, width: 1.5),
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(2),
-        child: LayoutBuilder(
-          builder: (_, box) => Stack(
-            children: [
-              ValueListenableBuilder<double>(
-                valueListenable: hp,
-                builder: (_, value, _) => Align(
-                  alignment: mirror ? Alignment.centerRight : Alignment.centerLeft,
-                  child: FractionallySizedBox(
-                    widthFactor: value.clamp(0.0, 1.0).toDouble(),
-                    child: Container(color: color),
-                  ),
-                ),
-              ),
-              // penanda batas fase (67% dan 33%)
-              for (final n in notches)
-                Positioned(
-                  left: mirror ? null : box.maxWidth * n,
-                  right: mirror ? box.maxWidth * n : null,
-                  top: 0,
-                  bottom: 0,
-                  child: Container(width: 2, color: Colors.white),
-                ),
-            ],
-          ),
+    return SizedBox(
+      height: 10 * unit,
+      width: double.infinity,
+      child: ValueListenableBuilder<double>(
+        valueListenable: hp,
+        builder: (_, value, _) => CustomPaint(
+          painter: _HpPainter(value.clamp(0.0, 1.0).toDouble(), color, mirror, notches, unit),
         ),
       ),
     );
   }
 }
 
+class _HpPainter extends CustomPainter {
+  _HpPainter(this.value, this.color, this.mirror, this.notches, this.unit);
+
+  final double value;
+  final Color color;
+  final bool mirror;
+  final List<double> notches;
+  final double unit;
+
+  static const _segments = 24;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..isAntiAlias = false;
+    final t = unit.clamp(1.0, 5.0).toDouble();
+    paint.color = PixelUi.cream;
+    canvas.drawRect(Offset.zero & size, paint);
+    paint.color = PixelUi.outline;
+    canvas.drawRect(Rect.fromLTWH(t, t, size.width - 2 * t, size.height - 2 * t), paint);
+    final inner = Rect.fromLTWH(2 * t, 2 * t, size.width - 4 * t, size.height - 4 * t);
+    paint.color = const Color(0xFF50466E);
+    canvas.drawRect(inner, paint);
+
+    final gap = t;
+    final blockW = (inner.width - gap * (_segments - 1)) / _segments;
+    final lit = (value * _segments).ceil();
+    paint.color = color;
+    for (var i = 0; i < lit; i++) {
+      final slot = mirror ? _segments - 1 - i : i;
+      canvas.drawRect(
+        Rect.fromLTWH(inner.left + slot * (blockW + gap), inner.top, blockW, inner.height),
+        paint,
+      );
+    }
+    // penanda batas fase
+    paint.color = PixelUi.cream;
+    for (final n in notches) {
+      final x = mirror ? inner.right - inner.width * n : inner.left + inner.width * n;
+      canvas.drawRect(Rect.fromLTWH(x - t / 2, 0, t, size.height), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _HpPainter oldDelegate) => true;
+}
+
 // ---------------- tombol kontrol ----------------
-/// Tombol yang tahan banyak sentuhan sekaligus lewat Listener (bukan GestureDetector).
+/// Tombol piksel yang tahan banyak sentuhan sekaligus lewat Listener (bukan GestureDetector).
 class _PadButton extends StatefulWidget {
   const _PadButton({
     required this.icon,
@@ -287,7 +310,7 @@ class _PadButton extends StatefulWidget {
     required this.size,
     required this.onDown,
     this.onUp,
-    this.color = const Color(0xCCFFFFFF),
+    this.color = const Color(0xFF3A3050),
     this.ready,
   });
 
@@ -298,6 +321,8 @@ class _PadButton extends StatefulWidget {
   final double size;
   final VoidCallback onDown;
   final VoidCallback? onUp;
+
+  /// Warna isi tombol (bingkai krem tetap).
   final Color color;
 
   /// Kesiapan (0..1) untuk tombol dengan jeda, mis. pisau.
@@ -318,19 +343,19 @@ class _PadButtonState extends State<_PadButton> {
 
   @override
   Widget build(BuildContext context) {
-    final face = AnimatedContainer(
-      duration: const Duration(milliseconds: 60),
-      width: widget.size,
-      height: widget.size,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: _down ? Colors.orange : widget.color,
-        border: Border.all(color: Colors.black87, width: 2.5),
-      ),
-      alignment: Alignment.center,
-      child: CustomPaint(
-        size: Size.square(widget.size * 0.56),
-        painter: PadIconPainter(widget.icon),
+    final u = PixelUi.overlayUnit(context);
+    final fill = _down ? Color.lerp(widget.color, Colors.white, 0.35)! : widget.color;
+    final face = Transform.translate(
+      offset: Offset(0, _down ? 2 * u : 0),
+      child: SizedBox(
+        width: widget.size,
+        height: widget.size,
+        child: PixelFrame(
+          unit: u,
+          fill: fill,
+          padding: EdgeInsets.zero,
+          child: Center(child: PadIconView(widget.icon, size: widget.size * 0.56)),
+        ),
       ),
     );
     final ready = widget.ready;
@@ -343,26 +368,23 @@ class _PadButtonState extends State<_PadButton> {
         onPointerUp: (_) => _set(false),
         onPointerCancel: (_) => _set(false),
         child: ready == null
-          ? face
-          : ValueListenableBuilder<double>(
-              valueListenable: ready,
-              builder: (_, r, _) => Stack(
-                alignment: Alignment.center,
-                children: [
-                  Opacity(opacity: r >= 1 ? 1 : 0.55, child: face),
-                  if (r < 1)
-                    SizedBox(
-                      width: widget.size,
-                      height: widget.size,
-                      child: CircularProgressIndicator(
-                        value: r,
-                        strokeWidth: 5,
-                        color: Colors.deepOrange,
+            ? face
+            : ValueListenableBuilder<double>(
+                valueListenable: ready,
+                builder: (_, r, _) => Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Opacity(opacity: r >= 1 ? 1 : 0.55, child: face),
+                    if (r < 1)
+                      Positioned(
+                        left: 4 * u,
+                        right: 4 * u,
+                        bottom: 4 * u,
+                        child: PixelBar(value: r, color: const Color(0xFFFF7043), unit: u, height: 5, segments: 8),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
       ),
     );
   }
@@ -413,7 +435,7 @@ class _ActionPad extends StatelessWidget {
           icon: PadIcon.block,
           semantic: 'Tangkis',
           size: base,
-          color: const Color(0xCC90CAF9),
+          color: const Color(0xFF2E5C8A),
           onDown: () => game.setBlock(true),
           onUp: () => game.setBlock(false),
         ),
@@ -422,7 +444,7 @@ class _ActionPad extends StatelessWidget {
           icon: PadIcon.kick,
           semantic: 'Tendang',
           size: base,
-          color: const Color(0xCCFFE082),
+          color: const Color(0xFF8A6A1E),
           onDown: game.pressKick,
         ),
         SizedBox(width: base * 0.15),
@@ -433,7 +455,7 @@ class _ActionPad extends StatelessWidget {
               icon: PadIcon.knife,
               semantic: 'Lempar pisau',
               size: base * 0.85,
-              color: const Color(0xCCB0BEC5),
+              color: const Color(0xFF4A5560),
               ready: game.knifeReady,
               onDown: game.pressKnife,
             ),
@@ -442,7 +464,7 @@ class _ActionPad extends StatelessWidget {
               icon: PadIcon.punch,
               semantic: 'Pukul',
               size: base * 1.2,
-              color: const Color(0xCCEF9A9A),
+              color: const Color(0xFFA83A3A),
               onDown: game.pressPunch,
             ),
           ],

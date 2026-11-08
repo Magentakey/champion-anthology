@@ -67,7 +67,7 @@ lib/
 │   └── save/                 # ProgressRepository (bintang tersimpan)
 ├── levels/
 │   ├── level_registry.dart   # daftar semua level
-│   ├── fight/                # Level 1: arena, petarung stickman, pose, animasi
+│   ├── fight/                # Level 1: arena piksel, sprite petarung per pose, klip animasi
 │   └── genius/               # Level 2: game, HUD, konfigurasi, soal, dialog
 ├── screens/                  # menu, storyboard, pilih level, intro boss, gameplay
 └── shared/widgets/           # StarRow, overlay jeda/hasil, efek getar
@@ -83,12 +83,11 @@ assets/
 ├── audio/                    # SFX dan BGM (.wav)
 └── icon/                     # ikon aplikasi
 test/                         # unit dan widget test
-tools/art/generate_art.py     # generator aset gambar (gaya stickman)
+tools/art/pixel_*.py          # generator semua aset gambar bergaya piksel (jalankan pixel_all.py)
 tools/audio/generate_fight_audio.py  # generator SFX dan BGM Level 1 (butuh numpy)
 tools/audio/generate_cooking_audio.py  # generator SFX Level 4 (potong, desis, gelembung, gosong)
 docs/PANDUAN_PENGEMBANGAN.md  # panduan menambah level, soal, dan mengganti aset
-docs/PIXEL_ART_STYLE.md       # kunci art style pixel 48 px (gaya baru)
-docs/ART_STYLE.md             # gaya stickman lama (aset yang belum dimigrasi)
+docs/PIXEL_ART_STYLE.md       # kunci art style pixel 48 px
 ```
 
 Pembagian tugas: **Flutter** untuk menu, dialog, dan HUD; **Flame** hanya aktif saat gameplay (boss, time bar, efek). Aset dimuat per level dan dibersihkan saat level ditutup agar ringan di perangkat spesifikasi rendah.
@@ -105,7 +104,7 @@ Lihat [`docs/PANDUAN_PENGEMBANGAN.md`](docs/PANDUAN_PENGEMBANGAN.md) untuk:
 
 ## Aset dan lisensi
 
-- Gambar dibuat sendiri lewat skrip. Menu utama, storyboard, pilih level, intro boss, overlay jeda/hasil, boss Bob/Asep/Chef, aset Level 4, dan ikon sudah bergaya pixel art 48 px (`python tools/art/pixel_font.py` lalu `python tools/art/pixel_export.py`, aturan di [`docs/PIXEL_ART_STYLE.md`](docs/PIXEL_ART_STYLE.md)); HUD Level 2 sampai 4 juga sudah piksel; hanya Level 1 (Rock) yang masih gaya stickman lama (`tools/art/generate_art.py`, [`docs/ART_STYLE.md`](docs/ART_STYLE.md)) dan akan dimigrasi bertahap. Semua gambar bisa diganti art final dengan menimpa file bernama sama.
+- Semua gambar dibuat sendiri lewat skrip bergaya pixel art 48 px (`python tools/art/pixel_all.py`, aturan di [`docs/PIXEL_ART_STYLE.md`](docs/PIXEL_ART_STYLE.md)) dan bisa diganti art final dengan menimpa file bernama sama.
 - Efek suara dan musik latar Level 1 dibuat sendiri secara sintetis lewat `tools/audio/generate_fight_audio.py`; tidak ada file audio dari pihak lain.
 - Lisensi proyek: belum ditentukan.
 

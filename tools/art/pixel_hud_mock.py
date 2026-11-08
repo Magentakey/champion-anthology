@@ -183,6 +183,90 @@ def cooking():
     return sc
 
 
+FIST = ['.#######.', '#########', '#k#k#k#k#', '#########', '#########', '.#######.', '..#####..', '...###...']
+BOOT = ['..###....', '..###....', '..###....', '..####...', '..######.', '..#######', '.########', '.########']
+SHIELD = ['#########', '####k####', '#kkkkkkk#', '####k####', '.###k###.', '.#######.', '..#####..', '...###...', '....#....']
+KNIFE = ['.......##', '......###', '.....###.', '....###..', '.k.###...', '.kk##....', '..kkk....', '.kk.k....', 'kk.......']
+LEFT = ['...#...', '..##...', '.###...', '#######', '.###...', '..##...', '...#...']
+RIGHT = ['...#...', '...##..', '...###.', '#######', '...###.', '...##..', '...#...']
+
+
+def hp_bar(sc, x, y, w, h, value, color, mirror, notches):
+    sc.rect(x, y, x + w, y + h, CREAM)
+    sc.rect(x + 1, y + 1, x + w - 1, y + h - 1, ps.OUT)
+    sc.rect(x + 2, y + 2, x + w - 2, y + h - 2, C(80, 70, 110))
+    n = 24
+    bw = (w - 4 - (n - 1)) / n
+    lit = int(value * n + 0.999)
+    for i in range(lit):
+        slot = n - 1 - i if mirror else i
+        a = x + 2 + int(slot * (bw + 1))
+        sc.rect(a, y + 2, a + int(bw), y + h - 2, color)
+    for nv in notches:
+        nx = x + w - 2 - int((w - 4) * nv) if mirror else x + 2 + int((w - 4) * nv)
+        sc.rect(nx, y, nx + 1, y + h, CREAM)
+
+
+def paste_small(sc, path, x, y, size):
+    pic = Image.open(path).convert('RGBA').resize((size, size), Image.NEAREST)
+    for yy in range(size):
+        for xx in range(size):
+            px = pic.getpixel((xx, yy))
+            if px[3]:
+                sc.set(x + xx, y + yy, px[:3] + (255,))
+
+
+def fight():
+    import pixel_arena
+    sc = pixel_arena.build()
+    # HUD: bar HP
+    for mirror, x0 in ((False, 4), (True, 366)):
+        m.frame(sc, x0, 4, 30, 30, PANEL)
+        paste_small(sc, ROOT / f"assets/images/fight/portrait_{'rock' if mirror else 'player'}.png", x0 + 2, 6, 26)
+    sc.text(38, 6, 'KAMU', color=CREAM, outline=ps.OUT)
+    sc.text(362 - sc.text_w('ROCK', 1), 6, 'ROCK', color=CREAM, outline=ps.OUT)
+    hp_bar(sc, 38, 16, 150, 11, 0.8, C(255, 112, 67), False, [])
+    hp_bar(sc, 212, 16, 150, 11, 0.55, C(255, 179, 0), True, [0.66, 0.33])
+    for i in range(3):
+        m.icon(sc, 304 + i * 11, 6, ['...#...', '..###..', '#######', '.#####.', '..###..', '.##.##.', '.#...#.'],
+               lambda _c, f=i < 1: C(255, 214, 64) if f else C(80, 70, 110))
+    m.frame(sc, 191, 5, 18, 18, C(26, 20, 44))
+    sc.rect(196, 10, 199, 18, CREAM)
+    sc.rect(201, 10, 204, 18, CREAM)
+    text_x = 200 - sc.text_w('FASE 2', 2) // 2
+    sc.text(text_x, 56, 'FASE 2', scale=2, color=CREAM, outline=ps.OUT, shadow=ps.C(26, 20, 44))
+    # tombol kontrol
+    def pad(x, y, fill, rows, pressed=False, colors=None):
+        m.frame(sc, x, y + (1 if pressed else 0), 38, 38, fill)
+        m.icon(sc, x + 15, y + 15, rows, colors or (lambda ch: ps.OUT if ch == 'k' else CREAM))
+    pad(8, 136, PANEL, LEFT)
+    pad(52, 136, PANEL, RIGHT)
+    pad(300, 96, C(46, 92, 138), SHIELD)
+    pad(344, 96, C(74, 85, 96), KNIFE, colors=lambda ch: C(141, 92, 46) if ch == 'k' else C(207, 216, 220))
+    pad(300, 138, C(138, 106, 30), BOOT)
+    pad(344, 138, C(168, 58, 58), FIST)
+    img = sc.image(2).convert('RGB')
+    # petarung (sprite per pose) memakai skala game: 1 satuan ruang pose = (360 * 0.60 / 1082) px
+    unit = 360 * 0.60 / 1082
+    s = unit * 18
+    ground = 0.86 * 360
+
+    def place(name, idx, cx, flip, mul):
+        sheet = Image.open(ROOT / f'assets/images/fight/{name}_sheet.png').convert('RGBA')
+        fr = sheet.crop((idx * 96, 0, idx * 96 + 96, 96))
+        size = round(96 * s * mul)
+        fr = fr.resize((size, size), Image.NEAREST)
+        if flip:
+            fr = fr.transpose(Image.FLIP_LEFT_RIGHT)
+        ox, oy = 40 * s * mul, 68 * s * mul
+        x = cx - (size - ox if flip else ox)
+        img.paste(fr, (round(x), round(ground - oy)), fr)
+
+    place('player', 6, 300, False, 1.0)     # punchHit
+    place('rock', 13, 470, True, 1.12)      # block
+    return img
+
+
 def main():
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'docs' / 'preview'
     out.mkdir(parents=True, exist_ok=True)
@@ -191,6 +275,7 @@ def main():
     for i, im in enumerate(imgs):
         sheet.paste(im, (i * 740, 0))
     sheet.save(out / 'hud_pixel.png')
+    fight().save(out / 'fight_pixel.png')
     print('mockup HUD ditulis ke', out)
 
 

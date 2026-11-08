@@ -109,7 +109,7 @@ Cukup **timpa file bernama sama**, tanpa mengubah kode:
 | Efek suara | `assets/audio/*.wav` |
 | Ikon aplikasi | `assets/icon/app_icon.png` dan `app_icon_fg.png`, lalu `dart run flutter_launcher_icons` |
 
-Ukuran gambar boss sebaiknya persegi (512×512). Semua gambar bisa dibuat ulang dengan `python tools/art/generate_art.py` (butuh Pillow); aturan gayanya ada di [`ART_STYLE.md`](ART_STYLE.md). Jika menambah file baru atau subfolder baru, daftarkan di `pubspec.yaml`.
+Ukuran gambar boss sebaiknya persegi (512×512). Semua gambar bisa dibuat ulang dengan `python tools/art/pixel_all.py` (butuh Pillow, numpy untuk audio, fonttools untuk font); aturan gayanya ada di [`PIXEL_ART_STYLE.md`](PIXEL_ART_STYLE.md). Jika menambah file baru atau subfolder baru, daftarkan di `pubspec.yaml`.
 
 ## 5. Mengubah teks dan dialog
 
@@ -165,7 +165,7 @@ Semua angka ada di `lib/levels/cooking/cooking_config.dart`:
 
 **Menambah resep atau bahan** (`cooking_models.dart`):
 
-1. Bahan baru: tambah satu entri di `ingredientCatalog` (id, nama, stasiun), lalu tambahkan fungsi `ing_<id>()` dan daftarnya di `INGREDIENTS` pada `tools/art/cooking_art.py`, jalankan skripnya. Tes memeriksa semua gambar ada.
+1. Bahan baru: tambah satu entri di `ingredientCatalog` (id, nama, stasiun), lalu tambahkan fungsi `ing_<id>()` dan daftarnya di `INGREDIENTS` pada `tools/art/pixel_cooking.py`, jalankan skripnya. Tes memeriksa semua gambar ada.
 2. Resep baru: tambah `Recipe(nama, [id bahan...])` di `recipes`. Minimal 5 bahan, dan 3 bahan pertama harus mencakup minimal 2 stasiun (step 1 memakai 3 bahan pertama).
 
 Cooking check berupa kelas Dart murni di `cooking_checks.dart` (tanpa Flame/Flutter), jadi mudah diuji dan ikut berhenti saat jeda. Stasiun baru = enum `Station` + kelas `CookingCheck` baru + satu panel di `cooking_hud.dart`.

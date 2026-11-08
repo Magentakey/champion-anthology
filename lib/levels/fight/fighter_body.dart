@@ -4,6 +4,7 @@ import 'attacks.dart';
 import 'fight_config.dart';
 import 'pose.dart';
 import 'pose_clips.dart';
+import 'pose_frames.dart';
 import 'pose_library.dart';
 
 enum BodyState { idle, walk, attack, block, hurt, ko, win, scripted }
@@ -72,6 +73,7 @@ class FighterBody {
   double _blendMs = _blendInMs;
   Pose _blendFrom = Poses.idleA;
   Pose _pose = Poses.idleA;
+  Pose _framePose = Poses.idleA;
 
   // ---------------- keadaan ----------------
   bool get canAct =>
@@ -84,6 +86,10 @@ class FighterBody {
   double get hpFraction => maxHp == 0 ? 0 : hp / maxHp;
 
   Pose get pose => _pose;
+
+  /// Pose kunci yang digambar sebagai sprite (tanpa campuran antar pose) dan nomor bingkainya.
+  Pose get framePose => _framePose;
+  int get frameIndex => PoseFrames.indexOf(_framePose);
   PoseClip get clip => _clip;
   FaceState get face => _clip.face;
 
@@ -342,5 +348,6 @@ class FighterBody {
     _pose = _blendMs >= _blendInMs
         ? target
         : Pose.lerp(_blendFrom, target, applyEase(Ease.out, _blendMs / _blendInMs));
+    _framePose = _clip.sampleStepped(_clipMs.round());
   }
 }

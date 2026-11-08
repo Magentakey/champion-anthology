@@ -4,15 +4,21 @@ import 'dart:ui';
 import 'package:flame/components.dart';
 
 import 'fighter_body.dart';
-import 'stick_renderer.dart';
+import 'pose_frames.dart';
 
-/// Tampilan satu petarung di layar. Logikanya ada di [FighterBody]; komponen ini hanya
-/// mengubah satuan ruang gambar ke piksel dan menggambar pose yang sedang aktif.
+/// Tampilan satu petarung di layar (sprite piksel, satu gambar per pose). Logikanya ada di
+/// [FighterBody]; komponen ini hanya mengubah satuan ruang gambar ke piksel layar dan
+/// menggambar bingkai pose yang sedang aktif dari [sheet].
 class Fighter extends Component {
-  Fighter({required this.body, required this.style});
+  Fighter({required this.body, required this.sheet, this.spriteScale = 1});
 
   final FighterBody body;
-  final FighterStyle style;
+
+  /// Lembar sprite (lihat [PoseFrames]).
+  final Image sheet;
+
+  /// Pembesar sprite (Rock sedikit lebih besar dari pemain).
+  final double spriteScale;
 
   /// Piksel layar per satuan ruang gambar, dan garis tanah di layar.
   double unit = 1;
@@ -20,15 +26,14 @@ class Fighter extends Component {
 
   double _timeSec = 0;
 
-  /// Cahaya aba-aba: gradien radial dibuat sekali (bukan blur besar tiap frame, yang berat
-  /// di HP spesifikasi rendah). Intensitas diatur lewat [_glowPaint.colorFilter].
-  static final Paint _glowPaint = Paint()
-    ..shader = Gradient.radial(
-      Offset.zero,
-      675,
-      const [Color(0xFFFF2828), Color(0xD9FF2828), Color(0x00FF2828)],
-      const [0.0, 0.55, 1.0],
-    );
+  // Paint dipakai ulang; tanpa antialiasing dan tanpa penghalusan gambar (pixel art).
+  static final Paint _spritePaint = Paint()
+    ..isAntiAlias = false
+    ..filterQuality = FilterQuality.none;
+  static final Paint _shadowPaint = Paint()
+    ..isAntiAlias = false
+    ..color = const Color(0x40000000);
+  static final Paint _glowPaint = Paint()..isAntiAlias = false;
 
   @override
   void update(double dt) {
@@ -42,27 +47,34 @@ class Fighter extends Component {
     canvas.translate(body.x * unit, groundY);
     canvas.scale(unit * body.facing, unit);
 
-    // aba-aba serangan khusus: cahaya merah berdenyut di belakang petarung
+    // aba-aba serangan khusus: aura merah berpita (3 lapis) berdenyut di belakang petarung
     if (body.telegraphing) {
       final pulse = 0.5 + 0.5 * math.sin(_timeSec * 22);
-      _glowPaint.colorFilter = ColorFilter.mode(
-        Color.fromARGB((70 + 90 * pulse).round(), 255, 255, 255),
-        BlendMode.modulate,
-      );
-      canvas.save();
-      canvas.translate(0, -560);
-      canvas.scale(980 / 1350, 1); // lingkaran 675 jadi oval 980x1350
-      canvas.drawCircle(Offset.zero, 675, _glowPaint);
-      canvas.restore();
+      const bands = <(double, int)>[(1.0, 38), (0.74, 54), (0.48, 74)];
+      for (final (k, base) in bands) {
+        _glowPaint.color = Color.fromARGB((base + 50 * pulse).round(), 255, 40, 40);
+        canvas.drawOval(
+          Rect.fromCenter(center: const Offset(0, -560), width: 980 * k, height: 1350 * k),
+          _glowPaint,
+        );
+      }
     }
 
     // bayangan di tanah
     canvas.drawOval(
-      Rect.fromCenter(center: const Offset(0, 14), width: 520, height: 44),
-      Paint()..color = const Color(0x33000000),
+      Rect.fromCenter(center: const Offset(0, 14), width: 520 * spriteScale, height: 44),
+      _shadowPaint,
     );
 
-    StickRenderer.paint(canvas, body.pose, style, body.face, _timeSec);
+    canvas.scale(spriteScale);
+    const size = PoseFrames.frameSize;
+    const u = PoseFrames.unitsPerPixel;
+    canvas.drawImageRect(
+      sheet,
+      Rect.fromLTWH(body.frameIndex * size, 0, size, size),
+      Rect.fromLTWH(-PoseFrames.originX * u, -PoseFrames.originY * u, size * u, size * u),
+      _spritePaint,
+    );
     canvas.restore();
   }
 }

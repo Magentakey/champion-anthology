@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Pose petarung Level Fight: sumber tunggal untuk gambar (generate_art.py) dan game (Dart).
+"""Pose petarung Level Fight: sumber tunggal data pose untuk game (Dart).
 
-Bingkai lokal 1000 x 1400, menghadap KANAN, tanah di y = 1262 (sama seperti POSES di
-generate_art.py). Jalankan dari root proyek:
+Bingkai lokal 1000 x 1400, menghadap KANAN, tanah di y = 1262. Jalankan dari root proyek:
 
     python tools/art/fight_poses.py            # tulis lib/levels/fight/pose_library.dart
-    python tools/art/fight_poses.py --sheet    # tulis juga lembar pratinjau di /tmp/fight_poses.png
+
+Sprite petarung dibuat dari data pose yang sama oleh tools/art/pixel_fighters.py (urutan pose di
+pose_library.dart = urutan bingkai pada lembar sprite; jalankan pixel_fighters.py lagi setiap pose berubah).
 
 Format pose: head, hip, arm_f/arm_b = (siku, tangan), leg_f/leg_b = (lutut, pergelangan, ujung kaki).
 Bahu dihitung otomatis (18% dari leher ke pinggul). `neck` opsional (default tepat di bawah
@@ -112,18 +113,6 @@ def shoulder(p):
     return (nx + (hx - nx) * 0.18, ny + (hy - ny) * 0.18)
 
 
-def to_draw_format(p):
-    """Format POSES milik generate_art.draw_figure (pratinjau dan aset gambar)."""
-    sh = shoulder(p)
-    hip = p['hip']
-    return dict(
-        head=p['head'], hip=hip, neck=p['neck'], over=p['over'],
-        arm_f=[sh, *p['arm_f']], arm_b=[sh, *p['arm_b']],
-        leg_f=[hip, *p['leg_f']], leg_b=[hip, *p['leg_b']],
-        fist_f=p['fist_f'], fist_b=p['fist_b'],
-    )
-
-
 def check_limbs():
     """Peringatan jika panjang anggota badan menyimpang jauh (tanda salah ketik koordinat)."""
     bad = []
@@ -194,33 +183,8 @@ def write_dart():
     print('ditulis', out.relative_to(ROOT), f'({len(FIGHT_POSES)} pose)')
 
 
-def write_sheet(path='/tmp/fight_poses.png'):
-    sys.path.insert(0, str(Path(__file__).parent))
-    import generate_art as ga
-    from PIL import Image, ImageDraw
-    names = list(FIGHT_POSES)
-    cols = 6
-    cw, ch = 330, 470
-    rows = (len(names) + cols - 1) // cols
-    sheet = Image.new('RGBA', (cols * cw, rows * ch), (255, 235, 238, 255))
-    for i, name in enumerate(names):
-        ga.POSES['_f_' + name] = to_draw_format(FIGHT_POSES[name])
-        a = ga.Art(cw, ch)
-        scale = 0.30
-        ga.draw_figure(a, '_f_' + name, 'mc_hype', 10, 10 + 8, scale, lw=22, acc=('headband',))
-        # garis tanah
-        a.line([(0, 10 + 1262 * scale + 10), (cw, 10 + 1262 * scale + 10)], 2, (120, 120, 120, 255))
-        tile = a.final()
-        ImageDraw.Draw(tile).text((8, 6), name, fill=(0, 0, 0, 255))
-        sheet.alpha_composite(tile, ((i % cols) * cw, (i // cols) * ch))
-    sheet.convert('RGB').save(path)
-    print('ditulis', path)
-
-
 if __name__ == '__main__':
     problems = check_limbs()
     for msg in problems:
         print('PERINGATAN panjang anggota badan:', msg)
     write_dart()
-    if '--sheet' in sys.argv:
-        write_sheet()

@@ -140,6 +140,53 @@ class PixelPatterns {
     '.#####.',
   ];
 
+  /// Ikon tombol pertarungan (`k` = warna kedua: celah jari, palang perisai, gagang pisau).
+  static const fist = <String>[
+    '.#######.',
+    '#########',
+    '#k#k#k#k#',
+    '#########',
+    '#########',
+    '.#######.',
+    '..#####..',
+    '...###...',
+  ];
+
+  static const boot = <String>[
+    '..###....',
+    '..###....',
+    '..###....',
+    '..####...',
+    '..######.',
+    '..#######',
+    '.########',
+    '.########',
+  ];
+
+  static const shield = <String>[
+    '#########',
+    '####k####',
+    '#kkkkkkk#',
+    '####k####',
+    '.###k###.',
+    '.#######.',
+    '..#####..',
+    '...###...',
+    '....#....',
+  ];
+
+  static const knife = <String>[
+    '.......##',
+    '......###',
+    '.....###.',
+    '....###..',
+    '.k.###...',
+    '.kk##....',
+    '..kkk....',
+    '.kk.k....',
+    'kk.......',
+  ];
+
   /// Kepala pemain 9x9 untuk labirin (garis tepi `O` sudah termasuk).
   static const playerHead = <String>[
     '..OOOOO..',

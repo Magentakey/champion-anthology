@@ -1,8 +1,8 @@
 # Kunci Art Style: Pixel Art 48 px
 
 > **Status: TERKUNCI.** Semua aset visual baru mengikuti dokumen ini. Mengubah aturan di sini harus disengaja
-> dan diikuti pembuatan ulang semua aset yang terdampak. Dokumen ini menggantikan `docs/ART_STYLE.md`
-> (gaya stickman) untuk aset baru; gaya lama tetap dipakai hanya sampai aset terkait dimigrasi.
+> dan diikuti pembuatan ulang semua aset yang terdampak. Seluruh game (menu, cerita, empat level, ikon)
+> kini memakai gaya ini; gaya stickman lama sudah dihapus.
 >
 > Sumber kebenaran angka dan bentuk: `tools/art/pixel_kit.py` (karakter, warna, pose, wajah) dan
 > `tools/art/pixel_scenes.py` (font, latar, adegan, UI). Jika dokumen dan kode berbeda, kode yang benar;
@@ -189,6 +189,7 @@ Ukuran panel cerita (logis → PNG 3×): panel 1 = 216×87 → 648×261; panel 2
 ## 11. Cara membuat aset
 
 ```bash
+python tools/art/pixel_all.py         # SEMUA aset sekaligus (font, menu, bos, Level 4, ikon, Level 1)
 python tools/art/pixel_font.py        # font: assets/fonts/PixelChampion.ttf (butuh: pip install fonttools)
 python tools/art/pixel_export.py      # aset game: home_bg, btn_* (+wide), ui/bg_night, panel_1..4 (diperbesar 3x) -> assets/images/
 python tools/art/pixel_bosses.py      # boss Bob, Asep, Chef (4 ekspresi, 512x512, sprite 8x) -> assets/images/{genius,maze,cooking}/
@@ -196,7 +197,10 @@ python tools/art/pixel_cooking.py     # Level 4: 16 ikon bahan, 3 stasiun, latar
 python tools/art/pixel_icon.py        # ikon aplikasi -> assets/icon/ (lalu: dart run flutter_launcher_icons)
 python tools/art/pixel_scenes.py      # mockup penuh + lembar karakter -> docs/preview/ (tidak masuk game)
 python tools/art/pixel_ui_mock.py     # perkiraan layar pilih level dan intro boss -> docs/preview/
-python tools/art/pixel_hud_mock.py    # perkiraan HUD Level 2 sampai 4 -> docs/preview/
+python tools/art/pixel_hud_mock.py    # perkiraan HUD Level 1 sampai 4 -> docs/preview/
+python tools/art/pixel_fighters.py    # Level 1: sprite pemain dan Rock per pose, potret HUD, bos Rock -> assets/images/fight/
+python tools/art/pixel_arena.py       # Level 1: latar Colosseum -> assets/images/fight/arena.png
+python tools/art/fight_poses.py       # data pose -> lib/levels/fight/pose_library.dart (lalu jalankan pixel_fighters.py)
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
 ```
 
@@ -246,11 +250,10 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | Menu utama (latar, judul, tombol) | **Terpasang di game** |
 | Storyboard (4 panel, bingkai, keterangan, penanda halaman) | **Terpasang di game** |
 | Gambar boss Bob, Asep, Chef (4 ekspresi: idle, kaget, tertawa, kalah) | **Terpasang (aset)** |
-| Rock sebagai sprite per frame untuk pertarungan (dan pemain, arena, potret Level 1) | Belum (dikerjakan paling akhir) |
 | Ikon bahan, stasiun, latar dapur, chef (Level 4) | **Terpasang (aset)** |
 | Pilih level, intro boss, overlay jeda dan hasil, tombol jeda, bintang dan gembok | **Terpasang di game** |
 | HUD Level 2 sampai 4 (kartu soal dan tombol jawaban Bob, tombol arah dan labirin Asep, kartu pesanan, stasiun, baki, dan panel cooking check Chef, bar waktu, gelembung, banner step) | **Terpasang di game** |
-| HUD Level 1 (Rock) dan seluruh visual pertarungan | Belum (dikerjakan paling akhir) |
+| Level 1 (Rock): sprite pemain dan Rock per pose, arena, obor, percikan, pisau, bar HP, tombol kontrol, potret | **Terpasang di game** |
 | Ikon aplikasi (wajah pemain + sinar matahari; latar adaptif `#FFAA38`) | **Terpasang (aset)** |
 
 ### Ekspresi boss
@@ -258,3 +261,26 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 Empat keadaan baku untuk boss: `idle` (pose dan wajah asli), `shock` (pose `surprise`, mata bulat putih, mulut "o", tetes keringat),
 `laugh` (pose `hips`, mata menutup, air mata, mulut lebar), `defeat` (pose `stand`, mata X, mulut bergelombang, bintang pusing).
 Aksesori khas tetap terlihat di semua ekspresi (kacamata Bob, topi koki Chef, papan labirin Asep jatuh ke lantai saat bereaksi).
+
+## 15. Level 1 (pertarungan): sprite per pose
+
+Animasi Level 1 memakai **sprite per bingkai**: satu gambar piksel untuk tiap pose, bukan stickman yang digambar dari sendi.
+Logika tidak berubah: kamus pose (`pose_library.dart`, dihasilkan `fight_poses.py`) dan klip (`pose_clips.dart`) tetap menentukan
+**waktu** fase serangan; hanya tampilannya yang diganti. `PoseClip.sampleStepped` memilih pose kunci yang ditampilkan (tanpa campuran),
+`FighterBody.frameIndex` memberi nomor bingkai, dan `Fighter` menggambar bingkai itu dari lembar sprite.
+
+| Hal | Aturan |
+|---|---|
+| Lembar sprite | `assets/images/fight/player_sheet.png` dan `rock_sheet.png`: 21 bingkai 96×96 berjajar mendatar, urutan = urutan pose di `pose_library.dart` |
+| Titik tanah bingkai | (40, 68) piksel, tepat di bawah pinggul; pose menghadap kanan, game membalik saat menghadap kiri |
+| Skala | 1 piksel sprite = 18 satuan ruang pose; Rock digambar 1,12× lebih besar |
+| Pemetaan sendi stickman ke chibi | kaki dipendekkan ×0,60, badan ×0,50, lengan ×1,0, kepala besar 10,5 piksel di atas leher (nilai `LEG`, `TORSO`, `ARM`, `HEAD_RISE` di `pixel_fighters.py`) |
+| Wajah per pose | pemain: diam/tangkis `fighter`, serang/ejek `hype`, terkena `shock`, KO `defeat`, menang `laugh`. Rock: diam/tangkis `angry`, serang/ejek `angry_shout`, lalu sama. Kepala dicerminkan agar ekor ikat kepala di belakang; pose rebah memutar kepala 90° |
+| Pemain | kaus putih garis merah, celana pendek navy, sepatu merah, lengan dan kaki kulit |
+| Rock | kulit lebih gelap `#D6A076`, tank top hitam, sabuk oranye, celana abu gelap, sepatu hitam, kepalan berperban putih, bekas luka |
+| Arena | `arena.png` 1600×720 (kisi 400×180 ×4): dinding dan penonton 140 baris, pasir 40 baris (garis potong 560/720 dijaga untuk lonjakan penonton) |
+| Efek | percikan = kotak piksel berlapis garis tepi gelap; pisau = persegi panjang bertangga, berputar langkah 45°; aura aba-aba = tiga oval berpita; obor = tiga bingkai api bergantian; cahaya obor = tiga cincin berpita |
+| HUD | bar HP berblok dengan penanda fase, bintang fase, potret 256×256 dalam bingkai, tombol kontrol bersudut siku dengan ikon piksel (kepalan, sepatu, perisai, pisau, panah), bar jeda pisau berblok, kilat merah berbentuk bingkai |
+
+Menambah pose: edit `FIGHT_POSES` di `fight_poses.py`, jalankan `fight_poses.py`, lalu `pixel_fighters.py`, dan tambahkan pose ke daftar di `pose_frames.dart`
+(`pose_frames_test.dart` memastikan urutannya sama).

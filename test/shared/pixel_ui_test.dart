@@ -61,6 +61,10 @@ void pixelWidgetTests() {
       'check': PixelPatterns.check,
       'fire': PixelPatterns.fire,
       'playerHead': PixelPatterns.playerHead,
+      'fist': PixelPatterns.fist,
+      'boot': PixelPatterns.boot,
+      'shield': PixelPatterns.shield,
+      'knife': PixelPatterns.knife,
     };
 
     test('semua pola berbentuk persegi panjang (tiap baris sama lebar)', () {

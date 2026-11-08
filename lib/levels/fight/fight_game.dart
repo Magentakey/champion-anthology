@@ -23,7 +23,6 @@ import 'fight_dialog.dart';
 import 'fight_hud.dart';
 import 'fighter.dart';
 import 'pose_clips.dart';
-import 'stick_renderer.dart';
 
 LevelGame createFightGame(LevelSession session) => FightGame(session);
 
@@ -76,7 +75,11 @@ class FightGame extends LevelGame with KeyboardEvents {
   final ValueNotifier<bool> rockAttacks = ValueNotifier(true);
 
   @override
-  List<String> get assetPaths => const ['fight/arena.png'];
+  List<String> get assetPaths => const [
+        'fight/arena.png',
+        'fight/player_sheet.png',
+        'fight/rock_sheet.png',
+      ];
 
   @override
   List<DeviceOrientation>? get orientations => const [
@@ -105,8 +108,15 @@ class FightGame extends LevelGame with KeyboardEvents {
     await loadAssets();
     arena = FightArena(worldWidth: 1);
     _bg = ArenaComponent(levelImages.fromCache('fight/arena.png'))..priority = -10;
-    _rockView = Fighter(body: arena.rock, style: FighterStyle.rockTheFighter)..priority = 0;
-    _playerView = Fighter(body: arena.player, style: FighterStyle.player)..priority = 1;
+    _rockView = Fighter(
+      body: arena.rock,
+      sheet: levelImages.fromCache('fight/rock_sheet.png'),
+      spriteScale: 1.12, // Rock lebih besar dari pemain
+    )..priority = 0;
+    _playerView = Fighter(
+      body: arena.player,
+      sheet: levelImages.fromCache('fight/player_sheet.png'),
+    )..priority = 1;
     _knives = KnifeLayer(arena)..priority = 2;
     await addAll([_bg, _rockView, _playerView, _knives]);
     _ready = true;

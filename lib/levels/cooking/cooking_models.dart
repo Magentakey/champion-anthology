@@ -25,7 +25,7 @@ class Ingredient {
   String get imageAsset => 'assets/images/cooking/ing_$id.png';
 }
 
-/// Semua bahan. Gambar: `assets/images/cooking/ing_(id).png` (dibuat tools/art/cooking_art.py).
+/// Semua bahan. Gambar: `assets/images/cooking/ing_(id).png` (dibuat tools/art/pixel_cooking.py).
 const ingredientCatalog = <Ingredient>[
   Ingredient('bawang', 'Bawang', Station.chop),
   Ingredient('tomat', 'Tomat', Station.chop),
