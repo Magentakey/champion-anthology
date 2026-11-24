@@ -26,8 +26,11 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      # Versi Flutter dikunci sama dengan lokal (flutter --version) supaya hasil analyze/test di CI
+      # sama dengan di laptop. Naikkan angka ini sengaja saat memang mau upgrade Flutter.
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.41.8'
           channel: stable
           cache: true
 
