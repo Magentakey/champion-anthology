@@ -12,19 +12,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Pastikan versi pubspec sama dengan tag
+        run: |
+          PUB=$(grep '^version:' pubspec.yaml | sed 's/version: *//; s/+.*//')
+          if [ "v$PUB" != "$GITHUB_REF_NAME" ]; then
+            echo "Versi di pubspec.yaml ($PUB) tidak sama dengan tag ($GITHUB_REF_NAME)."
+            exit 1
+          fi
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
+
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
+
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
       - run: flutter build apk --release
+
+      - name: Beri nama APK dengan versi
+        run: cp build/app/outputs/flutter-apk/app-release.apk "champion-anthology-${GITHUB_REF_NAME}.apk"
+
+      - name: Catatan rilis dari CHANGELOG
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v v="$VERSION" 'index($0, "## [" v "]") == 1 {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md > RELEASE_NOTES.md
+          if [ ! -s RELEASE_NOTES.md ]; then echo "Rilis ${GITHUB_REF_NAME}" > RELEASE_NOTES.md; fi
+          cat RELEASE_NOTES.md
+
       - uses: softprops/action-gh-release@v2
         with:
-          files: build/app/outputs/flutter-apk/app-release.apk
-          generate_release_notes: true
+          files: champion-anthology-${{ github.ref_name }}.apk
+          body_path: RELEASE_NOTES.md

@@ -6,10 +6,12 @@ Game mobile (Android) bergenre **minigame anthology dengan alur cerita**. Karakt
 
 | Level | Boss | Status |
 |---|---|---|
-| 1 | Rock the Fighter (pertarungan, 3 fase menurut batas HP) | Dapat dimainkan (tempur, 3 fase, AI Rock, efek, suara); tuning berdasarkan uji di HP menyusul |
+| 1 | Rock the Fighter (pertarungan, 3 fase menurut batas HP) | Selesai, bisa dimainkan (tempur, 3 fase, AI Rock, efek, suara, musik, getar) |
 | 2 | Bob the Genius (kuis pengetahuan) | Selesai, bisa dimainkan |
 | 3 | Asep the Mazelogist (labirin, tombol arah, batas waktu) | Selesai, bisa dimainkan |
-| 4 | Cooking Champion (ritme dan waktu) | Direncanakan |
+| 4 | Cooking Champion (geser bahan ke stasiun masak, cooking check, batas waktu) | Selesai, bisa dimainkan |
+
+Versi terbaru: **1.4.0** (seluruh game bergaya pixel art 48 px). Riwayat perubahan ada di [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Unduh dan pasang
 
@@ -110,16 +112,15 @@ Lihat [`docs/PANDUAN_PENGEMBANGAN.md`](docs/PANDUAN_PENGEMBANGAN.md) untuk:
 
 ## Performa
 
-Efek berat sengaja dihindari agar tetap lancar di HP spesifikasi rendah: cahaya aba-aba dan obor memakai gradien yang dibuat sekali (bukan blur tiap frame), `Paint` dipakai ulang, dan aset gambar serta audio per level dibersihkan saat level ditutup. Jika masih terasa berat, uji dengan `flutter run --profile`.
+Efek berat sengaja dihindari agar tetap lancar di HP spesifikasi rendah: seluruh gambar piksel digambar tanpa antialiasing dan tanpa blur, cahaya aba-aba dan obor memakai cincin berpita (bukan gradasi tiap frame), `Paint` dipakai ulang, dan aset gambar serta audio per level dibersihkan saat level ditutup. Jika masih terasa berat, uji dengan `flutter run --profile`.
 
 ## Rilis
 
-Versi ada di `pubspec.yaml` (`version: nama+nomorBuild`). Untuk membuat APK:
+Langkah lengkap ada di [`docs/RILIS.md`](docs/RILIS.md). Ringkasnya:
 
-```bash
-flutter pub get
-flutter analyze && flutter test
-flutter build apk --release
-```
+1. Naikkan `version:` di `pubspec.yaml` (`nama+nomorBuild`, mis. `1.4.0+5`) dan tambah bagian baru di `CHANGELOG.md`.
+2. Pastikan `flutter analyze` dan `flutter test` bersih.
+3. Commit, lalu buat tag yang **sama dengan versi**: `git tag v1.4.0 && git push --tags`.
+4. Workflow `.github/workflows/release.yml` membangun APK, menamainya `champion-anthology-v1.4.0.apk`, dan melampirkannya ke halaman Releases dengan catatan dari `CHANGELOG.md`.
 
-APK ada di `build/app/outputs/flutter-apk/app-release.apk`. Buat tag (`git tag v1.1.0 && git push --tags`) lalu unggah APK ke halaman Releases. Workflow `.github/workflows/release.yml` membuat APK otomatis dan melampirkannya ke Release saat tag `v*` di-push.
+Build manual: `flutter build apk --release` (hasil di `build/app/outputs/flutter-apk/app-release.apk`).
