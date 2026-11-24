@@ -30,7 +30,13 @@ enum Sfx {
   chop('chop.wav'),
   sizzle('sizzle.wav'),
   bubble('bubble.wav'),
-  burn('burn.wav');
+  burn('burn.wav'),
+
+  // Level Panahan (dibuat oleh tools/audio/generate_archery_audio.py)
+  bowDraw('bow_draw.wav'),
+  arrowShoot('arrow_shoot.wav'),
+  arrowHit('arrow_hit.wav'),
+  bullseye('bullseye.wav');
 
   const Sfx(this.file);
   final String file;

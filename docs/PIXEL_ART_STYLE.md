@@ -130,6 +130,7 @@ Ekspresi boss di game (idle, kaget, tertawa, kalah) memakai wajah yang sama deng
 | Bob | jabrik hitam tinggi (6 duri) | kemeja putih + rompi biru keabuan, celana panjang abu gelap, sepatu hitam | smug | kacamata bulat, dasi kupu-kupu biru |
 | Asep | menyapu cokelat (jambul ke kanan) | kaus hijau, celana khaki, sepatu cokelat | calm | papan labirin di dada |
 | Chef | topi koki putih bertingkat | celemek putih, syal merah, celana gelap | cheer | topi koki, badan lebih lebar |
+| Bima | topi pemanah hijau berbulu merah (tanpa rambut terlihat) | tunik hijau, celana khaki, sabuk dan sepatu cokelat, kulit sawo `#E2B280` | fighter | busur kayu (dipegang saat diam, tergeletak saat bereaksi) |
 | Rock | rambut kotak abu-abu | tank top hitam, sabuk oranye, celana hitam | angry | kepalan berperban putih, bekas luka di pipi |
 
 Tokoh baru: pilih **satu ciri khas** yang terbaca di siluet, kembangkan dari spesifikasi di `pixel_kit.py`
@@ -200,6 +201,8 @@ python tools/art/pixel_ui_mock.py     # perkiraan layar pilih level dan intro bo
 python tools/art/pixel_hud_mock.py    # perkiraan HUD Level 1 sampai 4 -> docs/preview/
 python tools/art/pixel_fighters.py    # Level 1: sprite pemain dan Rock per pose, potret HUD, bos Rock -> assets/images/fight/
 python tools/art/pixel_arena.py       # Level 1: latar Colosseum -> assets/images/fight/arena.png
+python tools/art/pixel_archery.py     # Level 5: latar lapangan panahan -> assets/images/archery/archery_bg.png
+python tools/audio/generate_archery_audio.py   # Level 5: efek suara (butuh numpy)
 python tools/art/fight_poses.py       # data pose -> lib/levels/fight/pose_library.dart (lalu jalankan pixel_fighters.py)
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
 ```
@@ -253,6 +256,7 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | Ikon bahan, stasiun, latar dapur, chef (Level 4) | **Terpasang (aset)** |
 | Pilih level, intro boss, overlay jeda dan hasil, tombol jeda, bintang dan gembok | **Terpasang di game** |
 | HUD Level 2 sampai 4 (kartu soal dan tombol jawaban Bob, tombol arah dan labirin Asep, kartu pesanan, stasiun, baki, dan panel cooking check Chef, bar waktu, gelembung, banner step) | **Terpasang di game** |
+| Level 5 (Bima): boss 4 ekspresi, latar lapangan, papan sasaran piksel, bidikan, HUD, efek suara | **Terpasang di game (belum dirilis)** |
 | Level 1 (Rock): sprite pemain dan Rock per pose, arena, obor, percikan, pisau, bar HP, tombol kontrol, potret | **Terpasang di game** |
 | Ikon aplikasi (wajah pemain + sinar matahari; latar adaptif `#FFAA38`) | **Terpasang (aset)** |
 
@@ -284,3 +288,11 @@ Logika tidak berubah: kamus pose (`pose_library.dart`, dihasilkan `fight_poses.p
 
 Menambah pose: edit `FIGHT_POSES` di `fight_poses.py`, jalankan `fight_poses.py`, lalu `pixel_fighters.py`, dan tambahkan pose ke daftar di `pose_frames.dart`
 (`pose_frames_test.dart` memastikan urutannya sama).
+
+## 16. Level 5 (panahan)
+
+- **Papan sasaran:** lingkaran bergerigi piksel dari kisi 20×20 sel (tiap cincin 2 sel), garis tepi gelap 1 sel; warna dari tengah: emas `#FFD640`, merah `#E03C3C`, biru `#3C7CE0`, hitam `#282232`, putih `#FAFAFA`. Dua kaki dan satu penyangga kayu di belakang papan.
+- **Bidikan:** tanda plus piksel (empat lengan dan titik tengah, tepi gelap); krem `#FFF4D6`, berubah emas saat anak panah akan kena cincin 10.
+- **Anak panah:** ikon kecil 3×8 (mata abu, batang cokelat, bulu merah) untuk sisa panah; yang menancap di papan 5×5 dilihat dari belakang; yang terbang berupa garis cokelat dengan mata dan bulu.
+- **HUD:** meter kekuatan berblok (oranye sebelum cukup, hijau sesudah, penanda kekuatan minimum), penunjuk angin 1 sampai 3 panah, skor melayang berwarna per cincin, tombol TARIK/LEPAS besar.
+- **Boss:** Bima dengan topi pemanah; busur dibuat oleh `bow_big` di `pixel_bosses.py`.

@@ -169,3 +169,15 @@ Semua angka ada di `lib/levels/cooking/cooking_config.dart`:
 2. Resep baru: tambah `Recipe(nama, [id bahan...])` di `recipes`. Minimal 5 bahan, dan 3 bahan pertama harus mencakup minimal 2 stasiun (step 1 memakai 3 bahan pertama).
 
 Cooking check berupa kelas Dart murni di `cooking_checks.dart` (tanpa Flame/Flutter), jadi mudah diuji dan ikut berhenti saat jeda. Stasiun baru = enum `Station` + kelas `CookingCheck` baru + satu panel di `cooking_hud.dart`.
+
+
+## Mengatur kesulitan Level 5 (panahan)
+
+Semua angka ada di `lib/levels/archery/archery_config.dart`:
+
+- `archerySteps`: jumlah anak panah, skor target, simpangan dan kecepatan goyangan bidikan (`aimX`, `aimY`, `aimSpeed`), pertambahan gemetar per detik setelah busur penuh (`shake`), kekuatan angin (`wind`), dan gerak papan (`targetX`, `targetY`, `targetSpeed`). Satuan jarak 1,0 = jari-jari papan.
+- `ArcheryTuning`: lama tarikan penuh (`fillSeconds`), kekuatan minimum (`minPower`), batas waktu tembakan (`shotSeconds`), dan skor tiap cincin.
+- `ArcheryLayout`: posisi papan, penunjuk angin, dan panel kontrol (Flame dan HUD membaca angka yang sama).
+- Kalimat Bima ada di `archery_dialog.dart`.
+
+`archery_test.dart` memainkan bot melawan konfigurasi: pemain sempurna harus menang hampir selalu, yang ceroboh, terlalu cepat, atau acak hampir tidak boleh menang. Jalankan `flutter test` setelah mengubah angka; kalau tes gagal berarti kesulitan bergeser terlalu jauh.

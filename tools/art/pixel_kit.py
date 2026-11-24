@@ -311,6 +311,14 @@ def build(spec):
             m |= c.rect(CX - hrx - 1, hcy - hry - 1, CX + hrx + 1, hl + 2)
             m = {q for q in m if ((q[0] + 0.5 - CX) / (hrx + 2.0)) ** 2 + ((q[1] + 0.5 - hcy) / (hry + 2.5)) ** 2 <= 1.2}
         c.paint(m, hp, depth=1)
+    if spec.get('hat') == 'robin':
+        top = hcy - hry
+        cap_pal = spec.get('hat_pal', GREEN)
+        cap = c.poly([(CX - 13, top + 4), (CX - 10, top - 4), (CX, top - 8), (CX + 10, top - 5),
+                      (CX + 21, top - 11), (CX + 14, top + 1), (CX + 13, top + 4)])
+        c.paint(cap, cap_pal, depth=1)
+        c.paint(c.rect(CX - 13, top + 2, CX + 13, top + 5), (cap_pal[2], cap_pal[1], cap_pal[2]), shade=False)
+        c.paint(c.tube([(CX + 8, top - 6), (CX + 17, top - 16)], 2.6), RED, shade=False)
     if spec.get('hat') == 'chef':
         hat = c.rect(CX - 10, hcy - hry - 2, CX + 10, hcy - hry + 4)
         pf = c.ell(CX - 7, hcy - hry - 6, 7, 6) | c.ell(CX + 7, hcy - hry - 6, 7, 6) | c.ell(CX, hcy - hry - 9, 8, 7)
@@ -445,6 +453,8 @@ CHEF = dict(hat='chef', top=WHITE, apron=pal((248, 248, 252)), neck=RED, neck_ki
             long_pants=True, shoe=BLACKP, face='cheer', pose='stand', torso_w=0.15, arm_thick=True)
 ROCK = dict(hair='flat', hair_pal=pal((90, 92, 104)), top=BLACKP, belt=ORANGE, bottom=BLACKP, shoe=BLACKP,
             face='angry', pose='fight', torso_w=0.16, arm_thick=True, wrap=WHITE, scar=True, legs='wide')
+BIMA = dict(hat='robin', hat_pal=pal((76, 160, 90)), top=pal((76, 160, 90)), bottom=KHAKI, shoe=BROWN,
+            belt=BROWNH, face='fighter', pose='stand', skin=pal((226, 178, 128)))
 
 
 def with_pose(spec, **kw):

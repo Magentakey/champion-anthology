@@ -21,6 +21,7 @@ BOSSES = {
     'genius': k.BOB,
     'maze': k.ASEP,
     'cooking': k.CHEF,
+    'archery': k.BIMA,
 }
 
 
@@ -35,7 +36,45 @@ def render(name, spec, state):
         else:
             board_at = (256 + 104, FEET[1] - 8 * SCALE)
         board_big(sc, *board_at, SCALE)
+    if name == 'archery':
+        if state == 'idle':
+            bow_big(sc, 256 + 18 * SCALE, FEET[1] - 18 * SCALE, SCALE, lying=False)
+        else:
+            bow_big(sc, 256 + 12 * SCALE, FEET[1] - 7 * SCALE, SCALE, lying=True)
     return sc
+
+
+def bow_big(sc, cx, cy, scale, lying):
+    """Busur kayu (garis tepi gelap, tali krem, genggaman merah). lying=True: tergeletak mendatar."""
+    import math
+    g = ps.Scene(14, 28)
+    pts = []
+    for i in range(0, 61):
+        t = i / 60
+        pts.append((round(3 + 7 * math.sin(math.pi * t)), round(1 + 25 * t)))
+    for x, y in pts:
+        g.set(x, y, ps.C(141, 92, 46))
+        g.set(x + 1, y, ps.C(141, 92, 46))
+    for y in range(1, 27):
+        g.set(3, y, ps.C(236, 236, 236))
+    for y in range(11, 17):
+        g.set(10, y, ps.C(214, 40, 40))
+        g.set(11, y, ps.C(214, 40, 40))
+    filled = {(x, y) for y in range(g.H) for x in range(g.W) if g.g[y][x]}
+    for (x, y) in list(filled):
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            if (x + dx, y + dy) not in filled:
+                g.set(x + dx, y + dy, ps.OUT)
+    for y in range(g.H):
+        for x in range(g.W):
+            col = g.g[y][x]
+            if not col:
+                continue
+            px, py = (y, x) if lying else (x, y)
+            w, h = (g.H, g.W) if lying else (g.W, g.H)
+            for ky in range(scale):
+                for kx in range(scale):
+                    sc.set(cx + (px - w // 2) * scale + kx, cy + (py - h // 2) * scale + ky, col)
 
 
 def board_big(sc, cx, cy, scale):

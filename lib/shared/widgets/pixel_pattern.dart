@@ -187,6 +187,27 @@ class PixelPatterns {
     'kk.......',
   ];
 
+  /// Anak panah kecil (`y` mata, `k` batang, `r` bulu) untuk hitungan sisa dan yang menancap di papan.
+  static const arrowItem = <String>[
+    '.y.',
+    'yyy',
+    '.k.',
+    '.k.',
+    '.k.',
+    '.k.',
+    'rkr',
+    '.r.',
+  ];
+
+  /// Anak panah yang menancap di papan, dilihat dari belakang (`k` batang, `r` bulu, `y` mata).
+  static const arrowStuck = <String>[
+    'r...r',
+    '.r.r.',
+    '..k..',
+    '.r.r.',
+    'r...r',
+  ];
+
   /// Kepala pemain 9x9 untuk labirin (garis tepi `O` sudah termasuk).
   static const playerHead = <String>[
     '..OOOOO..',

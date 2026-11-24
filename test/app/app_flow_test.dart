@@ -83,7 +83,7 @@ void main() {
     await playThroughStory(tester);
 
     expect(filledStars(), findsNWidgets(3)); // 1 bintang Fight + 2 bintang Bob
-    expect(locks(), findsNWidgets(1)); // hanya level 4 yang masih terkunci
+    expect(locks(), findsNWidgets(2)); // level 4 dan 5 masih terkunci
 
     // Level 4 sudah tersedia; terkunci karena Asep (level 3) belum punya bintang.
     await tester.tap(locks().first);
@@ -108,7 +108,7 @@ void main() {
     await pumpApp(tester, {});
     await playThroughStory(tester);
 
-    expect(locks(), findsNWidgets(3)); // Bob, Maze, Cooking
+    expect(locks(), findsNWidgets(4)); // Bob, Maze, Cooking, Archery
 
     await tester.tap(locks().first); // slot Bob
     await tester.pump();

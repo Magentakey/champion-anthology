@@ -1,4 +1,6 @@
 import '../core/level/level_definition.dart';
+import 'archery/archery_dialog.dart';
+import 'archery/archery_game.dart';
 import 'cooking/cooking_dialog.dart';
 import 'cooking/cooking_game.dart';
 import 'fight/fight_dialog.dart';
@@ -43,6 +45,15 @@ const levelRegistry = <LevelDefinition>[
     tip: CookingDialog.tip,
     bossImage: 'assets/images/cooking/boss_idle.png',
     createGame: createCookingGame,
+  ),
+  LevelDefinition(
+    id: 'archery',
+    number: 5,
+    bossName: 'Bima the Shooter',
+    introDialog: ArcheryDialog.intro,
+    tip: ArcheryDialog.tip,
+    bossImage: 'assets/images/archery/boss_idle.png',
+    createGame: createArcheryGame,
   ),
 ];
 

@@ -7,6 +7,8 @@ from pathlib import Path
 
 from PIL import Image
 
+import math
+
 import pixel_scenes as ps
 import pixel_ui_mock as m
 
@@ -216,6 +218,69 @@ def paste_small(sc, path, x, y, size):
                 sc.set(x + xx, y + yy, px[:3] + (255,))
 
 
+def archery():
+    sc = ps.Scene(W, H)
+    bg = Image.open(ROOT / 'assets/images/archery/archery_bg.png').convert('RGB').resize((W, H), Image.NEAREST)
+    for y in range(H):
+        for x in range(W):
+            sc.set(x, y, bg.getpixel((x, y)) + (255,))
+    sc.text(16, 10, 'STEP 3/3', color=CREAM, outline=ps.OUT)
+    sc.text(86, 10, 'SKOR 24/50', color=C(255, 214, 64), outline=ps.OUT)
+    arrow = ['.y.', 'yyy', '.k.', '.k.', '.k.', '.k.', 'rkr', '.r.']
+    for i in range(8):
+        col = {'y': C(207, 216, 220), 'k': C(185, 131, 80), 'r': C(224, 60, 60)}
+        m.icon(sc, 150 + i * 7, 8, arrow, lambda ch, c=col, f=i < 4: c.get(ch, C(207, 216, 220)) if f else C(90, 80, 110))
+    paste_img(sc, ROOT / 'assets/images/archery/boss_idle.png', frac(0.30, W), frac(0.19, H), 94)
+    bubble(sc, 'Papan bergerak dan angin kencang!')
+    time_bar(sc, frac(0.335, H), 0.7)
+    # papan sasaran (sel persegi) dan kaki
+    top, hh = frac(0.365, H), frac(0.34, H)
+    cx, cy = W // 2 + 14, top + hh // 2
+    r = min((W - 32) * 0.34, hh * 0.40)
+    cell = 2 * r / 20
+    for (x0, y0, x1, y1) in ((-0.45, 0.5, -0.85, 1.15), (0.45, 0.5, 0.85, 1.15), (0, 0.5, 0, 1.1)):
+        sc.line((cx + x0 * r, cy + y0 * r), (cx + x1 * r, cy + y1 * r), C(141, 92, 46), th=2)
+    rings = [C(255, 214, 64), C(224, 60, 60), C(60, 124, 224), C(40, 34, 50), C(250, 250, 250)]
+    for gy in range(24):
+        for gx in range(24):
+            d = math.sqrt((gx + .5 - 12) ** 2 + (gy + .5 - 12) ** 2) / 10
+            col = rings[min(4, int(d / 0.2))] if d <= 1.0 else (ps.OUT if d <= 1.12 else None)
+            if col:
+                sc.rect(round(cx + (gx - 12) * cell), round(cy + (gy - 12) * cell), round(cx + (gx - 11) * cell), round(cy + (gy - 11) * cell), col)
+    for dx, dy in ((0.35, -0.15), (-0.5, 0.3), (0.1, 0.55)):
+        sx, sy = round(cx + dx * r), round(cy + dy * r)
+        m.icon(sc, sx - 2, sy - 2, ['r...r', '.r.r.', '..k..', '.r.r.', 'r...r'], lambda ch: C(224, 60, 60) if ch == 'r' else C(141, 92, 46))
+    # bidikan (emas)
+    gx0, gy0 = cx - 12, cy - 6
+    for (a, b, c2, d2) in ((-9, -1, -3, 1), (4, -1, 10, 1), (-1, -9, 1, -3), (-1, 4, 1, 10)):
+        sc.rect(gx0 + a - 1, gy0 + b - 1, gx0 + c2 + 1, gy0 + d2 + 1, ps.OUT)
+    for (a, b, c2, d2) in ((-9, -1, -3, 1), (4, -1, 10, 1), (-1, -9, 1, -3), (-1, 4, 1, 10)):
+        sc.rect(gx0 + a, gy0 + b, gx0 + c2, gy0 + d2, C(255, 214, 64))
+    # angin
+    wy = frac(0.715, H)
+    sc.rect(86, wy, 154, wy + 13, C(24, 18, 44))
+    sc.text(92, wy + 3, 'ANGIN', color=CREAM)
+    for i in range(2):
+        m.icon(sc, 128 + i * 10, wy + 2, ['...#...', '...##..', '...###.', '#######', '...###.', '...##..', '...#...'], lambda _c: CREAM)
+    # panel kontrol
+    cy0, cb = frac(0.77, H), frac(0.97, H)
+    m.frame(sc, 16, cy0, W - 32, cb - cy0, PANEL)
+    sc.text(24, cy0 + 8, 'LEPAS SAAT BIDIKAN', color=C(255, 214, 64))
+    sc.text(24, cy0 + 17, 'KUNING DI TENGAH!', color=C(255, 214, 64))
+    bx, by, bw = 24, cy0 + 30, 100
+    sc.rect(bx, by, bx + bw, by + 10, CREAM)
+    sc.rect(bx + 1, by + 1, bx + bw - 1, by + 9, ps.OUT)
+    sc.rect(bx + 2, by + 2, bx + bw - 2, by + 8, C(80, 70, 110))
+    for i in range(18):
+        a = bx + 2 + int(i * 5.4)
+        sc.rect(a, by + 2, a + 4, by + 8, C(76, 175, 80) if i >= 17 else C(255, 143, 0))
+    sc.rect(bx + 2 + int(17 * 5.4) - 1, by, bx + 2 + int(17 * 5.4), by + 10, CREAM)
+    sc.text(24, by + 14, 'KEKUATAN', color=C(190, 180, 220))
+    m.frame(sc, 138, cy0 + 8, 88, cb - cy0 - 16, C(240, 138, 128))
+    m.text_c(sc, 182, cy0 + 22, 'LEPAS!', scale=2, color=INK)
+    return sc.image(3).convert('RGB')
+
+
 def fight():
     import pixel_arena
     sc = pixel_arena.build()
@@ -276,6 +341,7 @@ def main():
         sheet.paste(im, (i * 740, 0))
     sheet.save(out / 'hud_pixel.png')
     fight().save(out / 'fight_pixel.png')
+    archery().save(out / 'archery_pixel.png')
     print('mockup HUD ditulis ke', out)
 
 

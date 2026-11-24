@@ -3,6 +3,7 @@
     python tools/art/pixel_all.py
 """
 import pixel_arena
+import pixel_archery
 import pixel_bosses
 import pixel_cooking
 import pixel_export
@@ -14,7 +15,7 @@ import pixel_scenes
 
 def main():
     pixel_font.build(pixel_font.ROOT / 'assets/fonts/PixelChampion.ttf')
-    for mod in (pixel_export, pixel_bosses, pixel_cooking, pixel_icon, pixel_fighters, pixel_arena):
+    for mod in (pixel_export, pixel_bosses, pixel_cooking, pixel_icon, pixel_fighters, pixel_arena, pixel_archery):
         mod.main()
     print('semua aset piksel selesai')
 
