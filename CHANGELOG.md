@@ -2,6 +2,26 @@
 
 Format versi mengikuti `pubspec.yaml` (`nama+nomorBuild`). Tag rilis: `v<nama>`.
 
+## [1.5.0] - 2026-11-25
+
+### Ditambahkan
+- Level 5: Bima the Shooter (panahan). Tahan tombol TARIK sampai meter penuh, lalu lepas untuk menembak.
+- Bidikan yang terus bergoyang dan makin gemetar jika ditahan terlalu lama, dengan indikator kuning saat akan kena emas.
+- Skor cincin 10, 8, 6, 4, 2 dengan batas 9 detik per tembakan.
+- Tiga step kesulitan: Mudah (6 panah, target 44), Sedang (7 panah, target 46, angin), Sulit (8 panah, target 50, angin kencang dan papan bergerak).
+- Karakter Bima dengan empat ekspresi, latar lapangan panahan, HUD piksel, penunjuk angin, dan dialog.
+- Empat efek suara baru: tarik busur, lepas, tancap, dan kena emas.
+- Kunci level: terbuka setelah Cooking Champion mendapat minimal 1 bintang.
+- Tes untuk skor cincin, fisika tembakan, simulasi bot, dialog, dan aset.
+- Panduan tuning di PANDUAN_PENGEMBANGAN.md dan bagian 16 di PIXEL_ART_STYLE.md.
+
+### Diubah
+- Registry level kini berisi 5 level; tes progres dan tes alur disesuaikan.
+
+### Diperbaiki
+- Layar error merah sesaat saat Level 5 dimulai, diulang ("Main lagi"), atau di-restart: HUD membaca konfigurasi step sebelum game selesai dimuat (`LateInitializationError` pada `ArcheryGame._config`).
+- Menghapus import `dart:ui` yang tidak perlu di `archery_test.dart`.
+
 ## [1.4.0] - 2026-11-08
 
 ### Tampilan
