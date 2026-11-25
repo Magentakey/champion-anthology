@@ -79,6 +79,21 @@ void main() {
     expect(notifier.isUnlocked(levelById('archery')!), isFalse);
   });
 
+  test('Mr. Lexi (level 6) terbuka setelah Bima punya bintang', () async {
+    final (container, _) = await makeContainer({'stars_archery': 1});
+    final notifier = container.read(progressProvider.notifier);
+
+    expect(notifier.isUnlocked(levelById('gambler')!), isTrue);
+    expect(levelById('gambler')!.number, 6);
+  });
+
+  test('Mr. Lexi terkunci selama Bima belum punya bintang', () async {
+    final (container, _) = await makeContainer({'stars_cooking': 3});
+    final notifier = container.read(progressProvider.notifier);
+
+    expect(notifier.isUnlocked(levelById('gambler')!), isFalse);
+  });
+
   test('level yang sudah punya bintang tetap terbuka walau level sebelumnya belum', () async {
     final (container, _) = await makeContainer({'stars_genius': 2});
     final notifier = container.read(progressProvider.notifier);

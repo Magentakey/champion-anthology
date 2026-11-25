@@ -5,6 +5,8 @@ import 'cooking/cooking_dialog.dart';
 import 'cooking/cooking_game.dart';
 import 'fight/fight_dialog.dart';
 import 'fight/fight_game.dart';
+import 'gambler/gambler_dialog.dart';
+import 'gambler/gambler_game.dart';
 import 'genius/genius_game.dart';
 import 'maze/maze_dialog.dart';
 import 'maze/maze_game.dart';
@@ -54,6 +56,15 @@ const levelRegistry = <LevelDefinition>[
     tip: ArcheryDialog.tip,
     bossImage: 'assets/images/archery/boss_idle.png',
     createGame: createArcheryGame,
+  ),
+  LevelDefinition(
+    id: 'gambler',
+    number: 6,
+    bossName: 'Mr. Lexi the Gambler',
+    introDialog: GamblerDialog.intro,
+    tip: GamblerDialog.tip,
+    bossImage: 'assets/images/gambler/boss_idle.png',
+    createGame: createGamblerGame,
   ),
 ];
 

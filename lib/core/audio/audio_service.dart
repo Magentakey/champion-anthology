@@ -37,7 +37,14 @@ enum Sfx {
   bowDraw('bow_draw.wav'),
   arrowShoot('arrow_shoot.wav'),
   arrowHit('arrow_hit.wav'),
-  bullseye('bullseye.wav');
+  bullseye('bullseye.wav'),
+
+  // Level Gambler (dibuat oleh tools/audio/generate_gambler_audio.py)
+  cardFlip('card_flip.wav'),
+  coinToss('coin_toss.wav'),
+  cupSlide('cup_slide.wav'),
+  winChime('win_chime.wav'),
+  loseBuzz('lose_buzz.wav');
 
   const Sfx(this.file);
   final String file;

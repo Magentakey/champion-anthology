@@ -203,6 +203,8 @@ python tools/art/pixel_fighters.py    # Level 1: sprite pemain dan Rock per pose
 python tools/art/pixel_arena.py       # Level 1: latar Colosseum -> assets/images/fight/arena.png
 python tools/art/pixel_archery.py     # Level 5: latar lapangan panahan -> assets/images/archery/archery_bg.png
 python tools/audio/generate_archery_audio.py   # Level 5: efek suara (butuh numpy)
+python tools/art/pixel_gambler.py     # Level 6: latar stan, kartu, koin, cangkir, bola, chip -> assets/images/gambler/
+python tools/audio/generate_gambler_audio.py   # Level 6: efek suara (butuh numpy)
 python tools/art/fight_poses.py       # data pose -> lib/levels/fight/pose_library.dart (lalu jalankan pixel_fighters.py)
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
 ```
@@ -256,7 +258,8 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | Ikon bahan, stasiun, latar dapur, chef (Level 4) | **Terpasang (aset)** |
 | Pilih level, intro boss, overlay jeda dan hasil, tombol jeda, bintang dan gembok | **Terpasang di game** |
 | HUD Level 2 sampai 4 (kartu soal dan tombol jawaban Bob, tombol arah dan labirin Asep, kartu pesanan, stasiun, baki, dan panel cooking check Chef, bar waktu, gelembung, banner step) | **Terpasang di game** |
-| Level 5 (Bima): boss 4 ekspresi, latar lapangan, papan sasaran piksel, bidikan, HUD, efek suara | **Terpasang di game (belum dirilis)** |
+| Level 5 (Bima): boss 4 ekspresi, latar lapangan, papan sasaran piksel, bidikan, HUD, efek suara | **Terpasang di game** |
+| Level 6 (Mr. Lexi): boss 4 ekspresi, latar stan pasar malam, kartu, koin, cangkir, bola, chip, HUD, efek suara | **Terpasang di game (belum dirilis)** |
 | Level 1 (Rock): sprite pemain dan Rock per pose, arena, obor, percikan, pisau, bar HP, tombol kontrol, potret | **Terpasang di game** |
 | Ikon aplikasi (wajah pemain + sinar matahari; latar adaptif `#FFAA38`) | **Terpasang (aset)** |
 
@@ -296,3 +299,12 @@ Menambah pose: edit `FIGHT_POSES` di `fight_poses.py`, jalankan `fight_poses.py`
 - **Anak panah:** ikon kecil 3×8 (mata abu, batang cokelat, bulu merah) untuk sisa panah; yang menancap di papan 5×5 dilihat dari belakang; yang terbang berupa garis cokelat dengan mata dan bulu.
 - **HUD:** meter kekuatan berblok (oranye sebelum cukup, hijau sesudah, penanda kekuatan minimum), penunjuk angin 1 sampai 3 panah, skor melayang berwarna per cincin, tombol TARIK/LEPAS besar.
 - **Boss:** Bima dengan topi pemanah; busur dibuat oleh `bow_big` di `pixel_bosses.py`.
+
+## 17. Level 6 (gambler)
+
+- **Latar stan:** `table.png` 720x1278 (kisi 240x426 x3): langit malam, dinding papan kayu, kanopi belang merah-krem, untaian lampu, papan nama "MR. LEXI", dan kain hijau meja (y 151 sampai 300) tempat kartu, koin, dan cangkir digambar. Lantai papan di bawah meja untuk panel kontrol.
+- **Kartu:** kisi 20x28 x3. Punggung merah berpola dengan belah ketupat emas, muka aman (bintang hijau), muka sial (bom hitam bersumbu).
+- **Koin:** kisi 24x24 x3. Kepala (lambang topi tinggi Mr. Lexi), ekor (bintang), dan bingkai tipis 8x24 untuk koin yang sedang berputar tegak lurus.
+- **Cangkir:** kisi 22x26 x3, terbalik, belang merah dan krem, bibir merah gelap. **Bola** 10x10, **chip** 12x12 (merah dengan takik krem).
+- **Boss:** Mr. Lexi dengan topi tinggi hitam berpita merah, rompi marun, dasi kupu-kupu merah; `hat='tophat'` di `pixel_kit.py`.
+- **HUD:** label peluang emas di antara meja dan panel kontrol, tombol KEPALA dan EKOR (emas saat terpilih), bingkai emas di slot terpilih, tombol BUKA atau LEMPAR hijau (kelabu saat belum ada pilihan), tiga chip di bilah atas (redup sampai dimenangkan).

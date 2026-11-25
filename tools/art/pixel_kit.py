@@ -319,6 +319,13 @@ def build(spec):
         c.paint(cap, cap_pal, depth=1)
         c.paint(c.rect(CX - 13, top + 2, CX + 13, top + 5), (cap_pal[2], cap_pal[1], cap_pal[2]), shade=False)
         c.paint(c.tube([(CX + 8, top - 6), (CX + 17, top - 16)], 2.6), RED, shade=False)
+    if spec.get('hat') == 'tophat':
+        # topi tinggi pedagang: mahkota tegak, pita merah, dan tepi lebar
+        top = hcy - hry
+        hp_ = spec.get('hat_pal', BLACKP)
+        c.paint(c.rect(CX - 15, top - 1, CX + 15, top + 4), hp_, depth=1)
+        c.paint(c.rect(CX - 10, top - 13, CX + 10, top), hp_, depth=1)
+        c.paint(c.rect(CX - 10, top - 4, CX + 10, top - 1), spec.get('hat_band', RED), shade=False)
     if spec.get('hat') == 'chef':
         hat = c.rect(CX - 10, hcy - hry - 2, CX + 10, hcy - hry + 4)
         pf = c.ell(CX - 7, hcy - hry - 6, 7, 6) | c.ell(CX + 7, hcy - hry - 6, 7, 6) | c.ell(CX, hcy - hry - 9, 8, 7)
@@ -453,6 +460,9 @@ CHEF = dict(hat='chef', top=WHITE, apron=pal((248, 248, 252)), neck=RED, neck_ki
             long_pants=True, shoe=BLACKP, face='cheer', pose='stand', torso_w=0.15, arm_thick=True)
 ROCK = dict(hair='flat', hair_pal=pal((90, 92, 104)), top=BLACKP, belt=ORANGE, bottom=BLACKP, shoe=BLACKP,
             face='angry', pose='fight', torso_w=0.16, arm_thick=True, wrap=WHITE, scar=True, legs='wide')
+LEXI = dict(hat='tophat', hat_pal=BLACKP, hat_band=RED, hair='flat', hair_pal=pal((40, 34, 44)), top=WHITE,
+            vest=pal((120, 36, 66)), neck=RED, neck_kind='bow', bottom=DGREY, long_pants=True, shoe=BLACKP,
+            face='smug', pose='hips', glasses=False)
 BIMA = dict(hat='robin', hat_pal=pal((76, 160, 90)), top=pal((76, 160, 90)), bottom=KHAKI, shoe=BROWN,
             belt=BROWNH, face='fighter', pose='stand', skin=pal((226, 178, 128)))
 

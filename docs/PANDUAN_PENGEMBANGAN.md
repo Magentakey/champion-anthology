@@ -182,3 +182,17 @@ Semua angka ada di `lib/levels/archery/archery_config.dart`:
 - Kalimat Bima ada di `archery_dialog.dart`.
 
 `archery_test.dart` memainkan bot melawan konfigurasi: pemain sempurna harus menang hampir selalu, yang ceroboh, terlalu cepat, atau acak hampir tidak boleh menang. Jalankan `flutter test` setelah mengubah angka; kalau tes gagal berarti kesulitan bergeser terlalu jauh.
+
+
+## Mengatur Level 6 (gambler)
+
+Semua angka ada di `lib/levels/gambler/gambler_config.dart`:
+
+- `gamblerWinChance`: peluang menang tiap step (0,75, 0,5, 0,25). **Ini konstanta tetap**: tidak ada bonus setelah kalah dan tidak ada penyesuaian diam-diam. Label di layar (`GamblerDialog.oddsLabel`) membaca angka yang sama. Tes `gambler_test.dart` memastikan ketiga angka itu satu-satunya angka pecahan di berkas konfigurasi dan cocok dengan jumlah kartu, sisi, dan cangkir.
+- `GamblerTuning`: jumlah kartu (`cardCount`, `bombCount`), cangkir (`cupCount`), jumlah tukar acakan (`shuffleSwaps`), dan durasi semua animasi dalam milidetik. Mengubah jumlah kartu atau cangkir otomatis mengubah peluang sebenarnya, jadi sesuaikan juga `gamblerWinChance`; tes akan gagal kalau keduanya tidak cocok.
+- `GamblerLayout` (di `gambler_table.dart`): posisi meja, label peluang, dan panel kontrol. Flame dan HUD membaca angka yang sama.
+- Kalimat Mr. Lexi ada di `gambler_dialog.dart`. Font piksel hanya punya huruf besar, angka, dan tanda baca dasar; tes memeriksa karakter yang dipakai.
+
+Cara kerja keadilan: `GamblerRun.beginStep` menempatkan hasil (kartu sial, sisi koin yang mendarat, atau cangkir berbola) sebelum pemain memilih, memakai `Random` yang diberikan dari luar. Pilihan pemain hanya dibandingkan dengan penempatan itu. Animasi (balik kartu, lempar koin, acakan cangkir) tidak pernah menentukan hasil; acakan cangkir direncanakan mundur dari susunan akhir (`CupShuffle`).
+
+Aset dibuat oleh `tools/art/pixel_gambler.py` (latar, kartu, koin, cangkir, bola, chip), boss oleh `pixel_bosses.py`, dan suara oleh `tools/audio/generate_gambler_audio.py`.

@@ -1,7 +1,7 @@
-"""Gambar boss bergaya piksel: Bob, Asep, Chef (4 ekspresi, 512x512, latar transparan).
+"""Gambar boss bergaya piksel: Bob, Asep, Chef, Bima, Lexi (4 ekspresi, 512x512, latar transparan).
 
     python tools/art/pixel_bosses.py
-Menimpa assets/images/{genius,maze,cooking}/boss_{idle,shock,laugh,defeat}.png.
+Menimpa assets/images/{genius,maze,cooking,archery,gambler}/boss_{idle,shock,laugh,defeat}.png.
 Sprite 48 px diperbesar 8x (kelipatan bulat) dan berdiri di dasar kanvas, titik tumpu di tengah.
 """
 import sys
@@ -22,6 +22,7 @@ BOSSES = {
     'maze': k.ASEP,
     'cooking': k.CHEF,
     'archery': k.BIMA,
+    'gambler': k.LEXI,
 }
 
 
