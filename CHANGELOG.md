@@ -2,6 +2,25 @@
 
 Format versi mengikuti `pubspec.yaml` (`nama+nomorBuild`). Tag rilis: `v<nama>`.
 
+## [1.7.0] - 2026-11-26
+
+### Ditambahkan
+- Level 6: Mr. Lexi the Gambler, tiga permainan peluang bertema pasar malam dengan chip bohongan (tanpa uang sungguhan).
+- Step 1 Tebak Kartu (4 kartu, 1 kartu sial, peluang menang 75%), Step 2 Lempar Koin (kepala atau ekor, 50%), Step 3 Cangkir Tebak Bola (bola diacak di bawah 4 cangkir, 25%).
+- Peluang tetap dan selalu tampil di layar: tidak ada bonus setelah kalah, tidak ada kesulitan dinamis, dan tidak ada riwayat yang dibaca. Menang tiga step berturut-turut memberi 3 bintang (peluang 9,4%), kalah di satu step mengakhiri sesi.
+- Hasil ditentukan sebelum pemain memilih; animasi balik kartu, lemparan koin, dan acakan cangkir hanya hiasan. Pengacak diberikan dari luar sehingga bisa diuji dengan seed tetap.
+- Karakter Mr. Lexi (topi tinggi, empat ekspresi), latar stan pasar malam, kartu (punggung, aman, sial), koin (kepala, ekor, putar), cangkir, bola, dan chip, semua dibuat lewat `tools/art/pixel_gambler.py`.
+- Lima efek suara baru: balik kartu, lempar koin, geser cangkir, nada menang, dan dengung kalah (`tools/audio/generate_gambler_audio.py`).
+- Akhir acakan cangkir: keempat cangkir menyatu jadi satu tumpukan di tengah (tak mungkin dilacak lagi), ditahan sebentar, lalu dijajarkan kembali dengan urutan diacak (bola tidak kembali ke posisi semula), sehingga ronde ini murni peluang.
+- Istilah "Step" di Level 6 diganti "Round" (Round 1 sampai 3) dan pilihan KEPALA/EKOR baru muncul setelah banner ronde hilang.
+- Kunci level: terbuka setelah Bima the Shooter mendapat minimal 1 bintang.
+- Papan ketik untuk uji di emulator: angka 1 sampai 4 memilih, spasi atau Enter mengonfirmasi.
+
+### Teknis
+- Logika peluang murni di `luck_round.dart` (`CardRound`, `CoinRound`, `CupRound`, `CupShuffle`, `GamblerRun`) dan konstanta di `gambler_config.dart`, terpisah dari Flame supaya mudah dites.
+- Tes baru di `test/levels/gambler/`: konstanta peluang, frekuensi 10.000 putaran per permainan, pemerataan posisi, tanpa bonus kekalahan, penempatan lebih dulu, pelaporan sesi (3, 2, 1, dan 0 bintang), registri, label peluang di HUD, tata letak meja, animasi, dan aset. `test/app/app_flow_test.dart` dan `test/core/progress_test.dart` disesuaikan untuk level ke-6.
+- `pixel_kit.py` mendapat topi tinggi (`hat='tophat'`) dan `pixel_bosses.py` memuat Mr. Lexi; boss lain tidak berubah.
+
 ## [1.6.0] - 2026-11-25
 
 ### Ditambahkan
