@@ -2,6 +2,32 @@
 
 Format versi mengikuti `pubspec.yaml` (`nama+nomorBuild`). Tag rilis: `v<nama>`.
 
+## [1.6.0] - 2026-11-25
+
+### Ditambahkan
+- Level 1: combo lebih variatif. Pukul, silang, lalu penutup kini berupa uppercut sungguhan (jongkok, melompat, tinju naik) dan bukan jab yang diulang.
+- Pukul, silang, lalu tendang: tendangan yang ditekan setelah silang menjadi tendangan putar penutup yang menyambung langsung dan melempar lawan.
+- Tendang + tendang: tendangan kedua yang ditekan di pemulihan atau jendela combo menjadi tendangan tinggi (9 damage, dorong 300, melempar lawan).
+- Serangan tenaga: tahan tombol pukul (J di papan ketik) untuk menarik tinju dengan aura emas dan bar isi, lalu lepas. Isi minimal 0,5 detik (14 damage), penuh 1 detik (22 damage, gerak lambat singkat). Ayunannya sama dengan hantaman berat Rock dan berarmor, tetapi pemain rentan selama mengisi; terkena saat mengisi membatalkan isi.
+- Reaksi Rock berbeda per pukulan: kepala tersentak (jab), tubuh terpukul (silang), dan terlempar (penutup, tendangan penutup, serangan berat).
+- Rock punya animasi sendiri untuk Tendangan Putar dan pukulan terjang, lengkap dengan pose aba-abanya.
+- Efek per pukulan: hit-stop, getar layar, dan percikan makin besar seiring combo; penutup combo diberi gerak lambat singkat, suara baru (`finisher.wav`), dan debu di kaki lawan.
+- Hitungan combo di layar (x2 COMBO, x3 COMBO!) yang direset bila tidak mengenai selama 1,2 detik atau saat pemain terkena.
+- 12 pose baru (total 33 bingkai): uppercut (3), reaksi ringan dan terhuyung, Tendangan Putar (2), terjang (2), tendangan tinggi, napas diam ketiga, dan langkah jalan keempat.
+
+### Diubah
+- Pinggul dan kaki petarung digambar ulang di seluruh pose: celana pendek selebar baju dengan sisi lurus sampai sekitar paha tengah, dua sendi pinggul terpisah, kaki keluar dari sudut bawah.
+- Jalan kini 5 bingkai dan diam bernapas lewat 3 bingkai, lebih halus.
+- Tombol pukul kini dijalankan saat dilepas (ketuk singkat di bawah 0,2 detik = pukulan biasa) agar bisa dibedakan dari tahan; batas ada di `chargeTapMs`.
+- Angka pertarungan (damage, dorongan, lama terhenti, jendela waktu serangan) tidak berubah; klip baru memakai waktu yang sama dengan klip yang digantikan, dan uppercut mendapat maju 30 satuan agar jangkauan efektifnya sama.
+
+### Diperbaiki
+- Piksel kepala pada beberapa pose bolong atau bergaris karena pembulatan `round()` Python (.5 dibulatkan ke genap); kini dibulatkan tetap.
+
+### Teknis
+- Pose baru ditambahkan lewat `tools/art/fight_poses.py` lalu `pose_library.dart` dan lembar sprite dibuat ulang (`tools/art/pixel_fighters.py`); `finisher.wav` memakai generator acak sendiri sehingga SFX lain tidak berubah.
+- Logika rasa pukulan dipisah ke `hit_feel.dart` dan logika ketuk atau tahan ke `punch_input.dart` agar bisa diuji; tes baru di `test/levels/fight/combo_test.dart`.
+
 ## [1.5.0] - 2026-11-25
 
 ### Ditambahkan
