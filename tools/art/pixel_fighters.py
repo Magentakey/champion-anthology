@@ -25,6 +25,7 @@ LEG = 0.60            # pemendekan kaki
 TORSO = 0.50          # pemendekan badan
 ARM = 1.0
 HEAD_RISE = 10.5      # pusat kepala di atas leher (piksel)
+PELVIS_DROP = 5.4     # panggul turun di bawah titik pinggul (piksel)
 
 SPRITE_FACE = {       # pose -> keadaan wajah
     'idleA': 'idle', 'idleB': 'idle', 'walkA': 'idle', 'walkB': 'idle', 'walkC': 'idle',
@@ -32,6 +33,10 @@ SPRITE_FACE = {       # pose -> keadaan wajah
     'kickWind': 'attack', 'kickHit': 'attack', 'throwWind': 'attack', 'throwHit': 'attack',
     'block': 'block', 'hurt': 'hurt', 'fall': 'ko', 'ko': 'ko', 'win': 'win', 'taunt': 'taunt',
     'heavyWind': 'attack', 'heavyHit': 'attack',
+    'uppercutWind': 'attack', 'uppercutHit': 'attack', 'uppercutAir': 'attack',
+    'hurtLight': 'hurt', 'stagger': 'hurt',
+    'roundhouseWind': 'attack', 'roundhouseHit': 'attack', 'dashWind': 'attack', 'dashHit': 'attack',
+    'idleC': 'idle', 'walkD': 'idle', 'kickHighHit': 'attack',
 }
 
 
@@ -137,9 +142,37 @@ def render_pose(name, pose, ch):
         else:
             c.paint(c.ell(h[0], h[1], 2.4, 2.3), skin, depth=1)
 
+    def axis():
+        """Sumbu badan (pinggul -> leher, satuan) dan sumbu samping tegak lurus (+ = sisi depan)."""
+        ax, ay = neck_px[0] - hip_px[0], neck_px[1] - hip_px[1]
+        n = math.hypot(ax, ay) or 1.0
+        ax, ay = ax / n, ay / n
+        return (ax, ay), (-ay, ax)
+
+    def hip_joint(side):
+        """Sendi pinggul terpisah di sudut bawah panggul (kaki depan di sisi +, belakang di sisi -)."""
+        (ax, ay), (px, py) = axis()
+        off = (ch['torso_w'] - ch['limb']) / 2 - 0.2
+        sgn = 1.0 if side == 'F' else -1.0
+        return (hip_px[0] - ax * PELVIS_DROP + px * off * sgn,
+                hip_px[1] - ay * PELVIS_DROP + py * off * sgn)
+
+    def pelvis():
+        """Panggul / celana pendek selebar baju: sisi lurus, tanpa ujung membulat."""
+        (ax, ay), (px, py) = axis()
+        hw = ch['torso_w'] / 2
+        top = (hip_px[0] + ax * 0.6, hip_px[1] + ay * 0.6)
+        bot = (hip_px[0] - ax * (PELVIS_DROP + 0.6), hip_px[1] - ay * (PELVIS_DROP + 0.6))
+        quad = [(top[0] - px * hw, top[1] - py * hw), (top[0] + px * hw, top[1] + py * hw),
+                (bot[0] + px * hw, bot[1] + py * hw), (bot[0] - px * hw, bot[1] - py * hw)]
+        c.paint(c.poly(quad), ch['shorts'])
+        if ch.get('belt'):
+            c.line((round(top[0] - px * (hw - 1)), round(top[1] - py * (hw - 1))),
+                   (round(top[0] + px * (hw - 1)), round(top[1] + py * (hw - 1))), ch['belt'][0], th=2)
+
     def leg(side):
         kn, an, toe = leg_pt('knee' + side), leg_pt('ankle' + side), leg_pt('toe' + side)
-        c.paint(c.tube([hip_px, kn, an], limb + 0.4), ch['pants'] or skin)
+        c.paint(c.tube([hip_joint(side), kn, an], limb + 0.4), ch['pants'] or skin)
         fv = (P['toe' + side][0] - P['ankle' + side][0], P['toe' + side][1] - P['ankle' + side][1])
         ang = math.atan2(fv[1], fv[0]) if (abs(fv[0]) + abs(fv[1])) > 1 else 0.0
         flen = math.hypot(fv[0], fv[1]) / U + 3.2
@@ -152,10 +185,7 @@ def render_pose(name, pose, ch):
         if ch['stripe']:
             mx, my = (hip_px[0] + neck_px[0]) / 2, (hip_px[1] + neck_px[1]) / 2
             c.line((round(mx - tw / 2 + 1), round(my)), (round(mx + tw / 2 - 1), round(my)), ch['stripe'][0])
-        # celana pendek / pinggul
-        c.paint(c.tube([(hip_px[0] - 0.5, hip_px[1] - 0.2), (hip_px[0] + 0.5, hip_px[1] + 2.2)], tw - 1.0), ch['shorts'])
-        if ch.get('belt'):
-            c.line((round(hip_px[0] - tw / 2 + 1), round(hip_px[1])), (round(hip_px[0] + tw / 2 - 1), round(hip_px[1])), ch['belt'][0], th=2)
+        pelvis()
 
     arms_over = P['armsOver']
     # urutan gambar: lengan belakang, kaki belakang, badan, kaki depan, kepala, lengan depan
@@ -167,7 +197,8 @@ def render_pose(name, pose, ch):
     # kepala
     hc = (neck_px[0] + P['headDir'][0] * HEAD_RISE, neck_px[1] + P['headDir'][1] * HEAD_RISE)
     for dx, dy, col in head_pixels(ch, SPRITE_FACE[name], P['headDir']):
-        c.put(round(hc[0] + dx), round(hc[1] + dy), col)
+        # floor(v+0.5), bukan round(): round() Python membulatkan .5 ke genap sehingga piksel kepala bertabrakan
+        c.put(math.floor(hc[0] + dx + 0.5), math.floor(hc[1] + dy + 0.5), col)
     if arms_over:
         arm('B')
     arm('F')

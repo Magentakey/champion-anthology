@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart' show ValueNotifier;
 import 'package:flutter/material.dart'
     show Alignment, BuildContext, KeyEventResult, Widget;
 import 'package:flutter/services.dart'
-    show DeviceOrientation, HapticFeedback, KeyDownEvent, KeyEvent, LogicalKeyboardKey;
+    show DeviceOrientation, HapticFeedback, KeyDownEvent, KeyEvent, KeyUpEvent, LogicalKeyboardKey;
 
 import '../../core/audio/audio_service.dart';
 import '../../core/level/level_game.dart';
@@ -22,7 +22,9 @@ import 'fight_config.dart';
 import 'fight_dialog.dart';
 import 'fight_hud.dart';
 import 'fighter.dart';
+import 'hit_feel.dart';
 import 'pose_clips.dart';
+import 'punch_input.dart';
 
 LevelGame createFightGame(LevelSession session) => FightGame(session);
 
@@ -51,6 +53,10 @@ class FightGame extends LevelGame with KeyboardEvents {
   bool _telegraphWas = false;
   int _knivesWas = 0;
   double _shake = 0;
+
+  // tombol pukul: ketuk = pukulan biasa (dijalankan saat dilepas), tahan = isi serangan tenaga
+  final PunchInput _punch = PunchInput();
+  bool _chargeFullWas = false;
   double _unit = 1;
   double _groundY = 0;
 
@@ -70,6 +76,12 @@ class FightGame extends LevelGame with KeyboardEvents {
   /// Teks besar di tengah layar (mis. "K.O.!") dan penanda pukulan ke pemain (untuk kilat merah).
   final ValueNotifier<String?> callout = ValueNotifier(null);
   final ValueNotifier<int> hurtFlash = ValueNotifier(0);
+
+  /// Hitungan combo pemain untuk HUD (x2, x3, ...); 0 saat tidak ada combo.
+  final ValueNotifier<int> combo = ValueNotifier(0);
+
+  /// Isi serangan tenaga 0..1 untuk HUD; 0 saat tidak mengisi.
+  final ValueNotifier<double> charge = ValueNotifier(0);
 
   /// Mode uji: Rock menyerang atau diam.
   final ValueNotifier<bool> rockAttacks = ValueNotifier(true);
@@ -260,6 +272,8 @@ class FightGame extends LevelGame with KeyboardEvents {
     _left = false;
     _right = false;
     _block = false;
+    _punch.reset();
+    arena.player.cancelCharge();
     AudioService.instance.pauseBgm(owner: this);
     super.pauseEngine();
   }
@@ -278,6 +292,35 @@ class FightGame extends LevelGame with KeyboardEvents {
     if (_canInput) arena.player.queuePunch();
   }
 
+  /// Tombol pukul ditekan. Ketukan singkat menjadi pukulan saat dilepas; ditahan lebih dari
+  /// [chargeTapMs] mulai mengisi serangan tenaga.
+  void pressPunchDown() {
+    if (_canInput) _punch.down();
+  }
+
+  void pressPunchUp() {
+    switch (_punch.up()) {
+      case PunchRelease.tap:
+        pressPunch();
+      case PunchRelease.release:
+        if (arena.player.releaseCharge() != null) AudioService.instance.play(Sfx.whoosh);
+      case PunchRelease.none:
+        break;
+    }
+  }
+
+  void _updatePunchHold(double ms) {
+    if (!_punch.held) return;
+    if (!_canInput) {
+      _punch.reset();
+      arena.player.cancelCharge();
+      return;
+    }
+    if (_punch.update(ms) && arena.player.beginCharge()) _punch.markCharging();
+    // terkena saat mengisi: isi hilang dan tombol yang masih ditahan tidak mengisi ulang
+    if (_punch.charged && !arena.player.charging) _punch.chargeLost();
+  }
+
   void pressKick() {
     if (_canInput) arena.player.queueAttack(Attacks.kick);
   }
@@ -293,9 +336,11 @@ class FightGame extends LevelGame with KeyboardEvents {
     setMoveRight(held([LogicalKeyboardKey.arrowRight, LogicalKeyboardKey.keyD]));
     setBlock(held([LogicalKeyboardKey.keyL, LogicalKeyboardKey.keyS]));
     if (event is KeyDownEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.keyJ) pressPunch();
+      if (event.logicalKey == LogicalKeyboardKey.keyJ) pressPunchDown();
       if (event.logicalKey == LogicalKeyboardKey.keyK) pressKick();
       if (event.logicalKey == LogicalKeyboardKey.keyI) pressKnife();
+    } else if (event is KeyUpEvent && event.logicalKey == LogicalKeyboardKey.keyJ) {
+      pressPunchUp();
     }
     return KeyEventResult.handled;
   }
@@ -308,6 +353,7 @@ class FightGame extends LevelGame with KeyboardEvents {
       return;
     }
     final real = math.min(dt, 0.05);
+    _updatePunchHold(real * 1000);
     var timeScale = 1.0;
     if (_slowMoMs > 0) {
       _slowMoMs -= real * 1000; // slow-motion berjalan menurut waktu nyata
@@ -345,6 +391,8 @@ class FightGame extends LevelGame with KeyboardEvents {
 
     arena.update(dtMs);
     _processEvents();
+    combo.value = arena.combo;
+    charge.value = arena.player.chargeFraction;
     _processSoundEdges();
     _checkProgress();
 
@@ -357,14 +405,23 @@ class FightGame extends LevelGame with KeyboardEvents {
     for (final e in arena.events) {
       final at = Offset(e.x * _unit, _groundY + e.y * _unit);
       final blocked = e.kind == HitKind.blocked;
-      add(HitSpark(pos: at, radius: (blocked ? 200 : 300) * _unit, blocked: blocked));
-      _hitStopMs = math.max(_hitStopMs, blocked ? 30 : 60);
-      _shake = math.max(_shake, blocked ? 2 : (e.damage >= 10 ? 8 : 5));
+      final feel = hitFeelFor(e);
+      add(HitSpark(pos: at, radius: feel.sparkRadius * _unit, blocked: blocked));
+      if (feel.dust) {
+        final dir = e.byPlayer ? (arena.rock.x >= arena.player.x ? 1 : -1) : (arena.player.x >= arena.rock.x ? 1 : -1);
+        add(DustPuff(pos: Offset(at.dx, _groundY), scale: _unit, dir: dir));
+      }
+      _hitStopMs = math.max(_hitStopMs, feel.hitStopMs);
+      _shake = math.max(_shake, feel.shake);
+      if (feel.slowMs > 0 && _slowMoMs <= 0 && !_resultPending) {
+        _slowScale = feel.slowScale;
+        _slowMoMs = feel.slowMs;
+      }
       _cheer = math.min(1, _cheer + (blocked ? 0.05 : (e.byPlayer ? 0.3 : 0.1)));
 
       // suara
       final audio = AudioService.instance;
-      audio.play(blocked ? Sfx.block : _sfxFor(e));
+      audio.play(feel.sfx);
       if (!e.byPlayer && !blocked) {
         audio.play(Sfx.hurt);
         hurtFlash.value++;
@@ -384,24 +441,15 @@ class FightGame extends LevelGame with KeyboardEvents {
     arena.events.clear();
   }
 
-  Sfx _sfxFor(HitEvent e) {
-    if (e.knife) return Sfx.knifeHit;
-    switch (e.id) {
-      case 'kick':
-      case 'roundhouse':
-        return Sfx.kick;
-      case 'heavy':
-        return Sfx.heavy;
-      default:
-        return Sfx.punch;
-    }
-  }
-
   /// Suara yang dipicu perubahan keadaan: pisau dilempar dan aba-aba serangan khusus Rock.
   void _processSoundEdges() {
     final knives = arena.knives.length;
     if (knives > _knivesWas) AudioService.instance.play(Sfx.whoosh);
     _knivesWas = knives;
+
+    final full = arena.player.charging && arena.player.chargeFraction >= 1;
+    if (full && !_chargeFullWas) AudioService.instance.play(Sfx.bell);
+    _chargeFullWas = full;
 
     final telegraph = arena.rock.telegraphing;
     if (telegraph && !_telegraphWas) AudioService.instance.play(Sfx.warning);

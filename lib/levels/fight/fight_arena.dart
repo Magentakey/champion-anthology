@@ -36,6 +36,8 @@ class HitEvent {
     required this.damage,
     required this.id,
     this.knife = false,
+    this.combo = 0,
+    this.knockback = 0,
   });
 
   final HitKind kind;
@@ -49,6 +51,12 @@ class HitEvent {
   /// Id serangan yang mengenai (punch, kick, heavy, throw, ...), untuk memilih suara.
   final String id;
   final bool knife;
+
+  /// Jumlah pukulan pemain yang beruntun mengenai (termasuk pukulan ini); 0 untuk serangan Rock.
+  final int combo;
+
+  /// Dorongan mundur serangan ini (satuan ruang gambar), untuk efek debu.
+  final double knockback;
 }
 
 /// Dunia pertarungan (tanpa Flame): dua petarung, pisau, dan penyelesaian hit.
@@ -63,6 +71,7 @@ class FightArena {
           walkSpeed: 600,
           backSpeed: 450,
         ) {
+    player.combosEnabled = true;
     placeFighters();
     setStep(1);
   }
@@ -78,6 +87,10 @@ class FightArena {
 
   int step = 1;
 
+  /// Hitungan combo pemain saat ini (pukulan beruntun yang mengenai Rock).
+  int combo = 0;
+  double _comboIdleMs = 0;
+
   void placeFighters() {
     player.x = worldWidth * ArenaLayout.playerX;
     rock.x = worldWidth * ArenaLayout.rockX;
@@ -86,6 +99,7 @@ class FightArena {
   /// Menerapkan fase [step] (1..3): batas HP dan sifat Rock.
   void setStep(int step) {
     this.step = step;
+    combo = 0;
     final stats = rockPhaseStats[step - 1];
     rock.hpFloor = FightStats.rockFloorHp(step);
     rock.speedScale = stats.speedScale;
@@ -95,6 +109,10 @@ class FightArena {
   void clearKnives() => knives.clear();
 
   void update(double dtMs) {
+    if (combo > 0) {
+      _comboIdleMs += dtMs;
+      if (_comboIdleMs >= comboResetMs) combo = 0;
+    }
     player.update(dtMs, rock.x);
     rock.update(dtMs, player.x);
     _resolveMelee(player, rock, byPlayer: true);
@@ -148,6 +166,14 @@ class FightArena {
     final result = d.receiveHit(spec, attackerX);
     if (result == HitOutcome.ignored) return false;
     final blocked = result == HitOutcome.blocked;
+    if (!blocked) {
+      if (byPlayer && !knife) {
+        combo++;
+        _comboIdleMs = 0;
+      } else if (!byPlayer) {
+        combo = 0; // pemain terkena: combo putus
+      }
+    }
     events.add(HitEvent(
       kind: blocked ? HitKind.blocked : HitKind.hit,
       byPlayer: byPlayer,
@@ -156,6 +182,8 @@ class FightArena {
       damage: spec.damage * (blocked ? spec.blockedFactor : 1),
       id: spec.id,
       knife: knife,
+      combo: byPlayer && !blocked && !knife ? combo : 0,
+      knockback: spec.knockback,
     ));
     return true;
   }

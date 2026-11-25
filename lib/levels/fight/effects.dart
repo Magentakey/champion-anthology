@@ -48,6 +48,48 @@ class HitSpark extends Component {
   }
 }
 
+/// Debu di kaki lawan saat terkena dorongan kuat: kotak-kotak abu-abu yang naik pelan dan memudar.
+class DustPuff extends Component {
+  DustPuff({required this.pos, required this.scale, required this.dir});
+
+  final Offset pos;
+
+  /// Satuan piksel layar per satuan ruang gambar.
+  final double scale;
+
+  /// Arah dorongan (+1 ke kanan, -1 ke kiri); debu terlempar ke arah ini.
+  final int dir;
+
+  static const _life = 0.38;
+  static const count = 6;
+  double _t = 0;
+
+  static final Paint _edge = Paint()..isAntiAlias = false;
+  static final Paint _fill = Paint()..isAntiAlias = false;
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    _t += dt;
+    if (_t >= _life) removeFromParent();
+  }
+
+  @override
+  void render(Canvas canvas) {
+    final p = (_t / _life).clamp(0.0, 1.0).toDouble();
+    for (var i = 0; i < count; i++) {
+      final spread = (i - (count - 1) / 2) / (count / 2);
+      final x = pos.dx + dir * (60 + 160 * p) * scale * (0.6 + 0.4 * (i % 3) / 2) + spread * 50 * scale;
+      final y = pos.dy - (40 + 150 * p) * scale * (0.5 + 0.5 * ((i * 7) % 5) / 4);
+      final side = math.max(3.0, 60 * scale * (1 - 0.5 * p) * (0.7 + 0.3 * (i % 2)));
+      _fill.color = Color.fromRGBO(196, 170, 138, 1 - p);
+      _edge.color = Color.fromRGBO(62, 42, 28, 1 - p);
+      canvas.drawRect(Rect.fromCenter(center: Offset(x, y), width: side + 2, height: side + 2), _edge);
+      canvas.drawRect(Rect.fromCenter(center: Offset(x, y), width: side, height: side), _fill);
+    }
+  }
+}
+
 /// Menggambar semua pisau yang sedang melayang (piksel, berputar dalam langkah 45 derajat).
 class KnifeLayer extends Component {
   KnifeLayer(this.arena);

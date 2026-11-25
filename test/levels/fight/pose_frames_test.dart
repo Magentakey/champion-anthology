@@ -73,11 +73,11 @@ void main() {
       expect(c.sampleStepped(c.durationMs), Poses.idleA);
     });
 
-    test('idle berganti dua bingkai (napas) dan jalan memutar empat bingkai', () {
+    test('idle bernapas lewat tiga bingkai dan jalan memutar lima bingkai (v1.6.0)', () {
       final idleFrames = {for (var t = 0; t < 1400; t += 20) Clips.idle.sampleStepped(t)};
-      expect(idleFrames, {Poses.idleA, Poses.idleB});
+      expect(idleFrames, {Poses.idleA, Poses.idleB, Poses.idleC});
       final walkFrames = {for (var t = 0; t < 360; t += 10) Clips.walk.sampleStepped(t)};
-      expect(walkFrames, {Poses.walkA, Poses.walkB, Poses.walkC, Poses.idleA});
+      expect(walkFrames, {Poses.walkA, Poses.walkB, Poses.walkC, Poses.walkD, Poses.idleA});
     });
   });
 

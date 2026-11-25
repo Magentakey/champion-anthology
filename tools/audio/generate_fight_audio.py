@@ -112,6 +112,20 @@ def heavy():
     return normalize(boom * 1.0 + crack * 0.7 + rumble * 0.6, 0.95)
 
 
+def finisher():
+    """Penutup combo (uppercut / tendangan penutup): dentuman berat + desis naik + retakan terang.
+    Memakai generator acak sendiri supaya file lain tidak berubah saat skrip dijalankan ulang."""
+    rng = np.random.default_rng(11)
+    dur = 0.34
+    n = int(dur * SR)
+    thump = sweep(180, 45, dur) * env_exp(n, 12)
+    rise = sweep(300, 1400, 0.12)
+    rise = np.pad(rise, (0, n - len(rise))) * env_exp(n, 30) * 0.35
+    crack = lowpass(rng.uniform(-1, 1, n), 4200) * env_exp(n, 45) * 0.8
+    sparkle = highpass(rng.uniform(-1, 1, n), 3500) * env_exp(n, 110) * 0.4
+    return normalize(thump * 1.0 + rise + crack + sparkle, 0.92)
+
+
 def block():
     n = int(0.14 * SR)
     t = t_axis(0.14)
@@ -290,6 +304,7 @@ def main():
     for name, data in sfx.items():
         save(name, data)
     save('fight_bgm.wav', bgm(), sr=BGM_SR, fade_ms=0)   # BGM berulang: tanpa fade
+    save('finisher.wav', finisher())   # terakhir + generator acak sendiri: file lain tidak berubah
 
 
 if __name__ == '__main__':

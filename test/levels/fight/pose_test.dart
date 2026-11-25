@@ -71,6 +71,9 @@ void main() {
       Poses.punchHit, Poses.crossWind, Poses.crossHit, Poses.kickWind, Poses.kickHit,
       Poses.throwWind, Poses.throwHit, Poses.block, Poses.hurt, Poses.fall, Poses.ko,
       Poses.win, Poses.taunt, Poses.heavyWind, Poses.heavyHit,
+      Poses.uppercutWind, Poses.uppercutHit, Poses.uppercutAir, Poses.hurtLight, Poses.stagger,
+      Poses.roundhouseWind, Poses.roundhouseHit, Poses.dashWind, Poses.dashHit, Poses.idleC,
+      Poses.walkD, Poses.kickHighHit,
     ];
     for (final p in poses) {
       expect(p.toeF.dy, lessThanOrEqualTo(5));

@@ -60,6 +60,20 @@ class Fighter extends Component {
       }
     }
 
+    // mengisi serangan tenaga: aura emas yang makin terang dan cepat berdenyut sampai penuh
+    if (body.charging) {
+      final f = body.chargeFraction;
+      final pulse = 0.5 + 0.5 * math.sin(_timeSec * (10 + 18 * f));
+      const bands = <(double, int)>[(0.8, 30), (0.55, 46), (0.34, 64)];
+      for (final (k, base) in bands) {
+        _glowPaint.color = Color.fromARGB(((base + 60 * pulse) * (0.35 + 0.65 * f)).round(), 255, 214, 64);
+        canvas.drawOval(
+          Rect.fromCenter(center: const Offset(0, -560), width: 980 * k, height: 1350 * k),
+          _glowPaint,
+        );
+      }
+    }
+
     // bayangan di tanah
     canvas.drawOval(
       Rect.fromCenter(center: const Offset(0, 14), width: 520 * spriteScale, height: 44),

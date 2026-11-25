@@ -61,6 +61,14 @@ class FighterBody {
   double _iFramesMs = 0;
   double _scriptMs = 0;
 
+  /// Combo khusus pemain (tendang + tendang, pukul + silang + tendang). Rock tidak memakainya.
+  bool combosEnabled = false;
+
+  /// Sedang menahan tombol pukul untuk mengisi serangan tenaga (hanya pemain).
+  bool charging = false;
+  double chargeMs = 0;
+  double _kickWindowMs = 0;
+
   bool _queuedPunch = false;
   AttackSpec? _queuedSpec;
   double _queuedMs = 0;
@@ -85,6 +93,18 @@ class FighterBody {
   bool get atFloor => hpFloor > 0 && hp <= hpFloor + 1e-6;
   double get hpFraction => maxHp == 0 ? 0 : hp / maxHp;
 
+  /// Pukulan keberapa dalam rangkaian yang sedang berjalan atau baru selesai (0 = pukul, 1 = silang, 2 = penutup).
+  int get chainStep => _chainStep;
+
+  /// Masih dalam jendela menyambung combo (setelah pukulan rangkaian selesai).
+  bool get inComboWindow => _chainWindowMs > 0;
+
+  /// Isi serangan tenaga 0..1 (1 = penuh); 0 bila tidak sedang mengisi.
+  double get chargeFraction => charging ? (chargeMs / chargeFullMs).clamp(0.0, 1.0).toDouble() : 0;
+
+  /// Isi sudah cukup agar serangan tenaga keluar saat dilepas.
+  bool get chargeReady => charging && chargeMs >= chargeMinMs;
+
   Pose get pose => _pose;
 
   /// Pose kunci yang digambar sebagai sprite (tanpa campuran antar pose) dan nomor bingkainya.
@@ -107,6 +127,44 @@ class FighterBody {
     _queuedMs = inputBufferMs.toDouble();
   }
 
+  /// Mulai mengisi serangan tenaga: berdiri menahan pose menarik tinju. Gagal (false) bila sedang
+  /// menyerang, terkena, atau sudah mengisi.
+  bool beginCharge() {
+    if (!canAct || charging) return false;
+    state = BodyState.attack;
+    attack = null;
+    _telegraphLeft = 0;
+    _clearQueue();
+    charging = true;
+    chargeMs = 0;
+    _play(Clips.heavyWind);
+    return true;
+  }
+
+  /// Lepas tombol: mengayun bila isi cukup ([chargeSlam] atau [chargeFull]); selain itu batal.
+  /// Mengembalikan serangan yang keluar, atau null bila batal.
+  AttackSpec? releaseCharge() {
+    if (!charging) return null;
+    final ms = chargeMs;
+    charging = false;
+    chargeMs = 0;
+    if (ms < chargeMinMs) {
+      state = BodyState.idle;
+      return null;
+    }
+    final spec = ms >= chargeFullMs ? Attacks.chargeFull : Attacks.chargeSlam;
+    _startAttack(spec);
+    return spec;
+  }
+
+  /// Membatalkan isi tanpa menyerang (mis. saat jeda).
+  void cancelCharge() {
+    if (!charging) return;
+    charging = false;
+    chargeMs = 0;
+    if (state == BodyState.attack && attack == null) state = BodyState.idle;
+  }
+
   /// Gagal (false) jika pisau masih jeda.
   bool queueKnife() {
     if (knifeCooldownMs > 0) return false;
@@ -119,6 +177,7 @@ class FighterBody {
     if (isDead) return;
     state = BodyState.scripted;
     attack = null;
+    cancelCharge();
     _clearQueue();
     _scriptMs = (holdMs ?? clip.durationMs).toDouble();
     _play(clip);
@@ -162,10 +221,12 @@ class FighterBody {
     attack = null;
     _telegraphLeft = 0;
     _clearQueue();
+    charging = false; // terkena saat mengisi: isi hilang
+    chargeMs = 0;
     state = BodyState.hurt;
     _stunMs = spec.hurtMs * hurtScale;
     _knock(pushDir, spec.knockback);
-    _play(Clips.hurt);
+    _play(spec.hurtClip);
     return HitOutcome.hit;
   }
 
@@ -174,6 +235,7 @@ class FighterBody {
     if (knifeCooldownMs > 0) knifeCooldownMs = math.max(0, knifeCooldownMs - dtMs);
     if (_iFramesMs > 0) _iFramesMs = math.max(0, _iFramesMs - dtMs);
     if (_chainWindowMs > 0) _chainWindowMs = math.max(0, _chainWindowMs - dtMs);
+    if (_kickWindowMs > 0) _kickWindowMs = math.max(0, _kickWindowMs - dtMs);
     if (_queuedMs > 0) {
       _queuedMs -= dtMs;
       if (_queuedMs <= 0) _clearQueue();
@@ -223,6 +285,10 @@ class FighterBody {
   }
 
   void _updateAttack(double dtMs) {
+    if (charging) {
+      chargeMs = math.min(chargeMs + dtMs, chargeFullMs.toDouble());
+      return;
+    }
     final spec = attack;
     if (spec == null) {
       state = BodyState.idle;
@@ -243,8 +309,21 @@ class FighterBody {
       _clearQueue();
       return;
     }
+    // pukul, silang, lalu tendang: tendangan boleh langsung menyambung dari pemulihan silang
+    if (combosEnabled && spec.id == Attacks.cross.id && _queuedSpec?.id == Attacks.kick.id && attackMs >= spec.hitEndMs) {
+      _startAttack(Attacks.comboKick);
+      _clearQueue();
+      return;
+    }
+    // tendang + tendang: tendangan kedua menyambung dari pemulihan tendangan pertama
+    if (combosEnabled && spec.id == Attacks.kick.id && _queuedSpec?.id == Attacks.kick.id && attackMs >= spec.hitEndMs) {
+      _startAttack(Attacks.kickHigh);
+      _clearQueue();
+      return;
+    }
     if (attackMs >= spec.totalMs) {
       if (spec.chain) _chainWindowMs = comboWindowMs.toDouble();
+      if (combosEnabled && spec.id == Attacks.kick.id) _kickWindowMs = comboWindowMs.toDouble();
       attack = null;
       state = BodyState.idle;
     }
@@ -258,7 +337,11 @@ class FighterBody {
     }
     final spec = _queuedSpec;
     if (spec != null) {
-      _startAttack(spec);
+      // tendangan yang ditekan di jendela combo setelah silang menjadi tendangan penutup
+      final isKick = combosEnabled && spec.id == Attacks.kick.id;
+      final comboKick = isKick && _chainWindowMs > 0 && _chainStep == 1;
+      final kickHigh = isKick && !comboKick && _kickWindowMs > 0;
+      _startAttack(comboKick ? Attacks.comboKick : (kickHigh ? Attacks.kickHigh : spec));
       _clearQueue();
       return true;
     }
@@ -273,6 +356,8 @@ class FighterBody {
 
   void _startAttack(AttackSpec spec) {
     if (!spec.chain) _chainWindowMs = 0;
+    _kickWindowMs = 0;
+    charging = false;
     if (spec.projectile) knifeCooldownMs = PlayerStats.knifeCooldownMs.toDouble();
     state = BodyState.attack;
     attack = spec;
@@ -280,7 +365,7 @@ class FighterBody {
     hitDone = false;
     projectileSpawned = false;
     _telegraphLeft = spec.telegraphMs.toDouble();
-    _play(spec.telegraphMs > 0 ? Clips.heavyWind : spec.clip);
+    _play(spec.telegraphMs > 0 ? spec.telegraphClip : spec.clip);
   }
 
   void _clearQueue() {
@@ -292,6 +377,8 @@ class FighterBody {
   void _knockOut(int dir, double knockback) {
     state = BodyState.ko;
     attack = null;
+    charging = false;
+    chargeMs = 0;
     _telegraphLeft = 0;
     _clearQueue();
     _knock(dir, knockback);

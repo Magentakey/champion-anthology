@@ -77,6 +77,24 @@ const int inputBufferMs = 120;
 /// Jendela menyambung rangkaian pukulan setelah satu pukulan selesai.
 const int comboWindowMs = 350;
 
+/// Hitungan combo (x2, x3, ...) di layar direset bila pemain tidak mengenai lawan selama waktu ini.
+const int comboResetMs = 1200;
+
+/// Tombol pukul ditahan lebih lama dari ini = mulai mengisi serangan tenaga (lebih singkat = pukulan biasa).
+const int chargeTapMs = 200;
+
+/// Lama mengisi (setelah mulai) agar serangan tenaga keluar saat dilepas; kurang dari ini = batal.
+const int chargeMinMs = 500;
+
+/// Lama mengisi sampai penuh (serangan tenaga penuh: lebih kuat, ada gerak lambat).
+const int chargeFullMs = 1000;
+
+/// Hitungan combo baru ditampilkan mulai pukulan beruntun ke-2.
+const int minComboShown = 2;
+
+/// Teks hitungan combo di HUD, mis. "x3 COMBO!".
+String comboLabel(int n) => n >= 3 ? 'x$n COMBO!' : 'x$n COMBO';
+
 /// Perilaku Rock per fase (dipakai AI). Angka titik awal untuk tuning.
 class RockPhaseStats {
   const RockPhaseStats({

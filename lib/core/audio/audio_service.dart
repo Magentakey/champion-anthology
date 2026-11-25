@@ -25,6 +25,7 @@ enum Sfx {
   bell('bell.wav'),
   crowd('crowd.wav'),
   warning('warning.wav'),
+  finisher('finisher.wav'),
 
   // Level Cooking (dibuat oleh tools/audio/generate_cooking_audio.py)
   chop('chop.wav'),

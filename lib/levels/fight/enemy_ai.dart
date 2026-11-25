@@ -42,10 +42,20 @@ class EnemyAi {
   double _waitDir = 0;
 
   /// Pemain dianggap menyepam [id] bila 3 serangan terakhirnya sama.
+  /// Keluarga serangan untuk deteksi spam: tendangan tinggi dan tendangan penutup combo dihitung
+  /// sebagai tendangan, serangan tenaga penuh sebagai serangan tenaga. Tanpa ini, menyepam tendang
+  /// (yang kini berselang-seling kick dan kickHigh) lolos dari deteksi.
+  static String attackFamily(String id) => switch (id) {
+        'kickHigh' || 'comboKick' => 'kick',
+        'chargeFull' => 'charge',
+        _ => id,
+      };
+
   bool isSpamming(String id) {
     if (_history.length < 3) return false;
+    final family = attackFamily(id);
     final n = _history.length;
-    return _history[n - 1] == id && _history[n - 2] == id && _history[n - 3] == id;
+    return _history[n - 1] == family && _history[n - 2] == family && _history[n - 3] == family;
   }
 
   /// Pemain sudah terjepit di dinding cukup lama sehingga Rock menekan.
@@ -192,7 +202,7 @@ class EnemyAi {
     } else {
       if (!_seenAttack) {
         _seenAttack = true;
-        _history.add(atk.id);
+        _history.add(attackFamily(atk.id));
         if (_history.length > 5) _history.removeAt(0);
         if (atk.projectile || dist <= 750) {
           _pendingThreat = atk;

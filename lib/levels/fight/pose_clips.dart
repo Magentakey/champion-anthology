@@ -128,17 +128,23 @@ class PoseClip {
 abstract final class Clips {
   static const idle = PoseClip(
     'idle',
-    [PoseKey(Poses.idleA, 700), PoseKey(Poses.idleB, 700)],
+    [
+      PoseKey(Poses.idleA, 350),
+      PoseKey(Poses.idleB, 350),
+      PoseKey(Poses.idleA, 350),
+      PoseKey(Poses.idleC, 350),
+    ],
     loop: true,
   );
 
   static const walk = PoseClip(
     'walk',
     [
-      PoseKey(Poses.walkA, 90),
-      PoseKey(Poses.walkB, 90),
-      PoseKey(Poses.walkC, 90),
-      PoseKey(Poses.idleA, 90),
+      PoseKey(Poses.walkA, 72),
+      PoseKey(Poses.walkB, 72),
+      PoseKey(Poses.walkC, 72),
+      PoseKey(Poses.walkD, 72),
+      PoseKey(Poses.idleA, 72),
     ],
     loop: true,
   );
@@ -211,6 +217,112 @@ abstract final class Clips {
     face: FaceState.hurt,
   );
 
+  /// Uppercut penutup combo pemain. Waktu SAMA dengan [punch] (persiapan 70, aktif 70, pemulihan 150)
+  /// supaya angka pertarungan tidak berubah; hanya gerakannya yang berbeda: jongkok, melompat, tinju naik.
+  static const uppercut = PoseClip(
+    'uppercut',
+    [
+      PoseKey(Poses.uppercutWind, 0),
+      PoseKey(Poses.uppercutWind, 70),
+      PoseKey(Poses.uppercutHit, 60, ease: Ease.out),
+      PoseKey(Poses.uppercutAir, 70),
+      PoseKey(Poses.idleA, 150),
+    ],
+    face: FaceState.attack,
+  );
+
+  /// Tendangan tinggi: tendangan kedua pada combo tendang + tendang. Waktu SAMA dengan [kick].
+  static const kickHigh = PoseClip(
+    'kickHigh',
+    [
+      PoseKey(Poses.kickWind, 0),
+      PoseKey(Poses.kickWind, 130),
+      PoseKey(Poses.kickHighHit, 70, ease: Ease.out),
+      PoseKey(Poses.kickHighHit, 90),
+      PoseKey(Poses.idleA, 260),
+    ],
+    face: FaceState.attack,
+  );
+
+  /// Aba-aba Tendangan Putar Rock (ditahan sampai aba-aba selesai).
+  static const roundhouseWind = PoseClip(
+    'roundhouseWind',
+    [PoseKey(Poses.idleA, 0), PoseKey(Poses.roundhouseWind, 280)],
+    face: FaceState.attack,
+    holdLast: true,
+  );
+
+  /// Tendangan Putar Rock. Waktu SAMA dengan [kick] (persiapan 130, aktif 90, pemulihan 260).
+  static const roundhouse = PoseClip(
+    'roundhouse',
+    [
+      PoseKey(Poses.roundhouseWind, 0),
+      PoseKey(Poses.roundhouseWind, 130),
+      PoseKey(Poses.roundhouseHit, 70, ease: Ease.out),
+      PoseKey(Poses.roundhouseHit, 90),
+      PoseKey(Poses.idleA, 260),
+    ],
+    face: FaceState.attack,
+  );
+
+  /// Aba-aba pukulan terjang Rock (membungkuk ke depan).
+  static const dashWind = PoseClip(
+    'dashWind',
+    [PoseKey(Poses.idleA, 0), PoseKey(Poses.dashWind, 200)],
+    face: FaceState.attack,
+    holdLast: true,
+  );
+
+  /// Pukulan terjang Rock. Waktu SAMA dengan [punch].
+  static const dash = PoseClip(
+    'dash',
+    [
+      PoseKey(Poses.dashWind, 0),
+      PoseKey(Poses.dashWind, 70),
+      PoseKey(Poses.dashHit, 60, ease: Ease.out),
+      PoseKey(Poses.dashHit, 70),
+      PoseKey(Poses.idleA, 150),
+    ],
+    face: FaceState.attack,
+  );
+
+  /// Reaksi terkena pukulan ringan: kepala tersentak sebentar.
+  static const hurtLight = PoseClip(
+    'hurtLight',
+    [
+      PoseKey(Poses.idleA, 0),
+      PoseKey(Poses.hurtLight, 50, ease: Ease.out),
+      PoseKey(Poses.hurtLight, 120),
+      PoseKey(Poses.idleA, 150),
+    ],
+    face: FaceState.hurt,
+  );
+
+  /// Reaksi terkena serangan sedang: terhuyung ke belakang.
+  static const stagger = PoseClip(
+    'stagger',
+    [
+      PoseKey(Poses.idleA, 0),
+      PoseKey(Poses.stagger, 70, ease: Ease.out),
+      PoseKey(Poses.stagger, 180),
+      PoseKey(Poses.idleA, 200),
+    ],
+    face: FaceState.hurt,
+  );
+
+  /// Reaksi terkena serangan berat: terlempar sebentar lalu bangkit.
+  static const launched = PoseClip(
+    'launched',
+    [
+      PoseKey(Poses.idleA, 0),
+      PoseKey(Poses.hurt, 50, ease: Ease.out),
+      PoseKey(Poses.fall, 110),
+      PoseKey(Poses.fall, 120),
+      PoseKey(Poses.idleA, 160),
+    ],
+    face: FaceState.hurt,
+  );
+
   static const ko = PoseClip(
     'ko',
     [
@@ -274,5 +386,14 @@ abstract final class Clips {
     'taunt': taunt,
     'heavyWind': heavyWind,
     'heavyHit': heavyHit,
+    'uppercut': uppercut,
+    'kickHigh': kickHigh,
+    'roundhouseWind': roundhouseWind,
+    'roundhouse': roundhouse,
+    'dashWind': dashWind,
+    'dash': dash,
+    'hurtLight': hurtLight,
+    'stagger': stagger,
+    'launched': launched,
   };
 }

@@ -78,6 +78,16 @@ class FightHud extends StatelessWidget {
             alignment: const Alignment(0, -0.1),
             child: IgnorePointer(child: _Callout(text: game.callout, unit: u)),
           ),
+          // isi serangan tenaga (muncul saat tombol pukul ditahan)
+          Align(
+            alignment: const Alignment(0.78, 0.5),
+            child: IgnorePointer(child: _ChargeBar(charge: game.charge, unit: u)),
+          ),
+          // hitungan combo pemain (x2, x3, ...)
+          Align(
+            alignment: const Alignment(0.62, -0.55),
+            child: IgnorePointer(child: _ComboCounter(combo: game.combo, unit: u)),
+          ),
           Positioned(left: 12, bottom: 10, child: _MovePad(game: game)),
           Positioned(right: 12, bottom: 10, child: _ActionPad(game: game)),
           // panel uji hanya ada di build debug (flutter run), tidak di APK rilis
@@ -142,6 +152,98 @@ class _Callout extends StatelessWidget {
                   scale: 4,
                   color: PixelUi.gold,
                   outline: PixelUi.goldOutline,
+                  shadow: PixelUi.dark,
+                ),
+              ),
+            ),
+    );
+  }
+}
+
+/// Bar isi serangan tenaga: penanda di tengah = isi minimal agar keluar, emas saat penuh.
+class _ChargeBar extends StatelessWidget {
+  const _ChargeBar({required this.charge, required this.unit});
+
+  final ValueNotifier<double> charge;
+  final double unit;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<double>(
+      valueListenable: charge,
+      builder: (_, v, _) {
+        if (v <= 0) return const SizedBox.shrink();
+        final full = v >= 1;
+        final ready = v >= chargeMinMs / chargeFullMs;
+        final w = 56 * unit;
+        final h = 7 * unit;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              full ? 'LEPAS!' : (ready ? 'SIAP' : 'TAHAN'),
+              style: PixelUi.text(
+                unit,
+                scale: 2,
+                color: full ? PixelUi.gold : PixelUi.cream,
+                outline: full ? PixelUi.goldOutline : PixelUi.outline,
+                shadow: PixelUi.dark,
+              ),
+            ),
+            SizedBox(height: unit * 2),
+            Container(
+              width: w,
+              height: h,
+              decoration: BoxDecoration(
+                color: PixelUi.dark,
+                border: Border.all(color: PixelUi.cream, width: unit),
+              ),
+              child: Stack(
+                children: [
+                  FractionallySizedBox(
+                    widthFactor: v.clamp(0.0, 1.0),
+                    child: Container(color: full ? PixelUi.gold : (ready ? const Color(0xFFE8863A) : const Color(0xFFA83A3A))),
+                  ),
+                  Align(
+                    alignment: Alignment(chargeMinMs / chargeFullMs * 2 - 1, 0),
+                    child: Container(width: unit, color: PixelUi.cream),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Teks "x3 COMBO" yang membesar sekilas tiap pukulan beruntun mengenai (tampil mulai x2).
+class _ComboCounter extends StatelessWidget {
+  const _ComboCounter({required this.combo, required this.unit});
+
+  final ValueNotifier<int> combo;
+  final double unit;
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: combo,
+      builder: (_, n, _) => n < minComboShown
+          ? const SizedBox.shrink()
+          : TweenAnimationBuilder<double>(
+              key: ValueKey(n),
+              tween: Tween(begin: 1.7, end: 1),
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOutBack,
+              builder: (_, scale, child) => Transform.scale(scale: scale, child: child),
+              child: Text(
+                comboLabel(n),
+                style: PixelUi.text(
+                  unit,
+                  scale: n >= 3 ? 3 : 2,
+                  color: n >= 3 ? PixelUi.gold : PixelUi.cream,
+                  outline: n >= 3 ? PixelUi.goldOutline : PixelUi.outline,
                   shadow: PixelUi.dark,
                 ),
               ),
@@ -465,7 +567,8 @@ class _ActionPad extends StatelessWidget {
               semantic: 'Pukul',
               size: base * 1.2,
               color: const Color(0xFFA83A3A),
-              onDown: game.pressPunch,
+              onDown: game.pressPunchDown,
+              onUp: game.pressPunchUp,
             ),
           ],
         ),

@@ -25,6 +25,8 @@ class AttackSpec {
     this.lunge = 0,
     this.armored = false,
     this.blockedFactor = blockedDamageFactor,
+    this.hurtClip = Clips.hurt,
+    this.telegraphClip = Clips.heavyWind,
   })  : hitStartMs = clip.timeAtKey(arriveKey) - 30,
         hitEndMs = clip.timeAtKey(arriveKey + 1);
 
@@ -61,6 +63,13 @@ class AttackSpec {
   /// Bagian damage yang tembus saat ditangkis (bawaan 0,2; pukulan berat lebih tembus).
   final double blockedFactor;
 
+  /// Animasi reaksi korban saat terkena (ringan, terhuyung, atau terlempar). Hanya tampilan:
+  /// lama berhenti tetap [hurtMs].
+  final PoseClip hurtClip;
+
+  /// Pose aba-aba yang ditahan selama [telegraphMs].
+  final PoseClip telegraphClip;
+
   /// Awal dan akhir jendela hantam (ms sejak serangan mulai).
   final int hitStartMs;
   final int hitEndMs;
@@ -94,6 +103,8 @@ class AttackSpec {
         lunge: lunge,
         armored: armored,
         blockedFactor: blockedFactor,
+        hurtClip: hurtClip,
+        telegraphClip: telegraphClip,
       );
 }
 
@@ -106,6 +117,7 @@ abstract final class Attacks {
     knockback: 110,
     hurtMs: 260,
     chain: true,
+    hurtClip: Clips.hurtLight,
   );
 
   static final cross = AttackSpec(
@@ -116,16 +128,21 @@ abstract final class Attacks {
     hurtMs: 260,
     tip: Tip.handB,
     chain: true,
+    hurtClip: Clips.hurt,
   );
 
-  /// Pukulan ke-3 dalam rangkaian: lebih kuat dan mendorong jauh.
+  /// Pukulan ke-3 dalam rangkaian: uppercut yang lebih kuat dan melempar lawan.
+  /// Waktu klip sama dengan pukulan biasa; [lunge] 30 menambal jangkauan tinjunya yang sedikit
+  /// lebih pendek (360 vs 385) sehingga jangkauan efektif tidak berubah dari sebelumnya.
   static final finisher = AttackSpec(
     id: 'finisher',
-    clip: Clips.punch,
+    clip: Clips.uppercut,
     damage: 8,
     knockback: 320,
     hurtMs: 380,
     chain: true,
+    lunge: 30,
+    hurtClip: Clips.launched,
   );
 
   static final kick = AttackSpec(
@@ -135,6 +152,61 @@ abstract final class Attacks {
     knockback: 260,
     hurtMs: 360,
     tip: Tip.toeF,
+    hurtClip: Clips.stagger,
+  );
+
+  /// Tendangan penutup combo (pukul, silang, lalu tendang): angka sama dengan [kick],
+  /// bedanya berupa tendangan putar, lawan terlempar (animasi reaksi), dan boleh menyambung
+  /// langsung dari silang.
+  static final comboKick = AttackSpec(
+    id: 'comboKick',
+    clip: Clips.roundhouse,
+    damage: 10,
+    knockback: 260,
+    hurtMs: 360,
+    tip: Tip.toeF,
+    hurtClip: Clips.launched,
+  );
+
+  /// Tendangan kedua pada combo tendang + tendang: tendangan tinggi, sedikit maju dan melempar lawan.
+  /// Waktu klip sama dengan [kick]; [lunge] 40 menambal jangkauan kakinya (370 vs 405).
+  static final kickHigh = AttackSpec(
+    id: 'kickHigh',
+    clip: Clips.kickHigh,
+    damage: 9,
+    knockback: 300,
+    hurtMs: 380,
+    tip: Tip.toeF,
+    lunge: 40,
+    hurtClip: Clips.launched,
+  );
+
+  /// Serangan tenaga pemain (tahan tombol pukul lalu lepas): hantaman yang sama dengan pukulan berat
+  /// Rock, kebal terhenti saat mengayun, tapi pemain rentan selama mengisi.
+  static final chargeSlam = AttackSpec(
+    id: 'charge',
+    clip: Clips.heavyHit,
+    damage: 14,
+    knockback: 300,
+    hurtMs: 420,
+    arriveKey: 1,
+    lunge: 140,
+    armored: true,
+    hurtClip: Clips.launched,
+  );
+
+  /// Serangan tenaga penuh: lebih kuat dari [chargeSlam], hanya berkurang 40% saat ditangkis.
+  static final chargeFull = AttackSpec(
+    id: 'chargeFull',
+    clip: Clips.heavyHit,
+    damage: 22,
+    knockback: 420,
+    hurtMs: 520,
+    arriveKey: 1,
+    lunge: 140,
+    armored: true,
+    blockedFactor: 0.6,
+    hurtClip: Clips.launched,
   );
 
   /// Lempar pisau: damage 1,5x pukul. Pisau dilepas saat tangan tiba di depan.
@@ -160,29 +232,34 @@ abstract final class Attacks {
     lunge: 140,
     armored: true,
     blockedFactor: 0.6,
+    hurtClip: Clips.launched,
   );
 
   /// Tendangan Putar Rock (fase 2 dan 3): aba-aba 0,35 dtk lalu menerjang sambil menendang.
   static final roundhouse = AttackSpec(
     id: 'roundhouse',
-    clip: Clips.kick,
+    clip: Clips.roundhouse,
     damage: 12,
     knockback: 320,
     hurtMs: 420,
     tip: Tip.toeF,
     telegraphMs: 350,
     lunge: 260,
+    hurtClip: Clips.launched,
+    telegraphClip: Clips.roundhouseWind,
   );
 
   /// Pukulan terjang Rock (fase 3): menutup jarak jauh dengan cepat.
   static final dash = AttackSpec(
     id: 'dash',
-    clip: Clips.punch,
+    clip: Clips.dash,
     damage: 10,
     knockback: 200,
     hurtMs: 300,
     telegraphMs: 250,
     lunge: 480,
+    hurtClip: Clips.stagger,
+    telegraphClip: Clips.dashWind,
   );
 
   /// Urutan rangkaian pukulan pemain.

@@ -38,6 +38,18 @@ abstract final class PoseFrames {
     Poses.taunt,
     Poses.heavyWind,
     Poses.heavyHit,
+    Poses.uppercutWind,
+    Poses.uppercutHit,
+    Poses.uppercutAir,
+    Poses.hurtLight,
+    Poses.stagger,
+    Poses.roundhouseWind,
+    Poses.roundhouseHit,
+    Poses.dashWind,
+    Poses.dashHit,
+    Poses.idleC,
+    Poses.kickHighHit,
+    Poses.walkD,
   ];
 
   /// Nomor bingkai untuk [pose] (0 bila bukan salah satu pose pustaka).
