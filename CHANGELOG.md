@@ -2,6 +2,29 @@
 
 Format versi mengikuti `pubspec.yaml` (`nama+nomorBuild`). Tag rilis: `v<nama>`.
 
+## [1.8.0] - 2026-11-26
+
+### Ditambahkan
+- Level 7: Rhea the Drummer, game ritme empat jalur dengan tiga lagu tetap (Warm-up Groove 90 BPM, Street Beat 110 BPM, Final Encore 128 BPM) yang selalu sama dan bisa dilatih.
+- Not jatuh 1,4 detik menuju garis ketuk. Empat pad menerima sentuhan serentak (multi-sentuh); papan ketik untuk uji di emulator: D F J K.
+- Penilaian: PERFECT (selisih paling jauh 50 ms) bernilai 1, GOOD (paling jauh 110 ms) bernilai 0,5, MISS (lewat 130 ms) bernilai 0. Akurasi = jumlah nilai dibagi jumlah not. Ketukan yang tidak cocok dengan not mana pun diabaikan; satu ketukan hanya untuk satu not.
+- Target akurasi lulus 60%, 70%, 78% (32, 48, 72 not; 0, 6, 12 pasangan bersamaan). Begitu target mustahil dicapai lagi, step langsung gagal tanpa menunggu lagu habis. Menang tiga step = 3 bintang.
+- Combo hanya hiasan (komentar Rhea dan tampilan), tidak memengaruhi skor. Tanpa kemampuan tambahan dan tanpa kesulitan dinamis.
+- Layar jeda punya pengatur offset suara (-150 sampai +150 ms, langkah 10 ms) yang tersimpan di perangkat. Setelah jeda, lagu dilanjutkan lewat hitung mundur 3 ketukan.
+- Karakter Rhea (4 ekspresi), panggung, not, pad dua bingkai, dan garis ketuk lewat `tools/art/pixel_rhythm.py`; tiga lagu dan empat efek suara lewat `tools/audio/generate_rhythm_audio.py` (butuh numpy).
+- Kunci level: terbuka setelah Mr. Lexi the Gambler mendapat minimal 1 bintang.
+
+### Catatan penafsiran rancangan
+- Jendela cocok 110 ms dan batas MISS 130 ms dipakai bersamaan: ketukan lebih dari 110 ms dari not terdekat di jalurnya diabaikan, dan not baru ditandai MISS setelah lewat 130 ms.
+- Step 1 membatasi lompatan antar jalur paling jauh 2 supaya mudah dibaca.
+- Akurasi sementara (dari not yang sudah dinilai) tampil di layar bersama garis ambang. Mengetuk asal tetap gagal di Step 1 (diuji), tetapi pemain yang menekan semua pad terus-menerus belum dibatasi khusus.
+
+### Teknis
+- Logika murni dan terpisah dari Flame: `rhythm_chart.dart` (pembuat lagu dengan seed tetap dan aturan), `rhythm_judge.dart` (penilai, satuan 0,1 ms agar batas tepat), `rhythm_run.dart` (mesin tahap dan pelaporan sesi), `rhythm_calibration.dart` (offset tersimpan), konstanta di `rhythm_config.dart`.
+- Tes baru di `test/levels/rhythm/`: konstanta (termasuk angka desimal di sumber), batas jendela 50/110/130 ms, satu ketukan satu not, akurasi dan ambang, gagal dini, aturan lagu untuk ratusan seed, determinisme, pemain simulasi (galat 45, 60, 80 ms dan pengetuk asal), alur tahap dan sesi (3, 2, 1 bintang), jeda dan lanjut, kalibrasi, HUD, empat pad serentak, panel offset, dialog, tata letak, dan aset. `test/app/app_flow_test.dart`, `test/core/progress_test.dart`, dan `test/core/audio_assets_test.dart` disesuaikan untuk level ke-7.
+- Kait baru di inti: `LevelGame.buildPauseExtras`, parameter `extra` pada `PauseOverlay`, dan baris `note` pada `StepBannerCard`.
+- `pixel_kit.py` mendapat spesifikasi Rhea dan `pixel_bosses.py` memuatnya; boss lain tidak berubah. Berkas kosong `lib/levels/fight/1` dihapus.
+
 ## [1.7.0] - 2026-11-26
 
 ### Ditambahkan
