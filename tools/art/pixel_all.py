@@ -11,12 +11,13 @@ import pixel_fighters
 import pixel_font
 import pixel_gambler
 import pixel_icon
+import pixel_rhythm
 import pixel_scenes
 
 
 def main():
     pixel_font.build(pixel_font.ROOT / 'assets/fonts/PixelChampion.ttf')
-    for mod in (pixel_export, pixel_bosses, pixel_cooking, pixel_icon, pixel_fighters, pixel_arena, pixel_archery, pixel_gambler):
+    for mod in (pixel_export, pixel_bosses, pixel_cooking, pixel_icon, pixel_fighters, pixel_arena, pixel_archery, pixel_gambler, pixel_rhythm):
         mod.main()
     print('semua aset piksel selesai')
 

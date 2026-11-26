@@ -196,3 +196,17 @@ Semua angka ada di `lib/levels/gambler/gambler_config.dart`:
 Cara kerja keadilan: `GamblerRun.beginStep` menempatkan hasil (kartu sial, sisi koin yang mendarat, atau cangkir berbola) sebelum pemain memilih, memakai `Random` yang diberikan dari luar. Pilihan pemain hanya dibandingkan dengan penempatan itu. Animasi (balik kartu, lempar koin, acakan cangkir) tidak pernah menentukan hasil; acakan cangkir direncanakan mundur dari susunan akhir (`CupShuffle`).
 
 Aset dibuat oleh `tools/art/pixel_gambler.py` (latar, kartu, koin, cangkir, bola, chip), boss oleh `pixel_bosses.py`, dan suara oleh `tools/audio/generate_gambler_audio.py`.
+
+## Mengatur Level 7 (rhythm)
+
+Semua angka ada di `lib/levels/rhythm/rhythm_config.dart`:
+
+- `rhythmBpm`, `rhythmBars`, `rhythmNoteCount`, `rhythmDoubleCount`, dan `rhythmPassThreshold` (0,6, 0,7, 0,78): tabel tiap step. `rhythmSeeds` menentukan lagu; seed yang sama selalu menghasilkan lagu yang sama.
+- `RhythmTuning`: jendela penilaian (`perfectWindowMs` 50, `goodWindowMs` 110, `missWindowMs` 130), waktu jatuh (`fallMs` 1400), hitung mundur, dan rentang offset (-150 sampai +150, langkah 10).
+- Aturan pembuat lagu ada di `ChartRules` (`rhythm_chart.dart`); `RhythmChart.forStep` memberi kisi dan batas lompat jalur tiap step. Mengubah seed atau aturan tidak memerlukan perubahan lain, tes aturan lagu akan memeriksa hasilnya.
+- Tata letak panggung, pad, dan bar semangat: `RhythmLayout` di `rhythm_stage.dart` (Flame dan HUD membaca angka yang sama).
+- Kalimat Rhea di `rhythm_dialog.dart`; font piksel hanya punya huruf besar, angka, dan tanda baca dasar, dan tes memeriksa karakternya.
+
+Cara kerja: `RhythmRun` adalah mesin tahap murni (banner, hitung mundur 4 ketukan, bermain, hasil, jeda antar step) yang melapor ke `LevelSession` tepat sekali per step. Penilaian memakai jam permainan di `RhythmRun`, bukan posisi pemutar audio, sehingga tidak bergantung pada keterlambatan audio; lagu dimulai bersamaan dengan jam 0 dan offset menggeser jadwal not. Uji di HP sungguhan: bila ketukan terasa terlalu cepat atau lambat terhadap suara, geser offset di layar jeda.
+
+Aset dibuat oleh `tools/art/pixel_rhythm.py` (panggung, not, pad, garis ketuk), boss oleh `pixel_bosses.py`, dan lagu serta suara oleh `tools/audio/generate_rhythm_audio.py` (numpy; durasi lagu persis sama dengan panjang bar, dicek tes).

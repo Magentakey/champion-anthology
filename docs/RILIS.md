@@ -8,14 +8,14 @@ flutter pub get
 dart run flutter_launcher_icons      # hanya jika ikon berubah, lalu uninstall app lama di HP
 flutter analyze                      # harus bersih (info pun dianggap gagal oleh workflow)
 flutter test                         # semua lulus
-flutter run                          # coba alur penuh di HP: menu, cerita, 6 level, jeda, hasil
+flutter run                          # coba alur penuh di HP: menu, cerita, 7 level, jeda, hasil
 ```
 
 Daftar cek singkat di HP:
 
 - Menu dan cerita tampil, tombol Main, Lewati, dan Lanjut bekerja.
 - Pilih level: bintang tersimpan, level terkunci menampilkan pesan.
-- Level 1 sampai 6 bisa dimainkan sampai menang dan kalah; jeda, Ulangi, dan Keluar bekerja.
+- Level 1 sampai 7 bisa dimainkan sampai menang dan kalah; jeda, Ulangi, dan Keluar bekerja.
 - Suara (SFX dan musik) dan getar masuk akal; tombol suara di jeda bekerja.
 - Tidak ada layar putih atau teks terpotong di layar kecil.
 

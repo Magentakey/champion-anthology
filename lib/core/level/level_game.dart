@@ -33,6 +33,9 @@ abstract class LevelGame extends FlameGame {
   /// Sebutan satu tahap di layar hasil: "Step" (default) atau mis. "Fase".
   String get stepLabel => 'Step';
 
+  /// Tambahan di layar jeda (mis. pengaturan offset suara Level 7). null = tidak ada.
+  Widget? buildPauseExtras(BuildContext context) => null;
+
   /// Kalimat karakter boss di layar hasil (mis. ejekan). null = tidak ada.
   String? resultMessage() => null;
 

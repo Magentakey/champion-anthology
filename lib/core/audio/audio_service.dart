@@ -44,7 +44,13 @@ enum Sfx {
   coinToss('coin_toss.wav'),
   cupSlide('cup_slide.wav'),
   winChime('win_chime.wav'),
-  loseBuzz('lose_buzz.wav');
+  loseBuzz('lose_buzz.wav'),
+
+  // Level Rhythm (dibuat oleh tools/audio/generate_rhythm_audio.py)
+  rhythmHitPerfect('rhythm_hit_perfect.wav'),
+  rhythmHitGood('rhythm_hit_good.wav'),
+  rhythmMiss('rhythm_miss.wav'),
+  rhythmCount('rhythm_count.wav');
 
   const Sfx(this.file);
   final String file;

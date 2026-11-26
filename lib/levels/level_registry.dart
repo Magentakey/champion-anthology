@@ -10,6 +10,8 @@ import 'gambler/gambler_game.dart';
 import 'genius/genius_game.dart';
 import 'maze/maze_dialog.dart';
 import 'maze/maze_game.dart';
+import 'rhythm/rhythm_dialog.dart';
+import 'rhythm/rhythm_game.dart';
 
 /// Menambah level baru = tambah satu entry di sini + satu folder di lib/levels/.
 const levelRegistry = <LevelDefinition>[
@@ -65,6 +67,15 @@ const levelRegistry = <LevelDefinition>[
     tip: GamblerDialog.tip,
     bossImage: 'assets/images/gambler/boss_idle.png',
     createGame: createGamblerGame,
+  ),
+  LevelDefinition(
+    id: 'rhythm',
+    number: 7,
+    bossName: 'Rhea the Drummer',
+    introDialog: RhythmDialog.intro,
+    tip: RhythmDialog.tip,
+    bossImage: 'assets/images/rhythm/boss_idle.png',
+    createGame: createRhythmGame,
   ),
 ];
 

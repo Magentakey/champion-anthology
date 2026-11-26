@@ -42,11 +42,15 @@ class PauseOverlay extends StatelessWidget {
     required this.onResume,
     required this.onRestart,
     required this.onExit,
+    this.extra,
   });
 
   final VoidCallback onResume;
   final VoidCallback onRestart;
   final VoidCallback onExit;
+
+  /// Tambahan khusus level di bawah tombol suara (mis. offset suara Level 7). null = tidak ada.
+  final Widget? extra;
 
   @override
   Widget build(BuildContext context) {
@@ -75,6 +79,10 @@ class PauseOverlay extends StatelessWidget {
               unit: u,
             ),
           ),
+          if (extra != null) ...[
+            SizedBox(height: 6 * u),
+            extra!,
+          ],
           SizedBox(height: 6 * u),
           PixelButton(label: AppText.exit, onPressed: onExit, wide: true, secondary: true, unit: u),
         ],

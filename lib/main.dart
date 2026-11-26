@@ -6,12 +6,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app/app.dart';
 import 'core/audio/audio_service.dart';
 import 'core/save/progress_repository.dart';
+import 'levels/rhythm/rhythm_calibration.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final prefs = await SharedPreferences.getInstance();
   await AudioService.instance.init(prefs);
+  RhythmCalibration.instance.init(prefs);
 
   runApp(
     ProviderScope(

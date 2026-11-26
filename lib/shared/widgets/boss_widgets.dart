@@ -64,10 +64,13 @@ class _BubbleBody extends StatelessWidget {
 
 /// Banner besar saat pergantian step ("STEP 2" + tingkat kesulitan).
 class StepBannerCard extends StatelessWidget {
-  const StepBannerCard({super.key, required this.step, required this.label, this.word = 'STEP'});
+  const StepBannerCard({super.key, required this.step, required this.label, this.word = 'STEP', this.note});
 
   final int step;
   final String label;
+
+  /// Baris kecil di bawah [label] (mis. target akurasi Level 7). null = tidak ada.
+  final String? note;
 
   /// Kata di judul banner (default "STEP"; Level 6 memakai "ROUND").
   final String word;
@@ -100,6 +103,10 @@ class StepBannerCard extends StatelessWidget {
                   ),
                   SizedBox(height: 6 * u),
                   Text(label, style: PixelUi.text(u, scale: 2, color: PixelUi.cream)),
+                  if (note != null) ...[
+                    SizedBox(height: 6 * u),
+                    Text(note!, style: PixelUi.text(u, color: PixelUi.gold)),
+                  ],
                 ],
               ),
             ),

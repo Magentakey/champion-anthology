@@ -205,6 +205,8 @@ python tools/art/pixel_archery.py     # Level 5: latar lapangan panahan -> asset
 python tools/audio/generate_archery_audio.py   # Level 5: efek suara (butuh numpy)
 python tools/art/pixel_gambler.py     # Level 6: latar stan, kartu, koin, cangkir, bola, chip -> assets/images/gambler/
 python tools/audio/generate_gambler_audio.py   # Level 6: efek suara (butuh numpy)
+python tools/art/pixel_rhythm.py      # Level 7: panggung, not, pad, garis ketuk -> assets/images/rhythm/
+python tools/audio/generate_rhythm_audio.py    # Level 7: tiga lagu dan efek suara (butuh numpy)
 python tools/art/fight_poses.py       # data pose -> lib/levels/fight/pose_library.dart (lalu jalankan pixel_fighters.py)
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
 ```
@@ -259,7 +261,8 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | Pilih level, intro boss, overlay jeda dan hasil, tombol jeda, bintang dan gembok | **Terpasang di game** |
 | HUD Level 2 sampai 4 (kartu soal dan tombol jawaban Bob, tombol arah dan labirin Asep, kartu pesanan, stasiun, baki, dan panel cooking check Chef, bar waktu, gelembung, banner step) | **Terpasang di game** |
 | Level 5 (Bima): boss 4 ekspresi, latar lapangan, papan sasaran piksel, bidikan, HUD, efek suara | **Terpasang di game** |
-| Level 6 (Mr. Lexi): boss 4 ekspresi, latar stan pasar malam, kartu, koin, cangkir, bola, chip, HUD, efek suara | **Terpasang di game (belum dirilis)** |
+| Level 6 (Mr. Lexi): boss 4 ekspresi, latar stan pasar malam, kartu, koin, cangkir, bola, chip, HUD, efek suara | **Terpasang di game** |
+| Level 7 (Rhea): boss 4 ekspresi, panggung, not, pad dua bingkai, garis ketuk, HUD, lagu, efek suara | **Terpasang di game (belum dirilis)** |
 | Level 1 (Rock): sprite pemain dan Rock per pose, arena, obor, percikan, pisau, bar HP, tombol kontrol, potret | **Terpasang di game** |
 | Ikon aplikasi (wajah pemain + sinar matahari; latar adaptif `#FFAA38`) | **Terpasang (aset)** |
 
@@ -308,3 +311,12 @@ Menambah pose: edit `FIGHT_POSES` di `fight_poses.py`, jalankan `fight_poses.py`
 - **Cangkir:** kisi 22x26 x3, terbalik, belang merah dan krem, bibir merah gelap. **Bola** 10x10, **chip** 12x12 (merah dengan takik krem).
 - **Boss:** Mr. Lexi dengan topi tinggi hitam berpita merah, rompi marun, dasi kupu-kupu merah; `hat='tophat'` di `pixel_kit.py`.
 - **HUD:** label peluang emas di antara meja dan panel kontrol, tombol KEPALA dan EKOR (emas saat terpilih), bingkai emas di slot terpilih, tombol BUKA atau LEMPAR hijau (kelabu saat belum ada pilihan), tiga chip di bilah atas (redup sampai dimenangkan).
+
+## 18. Level 7 (rhythm)
+
+- **Panggung:** `stage.png` 720x1278 (kisi 240x426 x3): dinding belakang gelap, tirai beludru, tumpukan speaker, rangka lampu dan sorot, drum kecil di belakang Rhea, lantai papan dengan tepi LED, dan area bar semangat serta pad yang gelap di bawah. Letak jalur, garis ketuk, bar semangat, dan pad ada di `RhythmLayout` (`rhythm_stage.dart`).
+- **Not:** `note_0..3.png` 60x36 (kisi 20x12 x3), satu warna per jalur (merah, biru, hijau, emas) dengan kilau atas dan kiri, bayangan bawah dan kanan, serta belah ketupat krem di tengah.
+- **Pad:** `pad_0..3.png` 120x96, dua bingkai 60x96 berdampingan (kiri normal, kanan menyala dengan percikan di sudut), huruf papan ketik (D F J K) di tengah. HUD memotong bingkai yang dipakai.
+- **Garis ketuk:** `hit_line.png` 720x12, titik terang berkala dan ujung dibulatkan.
+- **Boss:** Rhea berambut runcing merah muda dengan ikat kepala biru muda, jaket gelap berlis emas, celana ungu; spesifikasi `RHEA` di `pixel_kit.py`, empat ekspresi (`boss_idle`, `boss_shock`, `boss_laugh`, `boss_defeat`).
+- **HUD:** bilah atas "Round n/3" dan akurasi sementara, gelembung Rhea, banner ronde dengan target akurasi, hitung mundur besar, tulisan PERFECT/GOOD/MISS dekat garis ketuk, bar semangat berblok dengan garis ambang emas, hitungan combo, dan empat pad.

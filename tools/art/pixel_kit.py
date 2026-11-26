@@ -463,6 +463,9 @@ ROCK = dict(hair='flat', hair_pal=pal((90, 92, 104)), top=BLACKP, belt=ORANGE, b
 LEXI = dict(hat='tophat', hat_pal=BLACKP, hat_band=RED, hair='flat', hair_pal=pal((40, 34, 44)), top=WHITE,
             vest=pal((120, 36, 66)), neck=RED, neck_kind='bow', bottom=DGREY, long_pants=True, shoe=BLACKP,
             face='smug', pose='hips', glasses=False)
+RHEA = dict(hair='spiky', hair_pal=pal((214, 52, 120)), spikes=6, peak=1.45, band=pal((70, 200, 230)),
+            top=pal((40, 40, 52)), stripe=GOLD, bottom=pal((120, 48, 168)), long_pants=True, shoe=GOLD,
+            face='hype', pose='fight', arm_thick=True)
 BIMA = dict(hat='robin', hat_pal=pal((76, 160, 90)), top=pal((76, 160, 90)), bottom=KHAKI, shoe=BROWN,
             belt=BROWNH, face='fighter', pose='stand', skin=pal((226, 178, 128)))
 

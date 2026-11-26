@@ -11,9 +11,10 @@ Game mobile (Android) bergenre **minigame anthology dengan alur cerita**. Karakt
 | 3 | Asep the Mazelogist (labirin, tombol arah, batas waktu) | Selesai, bisa dimainkan |
 | 4 | Cooking Champion (geser bahan ke stasiun masak, cooking check, batas waktu) | Selesai, bisa dimainkan |
 | 5 | Bima the Shooter (panahan: tarik busur, bidik, angin, papan bergerak) | Selesai, bisa dimainkan |
-| 6 | Mr. Lexi the Gambler (tiga permainan peluang pasar malam: tebak kartu 75%, lempar koin 50%, cangkir tebak bola 25%) | Selesai, bisa dimainkan (belum dirilis) |
+| 6 | Mr. Lexi the Gambler (tiga permainan peluang pasar malam: tebak kartu 75%, lempar koin 50%, cangkir tebak bola 25%) | Selesai, bisa dimainkan |
+| 7 | Rhea the Drummer (game ritme 4 jalur: tiga lagu 90/110/128 BPM, ketuk pad tepat waktu, target akurasi 60/70/78%) | Selesai, bisa dimainkan (belum dirilis) |
 
-Versi terbaru: **1.7.0** (seluruh game bergaya pixel art 48 px). Riwayat perubahan ada di [`CHANGELOG.md`](CHANGELOG.md).
+Versi terbaru: **1.8.0** (seluruh game bergaya pixel art 48 px). Riwayat perubahan ada di [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Unduh dan pasang
 
@@ -38,6 +39,7 @@ APK terbaru ada di halaman **Releases** repositori ini. Setelah mengunduh, izink
 - **Level 4 (Cooking Champion)**: tiap step ada satu pesanan masakan acak. Geser bahan dari baki ke stasiun yang tepat: **Talenan** (iris: ketuk terus sampai bar penuh), **Panci** (rebus: tahan tombol api untuk naik suhu, lepas untuk turun, jaga di zona hijau), **Wajan** (goreng: ketuk saat jarum di zona emas). Bahan di luar pesanan atau salah stasiun mengurangi 3 detik, cooking check yang gagal mengurangi 4 detik, check yang mulus menambah 1 detik. Semua bahan selesai sebelum waktu habis = menang. Step 1 sampai 3 beda jumlah bahan, pengecoh, dan ketatnya check.
 - **Level 5 (Bima the Shooter)**: tahan tombol TARIK untuk menarik busur sampai penuh (meter hijau), lalu lepas saat bidikan tepat di tengah papan. Bidikan terus bergoyang dan makin gemetar kalau ditahan lama setelah penuh; bidikan berwarna kuning = kena emas (10). Skor dari tengah ke tepi: 10, 8, 6, 4, 2. Capai skor target sebelum anak panah habis. Step 1 papan diam, Step 2 ada angin (mendorong bidikan), Step 3 angin kencang dan papan bergerak. Tiap tembakan dibatasi 9 detik. (Papan ketik untuk uji di emulator: spasi tahan = tarik, lepas = tembak.)
 - **Level 6 (Mr. Lexi the Gambler)**: tiga permainan murni peluang di stan pasar malam, tanpa uang sungguhan (hanya chip bohongan). Step 1 **Tebak Kartu** (4 kartu, 1 kartu sial, peluang menang 75%), Step 2 **Lempar Koin** (pilih kepala atau ekor, 50%), Step 3 **Cangkir Tebak Bola** (bola disembunyikan lalu cangkir diacak, 25%). Pilih, lalu tekan BUKA atau LEMPAR. Peluang selalu tampil di layar dan tidak pernah berubah: tidak ada bonus setelah kalah dan tidak ada kesulitan dinamis. Hasil ditentukan sebelum kamu memilih; animasi hanya hiasan. Menang ketiganya berturut-turut = 3 bintang (sekitar 9,4%), kalah mengakhiri sesi. (Papan ketik untuk uji di emulator: angka 1 sampai 4 memilih, spasi atau Enter mengonfirmasi.)
+- **Level 7 (Rhea the Drummer)**: game ritme empat jalur. Not jatuh selama 1,4 detik menuju garis ketuk; ketuk pad di bawah jalurnya tepat saat not menyentuh garis (empat pad menerima sentuhan serentak; papan ketik uji: D F J K). **PERFECT** (selisih paling jauh 50 ms) bernilai 1, **GOOD** (paling jauh 110 ms) bernilai 0,5, dan **MISS** (lewat 130 ms) bernilai 0. Akurasi = jumlah nilai dibagi jumlah not. Tiga lagu tetap dan selalu sama: Step 1 90 BPM, 16 bar, 32 not, target 60%; Step 2 110 BPM, 20 bar, 48 not (6 pasangan bersamaan), target 70%; Step 3 128 BPM, 24 bar, 72 not (12 pasangan), target 78%. Begitu target mustahil dicapai lagi, step langsung gagal. Combo hanya hiasan dan tidak memengaruhi skor. Tanpa kemampuan tambahan atau kesulitan dinamis. Offset suara (-150 sampai +150 ms, langkah 10 ms) bisa diatur di layar jeda untuk HP yang suaranya terlambat dan tersimpan di perangkat. Penilaian memakai jam permainan, bukan posisi pemutar audio.
 - Level berikutnya terbuka jika level sebelumnya sudah mendapat minimal 1 bintang. Bintang terbaik tersimpan di perangkat.
 
 ## Menjalankan dari kode
@@ -85,6 +87,7 @@ assets/
 ├── images/cooking/           # chef, ikon bahan, stasiun, latar dapur
 ├── images/archery/           # Bima (4 ekspresi) dan latar lapangan panahan
 ├── images/gambler/           # Mr. Lexi (4 ekspresi), latar stan, kartu, koin, cangkir, bola, chip
+├── images/rhythm/            # Rhea (4 ekspresi), panggung, not, pad (dua bingkai), garis ketuk
 ├── images/story/             # panel storyboard piksel (panel_*.png)
 ├── fonts/                    # PixelChampion.ttf (font piksel 5x7, huruf besar)
 ├── data/genius_questions.json
@@ -96,6 +99,7 @@ tools/audio/generate_fight_audio.py  # generator SFX dan BGM Level 1 (butuh nump
 tools/audio/generate_cooking_audio.py  # generator SFX Level 4 (potong, desis, gelembung, gosong)
 tools/audio/generate_archery_audio.py  # generator SFX Level 5 (tarik busur, lepas, tancap, kena emas)
 tools/audio/generate_gambler_audio.py  # generator SFX Level 6 (balik kartu, lempar koin, geser cangkir, menang, kalah)
+tools/audio/generate_rhythm_audio.py  # generator 3 lagu dan SFX Level 7 (PERFECT, GOOD, MISS, hitung mundur)
 docs/PANDUAN_PENGEMBANGAN.md  # panduan menambah level, soal, dan mengganti aset
 docs/PIXEL_ART_STYLE.md       # kunci art style pixel 48 px
 ```

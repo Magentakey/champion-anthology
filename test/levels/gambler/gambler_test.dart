@@ -377,8 +377,8 @@ void main() {
       expect(level.available, isTrue);
       expect(level.bossName, 'Mr. Lexi the Gambler');
       expect(level.bossImage, 'assets/images/gambler/boss_idle.png');
-      expect(levelRegistry.last.id, 'gambler');
-      expect(levelRegistry.map((l) => l.number).toList(), [1, 2, 3, 4, 5, 6]);
+      expect(levelRegistry[5].id, 'gambler'); // level ke-6; Level 7 (rhythm) menyusul di belakangnya
+      expect(levelRegistry.map((l) => l.number).toList().sublist(0, 6), [1, 2, 3, 4, 5, 6]);
     });
   });
 }

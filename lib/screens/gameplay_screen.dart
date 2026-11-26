@@ -174,6 +174,7 @@ class _GameplayScreenState extends ConsumerState<GameplayScreen> {
                         onResume: _resume,
                         onRestart: _restart,
                         onExit: _exit,
+                        extra: game.buildPauseExtras(context),
                       );
                     case SessionState.finished:
                       return ResultOverlay(
