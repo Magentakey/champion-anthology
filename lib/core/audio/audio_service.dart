@@ -50,7 +50,22 @@ enum Sfx {
   rhythmHitPerfect('rhythm_hit_perfect.wav'),
   rhythmHitGood('rhythm_hit_good.wav'),
   rhythmMiss('rhythm_miss.wav'),
-  rhythmCount('rhythm_count.wav');
+  rhythmCount('rhythm_count.wav'),
+
+  // Level Memory (dibuat oleh tools/audio/generate_memory_audio.py)
+  memoryNote0('memory_note_0.wav'),
+  memoryNote1('memory_note_1.wav'),
+  memoryNote2('memory_note_2.wav'),
+  memoryNote3('memory_note_3.wav'),
+  memoryNote4('memory_note_4.wav'),
+  memoryNote5('memory_note_5.wav'),
+  memoryNote6('memory_note_6.wav'),
+  memoryNote7('memory_note_7.wav'),
+  memoryNote8('memory_note_8.wav'),
+  memoryWrong('memory_wrong.wav'),
+  memoryClear('memory_clear.wav'),
+  memoryWin('memory_win.wav'),
+  memoryLose('memory_lose.wav');
 
   const Sfx(this.file);
   final String file;

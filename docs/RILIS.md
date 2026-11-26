@@ -8,7 +8,7 @@ flutter pub get
 dart run flutter_launcher_icons      # hanya jika ikon berubah, lalu uninstall app lama di HP
 flutter analyze                      # harus bersih (info pun dianggap gagal oleh workflow)
 flutter test                         # semua lulus
-flutter run                          # coba alur penuh di HP: menu, cerita, 7 level, jeda, hasil
+flutter run                          # coba alur penuh di HP: menu, cerita, 8 level, jeda, hasil
 ```
 
 Daftar cek singkat di HP:

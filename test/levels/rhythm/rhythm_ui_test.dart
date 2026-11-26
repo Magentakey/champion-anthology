@@ -170,10 +170,6 @@ void main() {
       expect(File('pubspec.yaml').readAsStringSync(), contains('assets/images/rhythm/'));
     });
 
-    test('versi aplikasi 1.8.0+9', () {
-      expect(File('pubspec.yaml').readAsStringSync(), contains('version: 1.8.0+9'));
-    });
-
     test('SFX dan lagu Level 7 terdaftar dan ada', () {
       for (final sfx in [Sfx.rhythmHitPerfect, Sfx.rhythmHitGood, Sfx.rhythmMiss, Sfx.rhythmCount]) {
         expect(File('assets/audio/${sfx.file}').lengthSync(), greaterThan(1000), reason: sfx.file);

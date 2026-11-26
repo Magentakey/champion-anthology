@@ -207,6 +207,8 @@ python tools/art/pixel_gambler.py     # Level 6: latar stan, kartu, koin, cangki
 python tools/audio/generate_gambler_audio.py   # Level 6: efek suara (butuh numpy)
 python tools/art/pixel_rhythm.py      # Level 7: panggung, not, pad, garis ketuk -> assets/images/rhythm/
 python tools/audio/generate_rhythm_audio.py    # Level 7: tiga lagu dan efek suara (butuh numpy)
+python tools/art/pixel_memory.py      # Level 8: panggung, 9 pad, ikon nyawa -> assets/images/memory/
+python tools/audio/generate_memory_audio.py    # Level 8: 9 nada pad dan 4 efek suara (butuh numpy)
 python tools/art/fight_poses.py       # data pose -> lib/levels/fight/pose_library.dart (lalu jalankan pixel_fighters.py)
 python tools/art/pixel_preview.py     # pratinjau pemain 32/48 px (eksperimen awal)
 ```
@@ -262,7 +264,8 @@ supaya aturan di atas otomatis terpenuhi dan mudah diubah serempak.
 | HUD Level 2 sampai 4 (kartu soal dan tombol jawaban Bob, tombol arah dan labirin Asep, kartu pesanan, stasiun, baki, dan panel cooking check Chef, bar waktu, gelembung, banner step) | **Terpasang di game** |
 | Level 5 (Bima): boss 4 ekspresi, latar lapangan, papan sasaran piksel, bidikan, HUD, efek suara | **Terpasang di game** |
 | Level 6 (Mr. Lexi): boss 4 ekspresi, latar stan pasar malam, kartu, koin, cangkir, bola, chip, HUD, efek suara | **Terpasang di game** |
-| Level 7 (Rhea): boss 4 ekspresi, panggung, not, pad dua bingkai, garis ketuk, HUD, lagu, efek suara | **Terpasang di game (belum dirilis)** |
+| Level 7 (Rhea): boss 4 ekspresi, panggung, not, pad dua bingkai, garis ketuk, HUD, lagu, efek suara | Terpasang di game (v1.8.0) |
+| Level 8 (Mira): boss 4 ekspresi, panggung, 9 pad dua bingkai, ikon nyawa, HUD, nada dan efek suara | **Terpasang di game (belum dirilis)** |
 | Level 1 (Rock): sprite pemain dan Rock per pose, arena, obor, percikan, pisau, bar HP, tombol kontrol, potret | **Terpasang di game** |
 | Ikon aplikasi (wajah pemain + sinar matahari; latar adaptif `#FFAA38`) | **Terpasang (aset)** |
 
@@ -320,3 +323,11 @@ Menambah pose: edit `FIGHT_POSES` di `fight_poses.py`, jalankan `fight_poses.py`
 - **Garis ketuk:** `hit_line.png` 720x12, titik terang berkala dan ujung dibulatkan.
 - **Boss:** Rhea berambut runcing merah muda dengan ikat kepala biru muda, jaket gelap berlis emas, celana ungu; spesifikasi `RHEA` di `pixel_kit.py`, empat ekspresi (`boss_idle`, `boss_shock`, `boss_laugh`, `boss_defeat`).
 - **HUD:** bilah atas "Round n/3" dan akurasi sementara, gelembung Rhea, banner ronde dengan target akurasi, hitung mundur besar, tulisan PERFECT/GOOD/MISS dekat garis ketuk, bar semangat berblok dengan garis ambang emas, hitungan combo, dan empat pad.
+
+## 19. Level 8 (memory)
+
+- **Panggung:** `stage.png` 720x1278 (kisi 240x426 x3): perpustakaan malam: dua baris rak buku, jendela bulan kecil di kanan atas, meja panjang dengan lilin, dan karpet ungu gelap; area pad di bawah dibiarkan gelap. Letak zona dan pad ada di `MemoryLayout` (`memory_stage.dart`).
+- **Pad:** `pad_0..8.png` 120x60, dua bingkai 60x60 berdampingan (kiri redup, kanan menyala). Tiap pad punya warna, bentuk (lingkaran, segitiga, persegi, berlian, bintang, dan seterusnya; daftar di `memoryPadShapes`), dan angka papan ketik 1 sampai 9, sehingga bisa dibedakan tanpa bergantung pada warna.
+- **Nyawa:** `heart_on.png` dan `heart_off.png` 24x24.
+- **Boss:** Mira bertopi tinggi ungu dengan pita emas, rambut ungu, kacamata, rompi ungu, dasi kupu-kupu hijau kebiruan, memegang buku catatan besar; spesifikasi `MIRA` di `pixel_kit.py`, empat ekspresi (`boss_idle`, `boss_shock`, `boss_laugh`, `boss_defeat`).
+- **HUD:** bilah atas "Ronde n/3", label "Ingat r/R" dan penghitung ketukan, gelembung Mira, banner "INGAT", judul fase (PERHATIKAN, GILIRANMU, BENAR!, SALAH!, WAKTU HABIS), bilah waktu berblok, baris nyawa, dan pad.

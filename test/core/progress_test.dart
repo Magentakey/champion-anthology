@@ -109,6 +109,21 @@ void main() {
     expect(notifier.isUnlocked(levelById('rhythm')!), isFalse);
   });
 
+  test('Mira (level 8) terbuka setelah Rhea punya bintang', () async {
+    final (container, _) = await makeContainer({'stars_rhythm': 1});
+    final notifier = container.read(progressProvider.notifier);
+
+    expect(notifier.isUnlocked(levelById('memory')!), isTrue);
+    expect(levelById('memory')!.number, 8);
+  });
+
+  test('Mira terkunci selama Rhea belum punya bintang', () async {
+    final (container, _) = await makeContainer({'stars_gambler': 3});
+    final notifier = container.read(progressProvider.notifier);
+
+    expect(notifier.isUnlocked(levelById('memory')!), isFalse);
+  });
+
   test('level yang sudah punya bintang tetap terbuka walau level sebelumnya belum', () async {
     final (container, _) = await makeContainer({'stars_genius': 2});
     final notifier = container.read(progressProvider.notifier);

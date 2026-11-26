@@ -10,6 +10,8 @@ import 'gambler/gambler_game.dart';
 import 'genius/genius_game.dart';
 import 'maze/maze_dialog.dart';
 import 'maze/maze_game.dart';
+import 'memory/memory_dialog.dart';
+import 'memory/memory_game.dart';
 import 'rhythm/rhythm_dialog.dart';
 import 'rhythm/rhythm_game.dart';
 
@@ -76,6 +78,15 @@ const levelRegistry = <LevelDefinition>[
     tip: RhythmDialog.tip,
     bossImage: 'assets/images/rhythm/boss_idle.png',
     createGame: createRhythmGame,
+  ),
+  LevelDefinition(
+    id: 'memory',
+    number: 8,
+    bossName: 'Mira the Memory Keeper',
+    introDialog: MemoryDialog.intro,
+    tip: MemoryDialog.tip,
+    bossImage: 'assets/images/memory/boss_idle.png',
+    createGame: createMemoryGame,
   ),
 ];
 

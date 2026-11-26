@@ -12,9 +12,10 @@ Game mobile (Android) bergenre **minigame anthology dengan alur cerita**. Karakt
 | 4 | Cooking Champion (geser bahan ke stasiun masak, cooking check, batas waktu) | Selesai, bisa dimainkan |
 | 5 | Bima the Shooter (panahan: tarik busur, bidik, angin, papan bergerak) | Selesai, bisa dimainkan |
 | 6 | Mr. Lexi the Gambler (tiga permainan peluang pasar malam: tebak kartu 75%, lempar koin 50%, cangkir tebak bola 25%) | Selesai, bisa dimainkan |
-| 7 | Rhea the Drummer (game ritme 4 jalur: tiga lagu 90/110/128 BPM, ketuk pad tepat waktu, target akurasi 60/70/78%) | Selesai, bisa dimainkan (belum dirilis) |
+| 7 | Rhea the Drummer (game ritme 4 jalur: tiga lagu 90/110/128 BPM, ketuk pad tepat waktu, target akurasi 60/70/78%) | Selesai, bisa dimainkan |
+| 8 | Mira the Memory Keeper (game memori: ulangi urutan pad yang menyala; 4/6/9 pad, 5/6/7 ronde, urutan bertambah tiap ronde) | Selesai, bisa dimainkan (belum dirilis) |
 
-Versi terbaru: **1.8.0** (seluruh game bergaya pixel art 48 px). Riwayat perubahan ada di [`CHANGELOG.md`](CHANGELOG.md).
+Versi terbaru: **1.9.0** (seluruh game bergaya pixel art 48 px). Riwayat perubahan ada di [`CHANGELOG.md`](CHANGELOG.md).
 
 ## Unduh dan pasang
 
@@ -40,6 +41,7 @@ APK terbaru ada di halaman **Releases** repositori ini. Setelah mengunduh, izink
 - **Level 5 (Bima the Shooter)**: tahan tombol TARIK untuk menarik busur sampai penuh (meter hijau), lalu lepas saat bidikan tepat di tengah papan. Bidikan terus bergoyang dan makin gemetar kalau ditahan lama setelah penuh; bidikan berwarna kuning = kena emas (10). Skor dari tengah ke tepi: 10, 8, 6, 4, 2. Capai skor target sebelum anak panah habis. Step 1 papan diam, Step 2 ada angin (mendorong bidikan), Step 3 angin kencang dan papan bergerak. Tiap tembakan dibatasi 9 detik. (Papan ketik untuk uji di emulator: spasi tahan = tarik, lepas = tembak.)
 - **Level 6 (Mr. Lexi the Gambler)**: tiga permainan murni peluang di stan pasar malam, tanpa uang sungguhan (hanya chip bohongan). Step 1 **Tebak Kartu** (4 kartu, 1 kartu sial, peluang menang 75%), Step 2 **Lempar Koin** (pilih kepala atau ekor, 50%), Step 3 **Cangkir Tebak Bola** (bola disembunyikan lalu cangkir diacak, 25%). Pilih, lalu tekan BUKA atau LEMPAR. Peluang selalu tampil di layar dan tidak pernah berubah: tidak ada bonus setelah kalah dan tidak ada kesulitan dinamis. Hasil ditentukan sebelum kamu memilih; animasi hanya hiasan. Menang ketiganya berturut-turut = 3 bintang (sekitar 9,4%), kalah mengakhiri sesi. (Papan ketik untuk uji di emulator: angka 1 sampai 4 memilih, spasi atau Enter mengonfirmasi.)
 - **Level 7 (Rhea the Drummer)**: game ritme empat jalur. Not jatuh selama 1,4 detik menuju garis ketuk; ketuk pad di bawah jalurnya tepat saat not menyentuh garis (empat pad menerima sentuhan serentak; papan ketik uji: D F J K). **PERFECT** (selisih paling jauh 50 ms) bernilai 1, **GOOD** (paling jauh 110 ms) bernilai 0,5, dan **MISS** (lewat 130 ms) bernilai 0. Akurasi = jumlah nilai dibagi jumlah not. Tiga lagu tetap dan selalu sama: Step 1 90 BPM, 16 bar, 32 not, target 60%; Step 2 110 BPM, 20 bar, 48 not (6 pasangan bersamaan), target 70%; Step 3 128 BPM, 24 bar, 72 not (12 pasangan), target 78%. Begitu target mustahil dicapai lagi, step langsung gagal. Combo hanya hiasan dan tidak memengaruhi skor. Tanpa kemampuan tambahan atau kesulitan dinamis. Offset suara (-150 sampai +150 ms, langkah 10 ms) bisa diatur di layar jeda untuk HP yang suaranya terlambat dan tersimpan di perangkat. Penilaian memakai jam permainan, bukan posisi pemutar audio.
+- **Level 8 (Mira the Memory Keeper)**: game memori. Pad menyala satu per satu dengan nada masing-masing; ulangi urutannya dengan mengetuk pad (papan ketik uji: 1 sampai 9). Step 1: 4 pad (2x2), urutan mulai 3 dan bertambah 1 tiap ronde selama 5 ronde (akhir 7), tempo 600 ms, 3 nyawa, batas 5 detik per ketukan. Step 2: 6 pad (3x2), mulai 4, 6 ronde (akhir 9), 500 ms, 2 nyawa, 4 detik. Step 3: 9 pad (3x3), mulai 5, 7 ronde (akhir 11), 420 ms, 2 nyawa, 3 detik. Salah ketuk atau waktu habis mengurangi 1 nyawa dan urutan yang sama diputar ulang dari awal; nyawa tidak pulih antar ronde, hanya antar step. Nyawa habis = step gagal. Urutan diacak baru tiap percobaan (tanpa tiga pad sama berturut-turut, dan semua pad muncul di ronde terakhir). Menang tiga step = 3 bintang. Tanpa musik latar agar nada pad terdengar jelas.
 - Level berikutnya terbuka jika level sebelumnya sudah mendapat minimal 1 bintang. Bintang terbaik tersimpan di perangkat.
 
 ## Menjalankan dari kode
@@ -88,6 +90,7 @@ assets/
 ├── images/archery/           # Bima (4 ekspresi) dan latar lapangan panahan
 ├── images/gambler/           # Mr. Lexi (4 ekspresi), latar stan, kartu, koin, cangkir, bola, chip
 ├── images/rhythm/            # Rhea (4 ekspresi), panggung, not, pad (dua bingkai), garis ketuk
+├── images/memory/            # Mira (4 ekspresi), panggung, 9 pad (dua bingkai), ikon nyawa
 ├── images/story/             # panel storyboard piksel (panel_*.png)
 ├── fonts/                    # PixelChampion.ttf (font piksel 5x7, huruf besar)
 ├── data/genius_questions.json
@@ -100,6 +103,7 @@ tools/audio/generate_cooking_audio.py  # generator SFX Level 4 (potong, desis, g
 tools/audio/generate_archery_audio.py  # generator SFX Level 5 (tarik busur, lepas, tancap, kena emas)
 tools/audio/generate_gambler_audio.py  # generator SFX Level 6 (balik kartu, lempar koin, geser cangkir, menang, kalah)
 tools/audio/generate_rhythm_audio.py  # generator 3 lagu dan SFX Level 7 (PERFECT, GOOD, MISS, hitung mundur)
+tools/audio/generate_memory_audio.py  # generator 9 nada pad dan 4 SFX Level 8 (salah, ronde selesai, menang, kalah)
 docs/PANDUAN_PENGEMBANGAN.md  # panduan menambah level, soal, dan mengganti aset
 docs/PIXEL_ART_STYLE.md       # kunci art style pixel 48 px
 ```

@@ -466,6 +466,9 @@ LEXI = dict(hat='tophat', hat_pal=BLACKP, hat_band=RED, hair='flat', hair_pal=pa
 RHEA = dict(hair='spiky', hair_pal=pal((214, 52, 120)), spikes=6, peak=1.45, band=pal((70, 200, 230)),
             top=pal((40, 40, 52)), stripe=GOLD, bottom=pal((120, 48, 168)), long_pants=True, shoe=GOLD,
             face='hype', pose='fight', arm_thick=True)
+MIRA = dict(hat='tophat', hat_pal=pal((96, 52, 150)), hat_band=GOLD, hair='flat', hair_pal=pal((70, 40, 100)),
+            top=CREAM, vest=pal((96, 52, 150)), neck=pal((48, 196, 176)), neck_kind='bow', bottom=pal((70, 40, 110)),
+            long_pants=True, shoe=GOLD, face='calm', pose='stand', glasses=True)
 BIMA = dict(hat='robin', hat_pal=pal((76, 160, 90)), top=pal((76, 160, 90)), bottom=KHAKI, shoe=BROWN,
             belt=BROWNH, face='fighter', pose='stand', skin=pal((226, 178, 128)))
 

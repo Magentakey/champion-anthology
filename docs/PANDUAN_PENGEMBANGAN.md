@@ -210,3 +210,17 @@ Semua angka ada di `lib/levels/rhythm/rhythm_config.dart`:
 Cara kerja: `RhythmRun` adalah mesin tahap murni (banner, hitung mundur 4 ketukan, bermain, hasil, jeda antar step) yang melapor ke `LevelSession` tepat sekali per step. Penilaian memakai jam permainan di `RhythmRun`, bukan posisi pemutar audio, sehingga tidak bergantung pada keterlambatan audio; lagu dimulai bersamaan dengan jam 0 dan offset menggeser jadwal not. Uji di HP sungguhan: bila ketukan terasa terlalu cepat atau lambat terhadap suara, geser offset di layar jeda.
 
 Aset dibuat oleh `tools/art/pixel_rhythm.py` (panggung, not, pad, garis ketuk), boss oleh `pixel_bosses.py`, dan lagu serta suara oleh `tools/audio/generate_rhythm_audio.py` (numpy; durasi lagu persis sama dengan panjang bar, dicek tes).
+
+## Mengatur Level 8 (memory)
+
+Semua angka ada di `lib/levels/memory/memory_config.dart`:
+
+- Tabel per step: `memoryPadCount` (4, 6, 9), `memoryStartLength` (3, 4, 5), `memoryRounds` (5, 6, 7), `memoryShowMs` (600, 500, 420), `memoryLives` (3, 2, 2), `memoryInputTimeoutMs` (5000, 4000, 3000), dan `memoryGridColumns`/`memoryGridRows`. Panjang urutan ronde r = `memoryStartLength + r - 1`.
+- `MemoryTuning`: porsi menyala (`litFraction` 0,7) dan semua jeda (intro, antar ronde, ulang, hasil, kilatan salah).
+- Aturan urutan ada di `MemorySequence` (`memory_sequence.dart`): tanpa tiga simbol sama berturut-turut (`memoryMaxRepeat`) dan semua pad muncul pada urutan ronde terakhir. `Random` disuntikkan sehingga tes bisa memakai urutan tetap.
+- Tata letak, warna, bentuk, dan nada pad: `MemoryLayout` dan daftar `memoryPad*` di `memory_stage.dart` (Flame dan HUD membaca angka yang sama; pad minimal 56 dp).
+- Kalimat Mira di `memory_dialog.dart`; font piksel hanya punya huruf besar, angka, dan tanda baca dasar, dan tes memeriksa karakternya.
+
+Cara kerja: `MemoryRound` adalah mesin tahap murni (banner, tonton, ketuk, ronde selesai, ulang, hasil, jeda antar step) yang melapor ke `LevelSession` tepat sekali per step. Satu ketukan diproses per frame. Jika level terasa terlalu sulit atau mudah, ubah `memoryLives[2]` atau `memoryRounds[2]` lebih dulu; tes simulasi menunjukkan dampaknya pada peluang lulus.
+
+Aset dibuat oleh `tools/art/pixel_memory.py` (panggung, 9 pad, ikon nyawa), boss oleh `pixel_bosses.py`, dan nada serta efek suara oleh `tools/audio/generate_memory_audio.py` (numpy).
