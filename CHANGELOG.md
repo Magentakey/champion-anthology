@@ -2,6 +2,28 @@
 
 Format versi mengikuti `pubspec.yaml` (`nama+nomorBuild`). Tag rilis: `v<nama>`.
 
+## [1.9.0] - 2026-11-27
+
+### Ditambahkan
+- Level 8: Mira the Memory Keeper, game memori. Pad menyala berurutan dengan nada masing-masing; pemain mengulang urutan dengan mengetuk pad (papan ketik uji: 1 sampai 9).
+- Tiga step: 4 pad (2x2), 6 pad (3x2), 9 pad (3x3). Ronde 5/6/7; panjang urutan mulai 3/4/5 dan bertambah 1 tiap ronde (akhir 7/9/11; total simbol 25/39/56). Tempo tampil 600/500/420 ms (menyala 70%).
+- Nyawa 3/2/2 per step, tidak pulih antar ronde. Batas waktu ketuk 5/4/3 detik dan diulang tiap ketukan benar. Salah atau waktu habis: nyawa berkurang 1 dan urutan yang sama diputar ulang dari awal; nyawa habis: step gagal. Menang tiga step = 3 bintang.
+- Urutan memakai `Random` yang disuntikkan dan diacak baru tiap percobaan; tidak ada tiga simbol sama berturut-turut dan semua pad muncul pada urutan ronde terakhir.
+- Jeda: saat tahap tonton, lanjut memutar ulang urutan dari awal; saat tahap ketuk, ketukan benar dipertahankan dan timer diulang.
+- Satu ketukan diproses per frame (sentuhan serentak: yang pertama saja). Pad memakai `Listener` pada pointer-down agar responsif.
+- Karakter Mira (4 ekspresi), panggung, 9 pad dua bingkai dengan bentuk dan warna berbeda, ikon nyawa lewat `tools/art/pixel_memory.py`; 9 nada pad dan 4 efek suara lewat `tools/audio/generate_memory_audio.py` (butuh numpy). Tanpa musik latar.
+- Kunci level: terbuka setelah Rhea the Drummer mendapat minimal 1 bintang.
+
+### Catatan penafsiran rancangan
+- Nada pad dibunyikan saat pad dinyalakan pada logika permainan; sinkron suara bersifat kosmetik dan tidak memengaruhi penilaian.
+- Rancangan menyebut rata-rata bintang sekitar 2,0 untuk galat 3% per ketukan; perhitungan tepat dari aturan yang sama memberi sekitar 1,79, dan tes simulasi memakai angka itu.
+- Pengaturan Step 3 (`memoryLives[2]`, `memoryRounds[2]`) adalah tombol utama bila level terasa terlalu sulit atau mudah.
+
+### Teknis
+- Logika murni dan terpisah dari Flame: `memory_sequence.dart` (pembuat urutan dan aturan), `memory_round.dart` (mesin tahap; melapor ke `LevelSession` tepat sekali per step), konstanta di `memory_config.dart`, tata letak di `memory_stage.dart`, HUD di `memory_hud.dart`.
+- Tes baru di `test/levels/memory/`: konstanta (termasuk angka desimal di sumber), aturan urutan untuk ratusan seed, mesin tahap (alur, ketukan diabaikan, salah, timeout, nyawa, jeda), simulasi pemain (galat 1, 2, 3, 5%, pengetuk asal, rata-rata bintang), dialog, registri, tata letak, aset, dan HUD. `app_flow_test`, `progress_test`, dan `audio_assets_test` disesuaikan untuk level ke-8; asersi versi 1.8.0 di tes rhythm dipindah ke tes memory (1.9.0+10).
+- `pixel_kit.py` mendapat spesifikasi Mira dan `pixel_bosses.py` memuatnya; boss lain tidak berubah.
+
 ## [1.8.0] - 2026-11-26
 
 ### Ditambahkan
